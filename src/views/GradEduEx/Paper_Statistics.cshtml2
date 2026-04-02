@@ -1,0 +1,494 @@
+﻿@page
+@model GraduateStudyWebApp.Pages.GraduateEduEx.Paper_StatisticsModel
+@{
+    Layout = "~/Pages/Shared/_Layout_PC.cshtml";
+    ViewData["Title"] = "论文读写统计表";
+    //操作Session样例，方法1：
+    //Model.seUserId = "TestUserId";
+    var strUserId_Value = Model.seUserId;
+    //操作Session样例，方法2：
+    Model.SetSession("UserId1", "TestUserId1");
+    var strUserId1_Value = Model.GetSession("UserId1");
+    //请参见页尾的隐形控件hidUserid和hidUserId1的使用。
+}
+@section Styles{
+
+    <link rel="stylesheet" href="../css/Bootstrap-3.0.3.css" />
+    <link rel="stylesheet" href="../lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="../css/site.css" />
+
+    <link rel="stylesheet" href="~/lib/Xadmin/css/font.css">
+    <link rel="stylesheet" href="~/lib/Xadmin/css/xadmin.css">
+    <!-- <link rel="stylesheet" href="./css/theme5.css"> -->
+
+    <link rel="stylesheet" href="~/css/public.css" />
+
+    <link href="~/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <style>
+        .panel-default {
+            border: none;
+            border-radius: 0px;
+            margin-bottom: 0px;
+            box-shadow: none;
+            -webkit-box-shadow: none;
+        }
+
+            .panel-default > .panel-heading {
+                color: #777;
+                background-color: #fff;
+                border-color: #e6e6e6;
+                padding: 10px 10px;
+            }
+
+            .panel-default > .panel-body {
+                padding: 10px;
+                padding-bottom: 0px;
+            }
+
+                .panel-default > .panel-body ul {
+                    overflow: hidden;
+                    padding: 0;
+                    margin: 0px;
+                    margin-top: -5px;
+                }
+
+                    .panel-default > .panel-body ul li {
+                        line-height: 27px;
+                        list-style-type: none;
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
+                    }
+
+                        .panel-default > .panel-body ul li .time {
+                            color: #a1a1a1;
+                            float: right;
+                            padding-right: 5px;
+                        }
+    </style>
+
+}
+@section Scripts{
+
+
+
+    <script src="../lib/jquery/dist/jquery.js"></script>
+    <script src="../lib/bootstrap/dist/js/bootstrap.js"></script>
+    @*<script src="../js/site.js" asp-append-version="true"></script>*@
+    @*<script src="../lib/bootstrap/dist/js/popper.js"></script>*@
+
+
+    <!--tab选项卡-->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap.min.js"></script>
+    @*<script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
+        <script src="http://libs.baidu.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>*@
+
+    @*<script type="text/javascript" src="~/lib/jquery.min.js"></script>*@
+    <script type="text/javascript" src="~/lib/Chart.js"></script>
+    <script src="~/lib/Xadmin/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="~/lib/Xadmin/js/xadmin.js"></script>
+    <script>
+        layui.use(['laydate', 'form'],
+            function () {
+                var laydate = layui.laydate;
+
+                //执行一个laydate实例
+                laydate.render({
+                    elem: '#txtStartDate_q' //指定元素
+                });
+
+                //执行一个laydate实例
+                laydate.render({
+                    elem: '#txtEndDate_q' //指定元素
+                });
+            });
+    </script>
+
+
+    <script src="../lib/require/require.js" data-main="../js/src/config"></script>
+}
+<script>
+
+var strUrl_Session_SetString = "@Model.Url_Session_SetString";
+var strUrl_Session_GetString = "@Model.Url_Session_GetString";
+var strCurrPrjId = "@Model.CurrPrjId";
+
+
+
+
+
+
+
+    window.onload = function () {
+
+        require(["../js/GraduateEduEx/Paper_Statistics.js"], function (Statistics) {
+            var objPage = new Statistics.Paper_Statistics();
+            $("#hidQueryStata").val("1");
+            objPage.Page_Load();
+        });
+    }
+    /*
+     查询记录
+    (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+    */
+    function btnQuery_Click() {
+        require(["../js/GraduateEduEx/Paper_Statistics.js"], function (Statistics) {
+            $("#Text1").val("进入函数：btnQuery_Click");
+            var objPage = new Statistics.Paper_Statistics();
+            objPage.btnQuery_Click();
+        });
+    }
+
+    function tbody() {
+        $("tbody.x-cate tr[fid!='0']").hide();
+        // 栏目多级显示效果
+        $('.x-show').click(function () {
+            if ($(this).attr('status') == 'true') {
+                $(this).html('&#xe625;');
+                $(this).attr('status', 'false');
+                cateId = $(this).parents('tr').attr('cate-id');
+                $("tbody tr[fid=" + cateId + "]").show();
+            } else {
+                cateIds = [];
+                $(this).html('&#xe623;');
+                $(this).attr('status', 'true');
+                cateId = $(this).parents('tr').attr('cate-id');
+                getCateId(cateId);
+                for (var i in cateIds) {
+                    $("tbody tr[cate-id=" + cateIds[i] + "]").hide().find('.x-show').html('&#xe623;').attr('status', 'true');
+                }
+            }
+        })
+    }
+
+    var cateIds = [];
+    function getCateId(cateId) {
+        $("tbody tr[fid=" + cateId + "]").each(function (index, el) {
+            id = $(el).attr('cate-id');
+            cateIds.push(id);
+            getCateId(id);
+        });
+    }
+
+
+    /*
+论文读写统计
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+*/
+    function liPaperReadWriteStatistics_Click() {
+        require(["../js/GraduateEduEx/Paper_Statistics.js"], function (Statistics) {
+            $("#hidQueryStata").val("1");
+            $("#Text1").val("进入函数：liPaperReadWriteStatistics_Click");
+            var objPage = new Statistics.Paper_Statistics();
+            objPage.liPaperReadWriteStatistics_Click();
+        });
+    }
+
+
+    /*
+论文统计
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+*/
+    function liPaperStatistics_Click() {
+        require(["../js/GraduateEduEx/Paper_Statistics.js"], function (Statistics) {
+            $("#hidQueryStata").val("2");
+            $("#Text1").val("进入函数：liPaperStatistics_Click");
+            var objPage = new Statistics.Paper_Statistics();
+            objPage.liPaperStatistics_Click();
+        });
+    }
+
+    /*
+论文子观点统计
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+*/
+    function liPaperSubViewpointStatistics_Click() {
+        require(["../js/GraduateEduEx/Paper_Statistics.js"], function (Statistics) {
+            $("#hidQueryStata").val("3");
+            $("#Text1").val("进入函数：liPaperSubViewpointStatistics_Click");
+            var objPage = new Statistics.Paper_Statistics();
+            objPage.liPaperSubViewpointStatistics_Click();
+        });
+    }
+
+    //论文读写
+    function Canvas1(strJson) {
+        var randomScalingFactor = function () { return Math.round(Math.random() * 100) };
+        var lineChartData = {
+            labels: ["论文读写总数", "论文阅读数", "论文写作数", "观点数大于5阅读", "观点数大于5写作"],
+            datasets: [
+                {
+                    fillColor: "#2e9dbd",
+                    data: strJson
+
+                }
+            ]
+        }
+        var ctx = document.getElementById("Canvas1").getContext("2d");
+        window.myLine = new Chart(ctx).Bar(lineChartData, {
+        bezierCurve: false,
+
+         });
+    }
+
+    //论文
+    function Canvas2(strJson) {
+        var randomScalingFactor = function () { return Math.round(Math.random() * 100) };
+        var lineChartData = {
+            labels: ["论文总数", "获得点赞", "获得评论数", "给他人点赞数", "给他人评论数"],
+            datasets: [
+                {
+                    fillColor: "#e57f4c",
+                    data: strJson
+
+                }
+            ]
+        }
+        var ctx = document.getElementById("Canvas2").getContext("2d");
+        window.myLine = new Chart(ctx).Bar(lineChartData, {
+            bezierCurve: false,
+
+        });
+    }
+
+    //论文子观点
+    function Canvas3(strJson) {
+        var randomScalingFactor = function () { return Math.round(Math.random() * 100) };
+        var lineChartData = {
+            labels: ["子观点总数", "获得点赞", "获得评论数", "给他人点赞数", "给他人评论数"],
+            datasets: [
+                {
+                    fillColor: "#3474d9",
+                    data: strJson
+
+                }
+            ]
+        }
+        var ctx = document.getElementById("Canvas3").getContext("2d");
+        window.myLine = new Chart(ctx).Bar(lineChartData, {
+            bezierCurve: false,
+
+        });
+    }
+
+</script>
+
+
+<div id="divLoading" class="loading">
+    <img src="~/images/CirclePoint.gif" />
+</div>
+
+<div id="tabLayout">
+    @*-- 标题层 --*@
+    <div class="x-nav">
+        <span class="layui-breadcrumb">
+            <a href="">首页</a>
+            <a href="">个人中心</a>
+            <a>
+                <cite>数据统计</cite>
+            </a>
+            <Label id="lblMsg_List" name="lblMsg_List"></Label>
+        </span>
+        <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+            <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+        </a>
+
+    </div>
+
+
+
+    <div id="divQuery" class="div_query">
+
+        <table id="tabQuery" name="tabQuery" style="width: 20%; " class="table table-bordered table-hover table td table-sm">
+            <tr>
+
+                <td id="td_UserId">
+                    <select id="ddlUserId_q" name="ddlUserId_q" class="form-control" style="width:170px;" />
+                </td>
+
+                <td>
+                    <input class="layui-input" placeholder="起始日期" name="txtStartDate_q" id="txtStartDate_q" style="width:150px;">
+                </td>
+                <td>
+                    <input class="layui-input" placeholder="结束日期" name="txtEndDate_q" id="txtEndDate_q" style="width:150px;">
+                </td>
+
+                <td>
+                    <button class="layui-btn" lay-submit="" lay-filter="sreach" onclick="btnQuery_Click()">
+                        <i class="layui-icon">&#xe615;</i>
+                    </button>
+                </td>
+            </tr>
+
+        </table>
+    </div>
+
+
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+
+
+                <div class="layui-card">
+
+                    @*<div class="layui-card-header">
+
+                        </div>*@
+
+                    <ul id="myTab" class="nav nav-tabs">
+                        <li class="active">
+                            <a href="#PaperReadWriteStatistics" data-toggle="tab" onclick="liPaperReadWriteStatistics_Click()">
+                                论文读写数据统计
+                            </a>
+                        </li>
+                        <li><a href="#PaperStatistics" data-toggle="tab" onclick="liPaperStatistics_Click()">论文统计</a></li>
+                        <li><a href="#PaperSubViewpointStatistics" data-toggle="tab" onclick="liPaperSubViewpointStatistics_Click()">论文子观点统计</a></li>
+
+
+                    </ul>
+                    <div id="myTabContent" class="tab-content">
+                        <div class="tab-pane fade in active show" id="PaperReadWriteStatistics" style="padding:5px;">
+                            <div class="layui-card-body ">
+                                <table class="layui-table layui-form">
+                                    <thead>
+                                        <tr>
+                                            <th width="5">
+                                                <input type="checkbox" name="" lay-skin="primary">
+                                            </th>
+                                            <th width="50">标识</th>
+                                            <td width="150">用户</td>
+                                            <td width="150">学院</td>
+
+                                            <th width="150">专业</th>
+                                            <th width="150">论文读写总数</th>
+                                            <th width="150">论文阅读数</th>
+                                            <th width="150">论文写作数</th>
+                                            <th width="150">观点数大于5阅读</th>
+                                            <th width="150">观点数大于5写作</th>
+                                    </thead>
+                                    <tbody id="tbList1" class="x-cate"></tbody>
+                                </table>
+                            </div>
+
+                            <div id="div_Canvas1" style="width: 50%; padding:15px;display:none;">
+                                <div style="height: 280px; border: 1px solid #e6e6e6; background-color: #fff;">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <i class="fa fa-bar-chart fa-lg" style="padding-right: 5px;"></i>论文读写数据统计
+                                        </div>
+                                        <div class="panel-body">
+                                            <canvas id="Canvas1" style="height: 220px; width: 100%;"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="tab-pane fade" id="PaperStatistics">
+                            <div class="layui-card-body ">
+                                <table class="layui-table layui-form">
+                                    <thead>
+                                        <tr>
+                                            <th width="5">
+                                                <input type="checkbox" name="" lay-skin="primary">
+                                            </th>
+                                            <th width="50">标识</th>
+                                            <td width="150">用户</td>
+                                            <th width="150">论文总数</th>
+                                            <th width="150">获得点赞</th>
+                                            <th width="150">获得评论数</th>
+                                            <th width="150">给他人点赞数</th>
+                                            <th width="150">给他人评论数</th>
+                                    </thead>
+                                    <tbody id="tbList2" class="x-cate"></tbody>
+                                </table>
+                            </div>
+                            <div id="div_Canvas2" style="width: 50%; padding:15px;display:none;">
+                                <div style="height: 280px; border: 1px solid #e6e6e6; background-color: #fff;">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <i class="fa fa-bar-chart fa-lg" style="padding-right: 5px;"></i>论文数据统计
+                                        </div>
+                                        <div class="panel-body">
+                                            <canvas id="Canvas2" style="height: 220px; width: 100%;"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="PaperSubViewpointStatistics">
+                            <div class="layui-card-body ">
+                                <table class="layui-table layui-form">
+                                    <thead>
+                                        <tr>
+                                            <th width="5">
+                                                <input type="checkbox" name="" lay-skin="primary">
+                                            </th>
+                                            <th width="50">标识</th>
+                                            <td width="150">用户</td>
+                                            <th width="150">子观点总数</th>
+                                            <th width="150">获得点赞</th>
+                                            <th width="150">获得评论数</th>
+                                            <th width="150">给他人点赞数</th>
+                                            <th width="150">给他人评论数</th>
+                                    </thead>
+                                    <tbody id="tbList3" class="x-cate"></tbody>
+                                </table>
+                            </div>
+
+                            <div id="div_Canvas3" style="width: 50%; padding:15px;display:none;">
+                                <div style="height: 280px; border: 1px solid #e6e6e6; background-color: #fff;">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <i class="fa fa-bar-chart fa-lg" style="padding-right: 5px;"></i>论文子观点数据统计
+                                        </div>
+                                        <div class="panel-body">
+                                            <canvas id="Canvas3" style="height: 220px; width: 100%;"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+            </div>
+        </div>
+    </div>
+
+
+
+</div>
+
+<script>
+    layui.use(['form'], function () {
+        form = layui.form;
+
+    });
+
+
+
+        // 分类展开收起的分类的逻辑
+        //
+
+
+</script>
+<input id="hidOpType" type="hidden" />
+<input id="hidKeyId" type="hidden" />
+<input id="hidUserId" type="hidden" />
+<input id="hidRoleId" type="hidden" />
+
+<input id="hidUserId1" type="hidden" value="@strUserId1_Value" />
+<input id="hidCurrPageIndex" type="hidden" value="1" />
+<input id="hidSortvPaperSubViewpointBy" type="hidden" value="" />
+<input id="hidUserInfo" type="hidden" value="@Model.GetSession("objvUserRoleRelation")" />
+<input id="hidPaperRWId" type="hidden" />
+
+
+<input id="hidQueryStata" type="hidden" />

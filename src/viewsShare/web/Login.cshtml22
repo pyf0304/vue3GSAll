@@ -1,0 +1,199 @@
+﻿@page
+@{
+
+    Layout = null;
+    //ViewData["Title"] = "登录";
+}
+
+<!doctype html>
+<html class="x-admin-sm">
+<head>
+    <title>登录</title>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    @*<meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi" />*@
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+    <link rel="stylesheet" href="~/lib/Xadmin/css/font.css">
+    <link rel="stylesheet" href="~/lib/Xadmin/css/login.css">
+    <link rel="stylesheet" href="~/lib/Xadmin/css/xadmin.css">
+    <!-- <link rel="stylesheet" href="./css/theme5.css"> -->
+    <script src="~/lib/Xadmin/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="~/lib/Xadmin/js/xadmin.js"></script>
+
+
+    <script src="~/jquery.mobile-1.4.5/jquery-1.11.1.min.js"></script>
+    <!-- 引入 jQuery Mobile 库 -->
+    @*<script src="~/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.js"></script>*@
+
+    <script src="../lib/jquery/dist/jquery.js"></script>
+    <script src="../lib/require/require.js" data-main="../js/src/config"></script>
+
+
+
+    <script>
+        //var LoginIp = returnCitySN.cip;
+
+         @*var strUrl_Session_SetString = "@Model.Url_Session_SetString";
+    var strUrl_Session_GetString = "@Model.Url_Session_GetString";
+        var strWebRoot = "@Model.WebRoot";*@
+
+        //function SetSession(Key, Value) {
+
+        //    $.ajax({
+        //        url: "/Session/SetString",
+        //        cache: false,
+        //        async: false,
+        //        type: 'get',
+        //        dataType: "json",
+        //        data: {
+        //            Key: Key,
+        //            Value: Value
+        //        },
+        //        success: function (data) {
+        //            //$('#myValue').val(text);
+        //            var strKey = data.key;
+        //            var strValue = data.value;
+
+        //            $('#myKey').html(strKey);
+        //            $('#myValue').html(strValue);
+        //            console.log(strKey + strValue);
+
+        //        }
+
+        //    });
+        //}
+
+
+        function GetRequest() {
+            var url = location.search; //获取url中"?"符后的字串
+            var theRequest = new Object();
+            if (url.indexOf("?") != -1) {
+                var str = url.substr(1);
+                strs = str.split("&");
+                for (var i = 0; i < strs.length; i++) {
+                    theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+                }
+            }
+            return theRequest;
+        }
+
+
+        window.onload = function () {
+
+            var Request = new Object();
+            Request = GetRequest();
+
+            var str1 = Request['state'];
+            $("#hidState").val(str1);
+
+            require(["../js/Web/Login.js"], function (users) {
+                var objPage = new users.Login();
+                objPage.Page_Load();
+            });
+
+        }
+
+
+        function btnLogin_Click() {
+            var txtUser = document.getElementById("txtUserId");
+            var txtPassword = document.getElementById("txtPassword");
+
+            //var divlogin = document.getElementById("login");
+            //var divloginInfo = document.getElementById("loginInfo");
+
+            if (txtUser.value == "") {
+                alert("请输入用户名！");
+            } else if (txtPassword.value == "") {
+                alert("请输入密码！");
+
+            } else {
+                require(["../js/Web/Login.js"], function (users) {
+
+                    var objPage = new users.Login();
+                    objPage.btnLogin_Click();
+                });
+            }
+        }
+
+        function CloseWindow() {
+
+            try {
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                parent.layer.close(index); //再执行关闭
+
+                window.parent.Page_Load();
+
+            } catch (e) {
+                window.opener.location = "父页面地址";
+                window.opener = null;
+                window.close();
+            }
+        }
+    </script>
+</head>
+<body class="login-bg">
+    <div id="divLoading" style="width:100%;height:100px; position:absolute; z-index:100; text-align:center; margin-top:300px; display:none;">
+        <img src="~/images/CirclePoint.gif" height="100" width="100" />
+    </div>
+
+    <div class="login layui-anim layui-anim-up">
+        <div class="message">研究生论文系统</div>
+        <div id="darkbannerwrap"></div>
+        <input name="txtUserId" id="txtUserId" placeholder="用户名" type="text" class="layui-input">
+        <hr class="hr15">
+        <input name="txtPassword" id="txtPassword" placeholder="密码" type="password" class="layui-input">
+        <hr class="hr15">
+        @*<label class="layui-form-label">滑动验证</label>*@
+        <div style="width:100%;">
+            <div id="slider"></div>
+        </div>
+        <hr class="hr15">
+        <input value="登录" lay-submit lay-filter="formDemo" style="width:100%;" type="submit">
+        <hr class="hr15">
+
+        @*<input value="注册" lay-submit lay-filter="login" style="width:100%;" type="submit" onclick="xadmin.open('注册','https://www.sh-tz.com/ExamLib/WebForm/Admin/wfmRegisterStu.aspx')">*@
+        <hr class="hr20">
+
+    </div>
+    @*<input id="hidUserInfo" type="hidden" value="@Model.GetSession("objvUserRoleRelation")" />*@
+    <input id="hidState" type="hidden" />
+    <script type="text/javascript" charset="utf-8">
+        layui.config({
+            base: '../lib/sliderVerify/'
+        }).use(['sliderVerify', 'jquery', 'form'], function () {
+            var sliderVerify = layui.sliderVerify,
+                $ = layui.jquery,
+                form = layui.form;
+            var slider = sliderVerify.render({
+                elem: '#slider',
+                onOk: function () {//当验证通过回调
+                    layer.msg('滑块验证通过!', {
+                        icon: 1,
+                        time: 500
+                    });
+                    //清空localStorage
+                    //localStorage.clear();
+                    //layer.msg("滑块验证通过");
+                }
+            })
+            $('#reset').on('click', function () {
+                slider.reset();
+            })
+            //监听提交
+            form.on('submit(formDemo)', function (data) {
+                if (slider.isOk()) {
+                    //layer.msg(JSON.stringify(data.field));
+                    btnLogin_Click();
+                } else {
+                    layer.msg("请先通过滑块验证");
+                }
+                return false;
+            });
+
+        })
+    </script>
+</body>
+</html>

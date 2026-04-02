@@ -1,0 +1,2462 @@
+﻿import $ from 'jquery';
+import { Public_PaperSubViewpoint } from '../GradEduPublicPage/Public_PaperSubViewpoint';
+import { gs_MeetingMinutes_EditEx } from './gs_MeetingMinutes_EditEx';
+import { gs_PaperReport_EditEx } from './gs_PaperReport_EditEx';
+import { gs_ReflectLogCRUDEx } from './gs_ReflectLogCRUDEx';
+import { gs_ReflectLog_EditEx } from './gs_ReflectLog_EditEx';
+import { gs_ResearchResult_EditEx } from './gs_ResearchResult_EditEx';
+import { gs_TeacherTaskCRUDEx } from './gs_TeacherTaskCRUDEx';
+import { gs_TobeStudiedProblem_EditEx } from './gs_TobeStudiedProblem_EditEx';
+import { gs_TopicRoleCRUDEx } from './gs_TopicRoleCRUDEx';
+import { gs_ViewsClassification_EditEx } from './gs_ViewsClassification_EditEx';
+import { PaperLstSel } from './PaperLstSel';
+import { ResearchTopicConceptEx } from './ResearchTopicConceptEx';
+import { ResearchTopicObjectiveEx } from './ResearchTopicObjectiveEx';
+import { ResearchTopicSysskillEx } from './ResearchTopicSysskillEx';
+import { ResearchTopicSysSocialRelaEx } from './ResearchTopicSysSocialRelaEx';
+import { ResearchTopicViewpointEx } from './ResearchTopicViewpointEx';
+import { ResearchTopic_EditEx } from './ResearchTopic_EditEx';
+import { RTPaperRela_EditEx } from './RTPaperRela_EditEx';
+import { RTPaperRela_QUDIEx } from './RTPaperRela_QUDIEx';
+import { RTUserRela_EditEx } from './RTUserRela_EditEx';
+import { UsersLstSel } from './UsersLstSel';
+import { clsPubFun4Web } from '@/ts/FunClass/clsPubFun4Web';
+import { CurrEduClsEx_SortFun_IntTag } from '@/ts/L3ForWApiEx/DailyRunning/clsCurrEduClsExWApi';
+import { CurrEduClsTeacherEx_SetCurrEduClsOrderNum4TeacherId } from '@/ts/L3ForWApiEx/DailyRunning/clsCurrEduClsTeacherExWApi';
+import { gs_UserConfigEx_GetNewReturnShareIdEx } from '@/ts/L3ForWApiEx/ExamMan/clsgs_UserConfigExWApi';
+import {
+  ResearchTopicEx_DelRecordAsyncEx,
+  ResearchTopicEx_SetIdCurrEduCls,
+} from '@/ts/L3ForWApiEx/GradEduTopic/clsResearchTopicExWApi';
+import {
+  RTUserRelaEx_CopyToEx,
+  RTUserRelaEx_GetObjLstByTopicId,
+  RTUserRelaEx_UpdateTypeTableHtmlAsync,
+} from '@/ts/L3ForWApiEx/GradEduTopic/clsRTUserRelaExWApi';
+import { gs_MeetingMinutes_Edit } from '@/viewsBase/GradEduTopic/gs_MeetingMinutes_Edit';
+import { gs_PaperReport_Edit } from '@/viewsBase/GradEduTopic/gs_PaperReport_Edit';
+import { gs_ReflectLog_Edit } from '@/viewsBase/GradEduTopic/gs_ReflectLog_Edit';
+import { gs_ResearchResult_Edit } from '@/viewsBase/GradEduTopic/gs_ResearchResult_Edit';
+import { gs_TobeStudiedProblem_Edit } from '@/viewsBase/GradEduTopic/gs_TobeStudiedProblem_Edit';
+import { gs_ViewsClassification_Edit } from '@/viewsBase/GradEduTopic/gs_ViewsClassification_Edit';
+import { RTUserRelaCRUD } from '@/viewsBase/GradEduTopic/RTUserRelaCRUD';
+import { clsCurrEduClsEN } from '@/ts/L0Entity/DailyRunning/clsCurrEduClsEN';
+import { clsgs_MeetingMinutesEN } from '@/ts/L0Entity/GradEduTopic/clsgs_MeetingMinutesEN';
+import { clsgs_PaperReportEN } from '@/ts/L0Entity/GradEduTopic/clsgs_PaperReportEN';
+import { clsgs_ReflectLogEN } from '@/ts/L0Entity/GradEduTopic/clsgs_ReflectLogEN';
+import { clsgs_ResearchResultEN } from '@/ts/L0Entity/GradEduTopic/clsgs_ResearchResultEN';
+import { clsgs_TeacherTaskEN } from '@/ts/L0Entity/GradEduTopic/clsgs_TeacherTaskEN';
+import { clsgs_TobeStudiedProblemEN } from '@/ts/L0Entity/GradEduTopic/clsgs_TobeStudiedProblemEN';
+import { clsgs_ViewsClassificationEN } from '@/ts/L0Entity/GradEduTopic/clsgs_ViewsClassificationEN';
+import { clsResearchTopicEN } from '@/ts/L0Entity/GradEduTopic/clsResearchTopicEN';
+import { clsRTPaperRelaEN } from '@/ts/L0Entity/GradEduTopic/clsRTPaperRelaEN';
+import { clsRTUserRelaEN } from '@/ts/L0Entity/GradEduTopic/clsRTUserRelaEN';
+import { clsvRTUserRelaEN } from '@/ts/L0Entity/GradEduTopic/clsvRTUserRelaEN';
+import { clsgs_ColorEN } from '@/ts/L0Entity/RT_Params/clsgs_ColorEN';
+import { CurrEduCls_GetObjLstAsync } from '@/ts/L3ForWApi/DailyRunning/clsCurrEduClsWApi';
+import { sys_RequestPush_GetRecCountByCondAsync } from '@/ts/L3ForWApi/GradEduTools/clssys_RequestPushWApi';
+import {
+  ResearchTopic_AddNewRecordWithReturnKeyAsync,
+  ResearchTopic_GetFirstObjAsync,
+  ResearchTopic_GetObjByTopicIdAsync,
+  ResearchTopic_GetObjLstAsync,
+} from '@/ts/L3ForWApi/GradEduTopic/clsResearchTopicWApi';
+import {
+  RTUserRela_AddNewRecordAsync,
+  RTUserRela_DelRecordAsync,
+  RTUserRela_GetFirstObjAsync,
+  RTUserRela_GetObjLstAsync,
+  RTUserRela_IsExistRecordAsync,
+  RTUserRela_ReFreshCache,
+  RTUserRela_ReOrderAsync,
+  RTUserRela_UpdateRecordAsync,
+} from '@/ts/L3ForWApi/GradEduTopic/clsRTUserRelaWApi';
+import {
+  vRTUserRela_GetObjBymIdCache,
+  vRTUserRela_GetSubObjLstCache,
+} from '@/ts/L3ForWApi/GradEduTopic/clsvRTUserRelaWApi';
+import {
+  gs_Color_GetObjLstAsync,
+  gs_Color_GetObjLstCache,
+} from '@/ts/L3ForWApi/RT_Params/clsgs_ColorWApi';
+import { gs_Share_BindDdl_ShareIdInDivCache } from '@/ts/L3ForWApi/RT_Params/clsgs_ShareWApi';
+import { TopicUserRole_GetObjLstCache } from '@/ts/L3ForWApi/RT_Params/clsTopicUserRoleWApi';
+import { clsPrivateSessionStorage } from '@/ts/PubConfig/clsPrivateSessionStorage';
+import { clsOrderByData } from '@/ts/PubFun/clsOrderByData';
+import { clsPubLocalStorage } from '@/ts/PubFun/clsPubLocalStorage';
+import { clsStackTrace } from '@/ts/PubFun/clsStackTrace';
+import { Format, IsNullOrEmpty } from '@/ts/PubFun/clsString';
+
+import { IShowList } from '@/ts/PubFun/IShowList';
+import {
+  GetCheckedKeyIdsInDivObj,
+  GetFirstCheckedKeyIdInDivObj,
+  GetInputValueInDivObj,
+  GetInputValueInDivObjN,
+  GetSelectValueInDivObj,
+  HideDivInDivObj,
+  SetInputValueInDivObj,
+  SetSelectValueByIdInDivObj,
+  GetDivObjInDivObj,
+} from '@/ts/PubFun/clsCommFunc4Ctrl';
+import { AccessBindGvDefault, AccessBtnClickDefault } from '@/ts/PubFun/clsErrMsgBLEx';
+import { enumDivType } from '@/ts/PubFun/enumDivType'; //主题菜单是否隐藏
+import { RTUserRelaEx_BindTabvRTUserRela } from '@/ts/L3ForWApiEx/GradEduTopic/clsRTUserRelaExWApiB';
+import { ResearchTopic_QUDIExB } from '@/views/GradEduTopic/ResearchTopic_QUDIExB';
+
+declare function ShowDialogEight(): void;
+declare function ShowDialogSeven(): void;
+declare function ShowDialogTwo(): void;
+declare function ShowDialogTen(): void;
+
+declare function ShowUserColor(): void;
+declare function HideUserColor(): void;
+declare function ShowDialogPaperSubViewpoint(): void;
+declare function HideDialogFour(): void;
+declare function ShowDialogNine(): void;
+
+declare function liPaperClick(strKeyId: string): void; //相关论文
+declare function liTeacherTaskClick(): void; //教师任务
+declare function liResearchPlanClick(): void; //研究计划
+declare function liPaperSubViewpoint(): void; //论文子观点
+
+declare function liViewpointClick(): void; //个人观点
+declare function liExpertViewpointClick(): void; //专家观点
+declare function liConceptClick(): void; //相关概念
+declare function liObjectiveFactClick(): void; //客观事实
+declare function liObjectiveBasisClick(): void; //客观依据
+declare function liSysskillClick(): void; //技能
+declare function liSysSocialRelationsClick(): void; //社会关系
+
+declare function ligs_ReflectLog(): void; //反思日志
+declare function liMeetingMinutesClick(): void; //会议纪要
+declare function liPaperReportClick(): void; //论文汇报
+declare function liTobeStudiedProblemClick(): void; //待研究问题
+declare function liResearchResultClick(): void; //研究成果
+declare function liViewsClassificationClick(): void; //各观点分类
+declare function xadminopen2(
+  title: string,
+  strFile: string,
+  intWidth: number,
+  intHeight: number,
+): void; //打开一个对话框
+declare function xadminOpen(title: string, strFile: string): void; //打开一个对话框
+declare function xadminOpen_Width_Height(
+  title: string,
+  strFile: string,
+  intWidth: number,
+  intHeight: number,
+): void; //打开一个对话框
+
+declare function TopicMenuIsHide(): void;
+declare let window: any;
+/* ResearchTopic_QUDI_TSEx 的摘要说明。其中Q代表查询,U代表修改
+ (AutoGCLib.WA_ViewScriptCSEx_TS4TypeScript:GeneCode)
+*/
+export class ResearchTopic_QUDIEx extends RTUserRelaCRUD implements IShowList {
+  public static GetPropValue: (strPropName: string) => string;
+  //export class ResearchTopic_QUDIEx extends ResearchTopicCRUD {
+  //用户列表
+  public static topicId = ''; //当前所选的主题Id
+  /*
+   * 每页记录数，在扩展类可以修改
+   */
+  public get pageSize(): number {
+    return 20;
+  }
+  public recCount = 0;
+  BindGv(strType: string, strPara: string) {
+    console.log(strType, strPara);
+    let objPage;
+    let objPage_gs_TeacherTask;
+    switch (strType) {
+      case clsResearchTopicEN._CurrTabName:
+        this.GetTopicData();
+        break;
+      case clsgs_ReflectLogEN._CurrTabName:
+        objPage = new gs_ReflectLogCRUDEx();
+        objPage.BindGv_gs_ReflectLog(RTUserRelaCRUD.divLayout);
+        break;
+      case clsgs_ViewsClassificationEN._CurrTabName:
+        liViewsClassificationClick();
+        break;
+      case clsgs_TobeStudiedProblemEN._CurrTabName:
+        liTobeStudiedProblemClick();
+        break;
+      case clsgs_ResearchResultEN._CurrTabName:
+        liResearchResultClick();
+        break;
+      case clsgs_PaperReportEN._CurrTabName:
+        liPaperReportClick();
+        break;
+      case clsgs_MeetingMinutesEN._CurrTabName:
+        liMeetingMinutesClick();
+        break;
+      case clsgs_TeacherTaskEN._CurrTabName:
+        /*liTeacherTaskClick();*/
+        objPage_gs_TeacherTask = new gs_TeacherTaskCRUDEx();
+        objPage_gs_TeacherTask.liTeacherTaskClick(
+          RTUserRelaCRUD.divLayout,
+          RTUserRelaCRUD.divDataLst,
+        );
+        break;
+
+      default:
+        AccessBindGvDefault(strType);
+        break;
+    }
+  }
+  async BindGvCache(strType: string, strPara: string) {
+    const objPage0 = new ResearchTopic_QUDIExB();
+    const objLayOut = objPage0.getDivName(enumDivType.LayOut_01);
+    if (objLayOut == null) return;
+    switch (strType) {
+      case clsRTPaperRelaEN._CurrTabName:
+        if (IsNullOrEmpty(strPara) == false) {
+          const objPager_CRUD = new RTPaperRela_QUDIEx();
+          const objRTPaperRela_Edit = new RTPaperRela_EditEx('', objPager_CRUD);
+          const strPaperId = strPara;
+          const bolIsSuccess = await objRTPaperRela_Edit.AddNewRecordSavePaperRela(strPaperId);
+          if (bolIsSuccess == true) {
+            const objPage = new RTPaperRela_QUDIEx();
+            objPage.divName4Pager = 'divPager4Paper';
+            objPage.liPaperClick(objLayOut, false);
+
+            //const objPage_RTPaperRela = new Pub_RTPaperRelaList();
+            //objPage_RTPaperRela.divName4Pager = "divPager4Paper";
+            //objPage_RTPaperRela.PageLoad();
+          }
+          //await objPage_RTPaperRela.BindGv_vRTPaperRela();
+        }
+        break;
+      case clsRTUserRelaEN._CurrTabName:
+        if (IsNullOrEmpty(strPara) == false) {
+          this.btnUserRecordInTab_Click(strPara);
+        }
+        break;
+      case clsResearchTopicEN._CurrTabName:
+        this.GetTopicData();
+        break;
+
+      default:
+        AccessBindGvDefault(strType);
+        break;
+    }
+  }
+  /*
+    按钮单击,用于调用Js函数中btn_Click
+   (AutoGCLib.WA_ViewScriptCSEx_TS4TypeScript:Gen_WApi_TS_btn_Click)
+   */
+  public static btn_Click(strCommandName: string, strKeyId: string) {
+    const objPage: ResearchTopic_QUDIEx = new ResearchTopic_QUDIEx();
+    const objPageEdit_PaperSel: PaperLstSel = new PaperLstSel(objPage);
+    const objPageEdit: ResearchTopic_EditEx = new ResearchTopic_EditEx(
+      'ResearchTopic_EditEx',
+      objPage,
+    );
+    const objPageEditgs_ReflectLog: gs_ReflectLog_EditEx = new gs_ReflectLog_EditEx(
+      'gs_ReflectLog_EditEx',
+      objPage,
+    );
+    const objPageEditgs_ViewsClassification = new gs_ViewsClassification_EditEx(
+      'gs_ViewsClassification_EditEx',
+      objPage,
+    );
+    const arrKeyIds = GetCheckedKeyIdsInDivObj(RTUserRelaCRUD.divDataLst);
+    strKeyId = GetFirstCheckedKeyIdInDivObj(RTUserRelaCRUD.divDataLst);
+    let objPageEdit_UsersSel;
+    const strKeyId2 = clsPrivateSessionStorage.topicIdInTree;
+    switch (strCommandName) {
+      case 'UpdateUserRelaInTab': //删除研究主题AddgsReflectLog
+        //objPage.btnUpdateUserRelaInTab_Click();
+        break;
+      case 'AddSysskillInTab': //删除研究主题AddgsReflectLog
+        objPage.btnAddSysskillInTab_Click();
+        break;
+      case 'AddNewResearchResult': //删除研究主题AddgsReflectLog
+        objPage.btnAddNewResearchResult_Click();
+        break;
+      case 'AddNewTobeStudiedProblem': //删除研究主题AddgsReflectLog
+        objPage.btnAddNewTobeStudiedProblem_Click();
+        break;
+      case 'UpdateRecordInTab_gs_TobeStudiedProblem': //删除研究主题AddgsReflectLog
+        objPage.btnUpdateRecordInTab_gs_TobeStudiedProblem_Click(strKeyId);
+        break;
+
+      case 'UpdateRecordInTab_gs_ResearchResult': //删除研究主题AddgsReflectLog
+        objPage.btnUpdateRecordInTab_gs_ResearchResult_Click(strKeyId);
+        break;
+
+      case 'UpdateRecordInTab_gs_ViewsClassification': //删除研究主题AddgsReflectLog
+        objPage.btnUpdateRecordInTab_gs_ViewsClassification_Click(strKeyId);
+        break;
+
+      case 'Updategs_TeacherTask': //删除研究主题AddgsReflectLog
+        objPage.btnUpdategs_TeacherTask_Click(Number(strKeyId));
+        break;
+      case 'Updategs_ReflectLog': //删除研究主题AddgsReflectLog
+        objPage.btnUpdategs_ReflectLog_Click(Number(strKeyId));
+        break;
+
+      case 'UpdateRecordInTab_gs_PaperReport': //删除研究主题AddgsReflectLog
+        objPage.btnUpdateRecordInTab_gs_PaperReport_Click(strKeyId);
+        break;
+      case 'UpdateRecordInTab_gs_MeetingMinutes': //删除研究主题AddgsReflectLog
+        objPage.btnUpdateRecordInTab_gs_MeetingMinutes_Click(strKeyId);
+        break;
+
+      case 'AddpdfSysSocialRela': //删除研究主题AddgsReflectLog
+        objPage.btnAddpdfSysSocialRela_Click();
+        break;
+      case 'AddRTSysSocialRelaInTab': //删除研究主题AddgsReflectLog
+        objPage.btnAddRTSysSocialRelaInTab_Click();
+        break;
+      case 'AddpdfSysskill': //删除研究主题AddgsReflectLog
+        objPage.btnAddpdfSysskill_Click();
+        break;
+      case 'AddNewPaperReport': //删除研究主题AddgsReflectLog
+        objPage.btnAddNewPaperReport_Click();
+        break;
+      case 'AddNewMeetingMinutes': //删除研究主题AddgsReflectLog
+        objPage.btnAddNewMeetingMinutes_Click();
+        break;
+      case 'RoleTool': //删除研究主题AddgsReflectLog
+        objPage.btnRoleTool_Click();
+        break;
+      case 'AddNewPaperRela': //删除研究主题AddgsReflectLog
+        objPage.btnAddNewPaperRela_Click();
+        break;
+      case 'AddNewgs_PaperRela': //删除研究主题AddgsReflectLog
+        objPage.btnAddNewgs_PaperRela_Click();
+        break;
+      case 'AddExpertViewPointRelaRecordInTab': //删除研究主题AddgsReflectLog
+        objPage.btnAddExpertViewPointRelaRecordInTab_Click();
+        break;
+      case 'AddViewPointRelaRecordInTab': //删除研究主题AddgsReflectLog
+        objPage.btnAddViewPointRelaRecordInTab_Click();
+        break;
+      case 'AddConceptRelaRecordInTab': //删除研究主题AddgsReflectLog
+        objPage.btnAddConceptRelaRecordInTab_Click();
+        break;
+      case 'AddTopicObjectiveRelaRecordInTab': //删除研究主题AddgsReflectLog
+        objPage.btnAddTopicObjectiveRelaRecordInTab_Click();
+        break;
+      case 'BasisObjectiveRelaInTab': //删除研究主题AddgsReflectLog
+        objPage.btnAddBasisObjectiveRelaInTab_Click();
+        break;
+      case 'AddpdfBasisObjective': //删除研究主题AddgsReflectLog
+        objPage.btnAddpdfBasisObjective_Click();
+        break;
+      case 'AddpdfObjectiveFact': //删除研究主题AddgsReflectLog
+        objPage.btnAddpdfObjectiveFact_Click();
+        break;
+      case 'AddpdfNewConceptRela': //删除研究主题AddgsReflectLog
+        objPage.btnAddpdfNewConceptRela_Click();
+        break;
+      case 'AddpdfExpertViewPointRel': //删除研究主题AddgsReflectLog
+        objPage.btnAddpdfExpertViewPointRel_Click();
+        break;
+      case 'AddpdfViewPointRela': //删除研究主题AddgsReflectLog
+        objPage.btnAddpdfViewPointRela_Click();
+        break;
+      case 'AddpdfPaperSubViewpoint': //删除研究主题AddgsReflectLog
+        objPage.btnAddpdfPaperSubViewpoint_Click();
+        break;
+
+      case 'AddNewClassification': //删除研究主题AddgsReflectLog
+        objPageEditgs_ViewsClassification.divName4Edit = 'divEdit_gs_ReflectLog';
+        objPageEditgs_ViewsClassification.btnAddNewRecord_Click();
+        break;
+
+      case 'Addgs_ReflectLog': //删除研究主题AddgsReflectLog
+        objPageEditgs_ReflectLog.divName4Edit = 'divEdit_gs_ReflectLog';
+        objPageEditgs_ReflectLog.btnAddNewRecord_Click();
+        break;
+      case 'AddNewRecord': //删除研究主题
+        objPageEdit.btnAddNewRecord_Click();
+        break;
+      case 'DelResearchTopic': //删除研究主题
+        objPage.btnDelResearchTopic_Click();
+        break;
+      case 'Addgs_TeacherTask': //添加研究计划
+        //const objPageEdit_TeacherTask: Addgs_TeacherTaskEx = new Addgs_TeacherTaskEx(objPage);
+
+        objPage.btnAddgs_TeacherTask_Click();
+        break;
+      case 'AddResearchPlan': //添加研究计划
+        objPage.btnAddResearchPlan_Click();
+        break;
+      case 'AddRelaPaper': //查询记录
+        objPageEdit_PaperSel.btnAddPaperRela_Click();
+        break;
+      case 'AddRelaUsers': //查询记录
+        objPageEdit_UsersSel = new UsersLstSel(objPage);
+
+        objPageEdit_UsersSel.btnAddUserRela_Click();
+        break;
+      case 'Query': //查询记录
+        //objPage.btnQuery_Click();
+        break;
+      case 'AddNewRecordWithMaxId': //添加记录使用最大关键字
+        //objPageEdit.btnAddNewRecordWithMaxId_Click();
+        break;
+      case 'CreateWithMaxId': //添加记录使用最大关键字
+        //objPageEdit.btnAddNewRecordWithMaxId_Click();
+        break;
+
+      case 'Create': //添加记录
+        //objPageEdit.btnAddNewRecord_Click();
+        break;
+      case 'UpdateRecord': //修改记录
+      case 'Update': //修改记录
+        if (strKeyId2 == '') {
+          alert('请选择需要修改的记录！');
+          return;
+        }
+        objPageEdit.btnUpdateRecord_Click(strKeyId2);
+        break;
+      case 'UpdateRecordInTab': //修改记录InTab
+        //objPageEdit.btnUpdateRecordInTab_Click(strKeyId);
+        break;
+      case 'CopyRecord': //复制记录
+      case 'Clone': //复制记录
+        if (arrKeyIds.length == 0) {
+          alert('请选择需要复制的记录！');
+          return;
+        }
+        //objPage.btnCopyRecord_Click();
+        break;
+      case 'DelRecord': //删除记录
+      case 'Delete': //删除记录
+        if (arrKeyIds.length == 0) {
+          alert('请选择需要删除的记录！');
+          return;
+        }
+        //objPage.btnDelRecord_Click();
+        break;
+      case 'DelRecordInTab': //删除记录InTab
+        //objPage.btnDelRecordInTab_Click(strKeyId);
+        break;
+      case 'DelRecordBySign': //按标志删除记录
+      case 'DeleteBySign': //按标志删除记录
+        if (arrKeyIds.length == 0) {
+          alert('请选择需要按标志删除的记录！');
+          return;
+        }
+        //objPage.btnDelRecordBySign_Click();
+        break;
+      case 'UnDelRecordBySign': //按标志恢复删除记录
+      case 'UnDeleteBySign': //按标志恢复删除记录
+        if (arrKeyIds.length == 0) {
+          alert('请选择需要恢复删除的记录！');
+          return;
+        }
+        //objPage.btnUnDelRecordBySign_Click();
+        break;
+      case 'GoTop': //置顶记录
+        if (arrKeyIds.length == 0) {
+          alert('请选择需要置顶的记录！');
+          return;
+        }
+        //objPage.btnGoTop_Click();
+        break;
+      case 'GoBottum': //移底记录
+        if (arrKeyIds.length == 0) {
+          alert('请选择需要移底的记录！');
+          return;
+        }
+        //objPage.btnGoBottum_Click();
+        break;
+      case 'UpMove': //上移记录
+        if (arrKeyIds.length == 0) {
+          alert('请选择需要上移的记录！');
+          return;
+        }
+        //objPage.btnUpMove_Click();
+        break;
+      case 'DownMove': //下移记录
+        if (arrKeyIds.length == 0) {
+          alert('请选择需要下移的记录！');
+          return;
+        }
+        //objPage.btnDownMove_Click();
+        break;
+      case 'ReOrder': //重序记录
+        //objPage.btnReOrder_Click();
+        break;
+      case 'ExportExcel': //导出Excel
+        alert('导出Excel功能还没有开通！');
+        break;
+      default:
+        AccessBtnClickDefault(strCommandName, 'ResearchTopic_QUDIEx.btn_Click');
+
+        break;
+    }
+  }
+
+  /* 函数功能:页面导入,当页面开始运行时所发生的事件
+        (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_PageLoad)
+      */
+  public async PageLoad() {
+    const objLayOut = this.getDivName(enumDivType.LayOut_01);
+    if (objLayOut == null) return;
+    // 在此处放置用户代码以初始化页面
+    try {
+      if (clsPubLocalStorage.userId != '') {
+        //主题
+        this.hidSortResearchTopicBy = 'updDate Desc';
+        //主题用户
+        this.hidSortvRTUserRelaBy = 'updDate Asc';
+
+        //QxUsersCRUD.sortQxUsersBy = "updDate Desc";
+
+        //读取session角色 来判断绑定不同数据列表
+        $('#hidUserId').val(clsPubLocalStorage.userId);
+        $('#hidRoleId').val(clsPubLocalStorage.roleId);
+        //管理员 判断角色
+        if (GetInputValueInDivObj(objLayOut, 'hidRoleId') == '00620001') {
+          //    $("#btnDelRecord").show();
+          $('#tab4Bind tr').find('td:eq(8)').show();
+        } else {
+          //学生00620003 教师
+          //      $("#btnDelRecord").hide();
+          $('#tab4Bind tr').find('td:eq(8)').hide();
+        }
+
+        //if (this.bolIsInitShow == false)  //
+        //{
+        //    this.objPager.InitShow(this.divName4Pager);
+        //    this.bolIsInitShow = true;  //
+        //}
+        await this.Bind_ApplyTopicCount();
+        await this.GetTopicData();
+        HideDivInDivObj(objLayOut, 'divLoading');
+      } else {
+        alert('登录超时，请重新登录！');
+        window.top.location.href = '../Web/Login';
+      }
+    } catch (e: any) {
+      const strMsg = `根1据条件获取相应的记录对象的列表不成功,${e}.`;
+      console.error(strMsg);
+      alert(strMsg);
+    }
+  }
+  //申请主题数
+  public async Bind_ApplyTopicCount() {
+    try {
+      //strWhereCond = " 1=1  and idCurrEduCls=" + clsPubLocalStorage.idCurrEduCls;
+      let strWhereCond = ' 1=1 ';
+      strWhereCond += ` and requesTypeId='02' and receiveUser='${clsPubLocalStorage.userId}' and isReply=0`;
+
+      const int_ReceiveCount = await sys_RequestPush_GetRecCountByCondAsync(strWhereCond);
+      $('#ApplyTopicCount').html(int_ReceiveCount.toString());
+    } catch (e: any) {
+      const strMsg = `根1据条件获取相应的记录对象的列表不成功,${e}.`;
+      console.error(strMsg);
+      //alert(strMsg);
+      console.log(strMsg);
+    }
+  }
+
+  /* 为插入记录做准备工作
+   (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_AddNewRecord)
+ */
+  public AddNewRecord() {
+    //this.SetKeyReadOnly(false);
+    this.btnOKUpd = '确认添加';
+    this.btnCancel = '取消添加';
+    this.Clear();
+    //去掉提交按钮不可用状态
+    $('#btnOKUpd').attr('disabled', 'false');
+  }
+
+  /* 添加新记录
+    (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_btnAddNewRecord_Click)
+   */
+  public async btnAddResearchTopic_Click() {
+    const objLayOut = this.getDivName(enumDivType.LayOut_01);
+    if (objLayOut == null) return;
+    const strListDiv = GetDivObjInDivObj(objLayOut, 'divDataLst');
+    if (strListDiv == null) return;
+    this.opType = 'Add';
+    try {
+      await gs_Share_BindDdl_ShareIdInDivCache(strListDiv, 'ddlShareId');
+      await this.AddNewRecord();
+      //获取分享Id
+      const responseText1 = await gs_UserConfigEx_GetNewReturnShareIdEx(
+        '12',
+        clsPubLocalStorage.userId,
+      );
+      const strShareId: string = responseText1;
+      if (strShareId != '') {
+        this.shareId = strShareId;
+      }
+    } catch (e: any) {
+      console.error('catch(e)=');
+      console.error(e);
+      const strMsg = `添加新记录初始化不成功,${e}.`;
+      alert(strMsg);
+    }
+  }
+
+  /// <summary>
+  /// 清除用户自定义控件中，所有控件的值
+  /// (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_Clear)
+  /// </summary>
+  public Clear() {
+    this.topicId = '';
+    this.topicName = '';
+    this.topicContent = '';
+    this.topicProposePeople = '';
+    this.orderNum = 0;
+    this.updDate = '';
+    this.updUser = '';
+    this.memo = '';
+  }
+
+  //得到3个关系列表数据；
+  public async GetAllFunctionMethod(strTopicId: string) {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    ResearchTopic_QUDIEx.topicId = strTopicId;
+    clsPrivateSessionStorage.topicIdInTree = ResearchTopic_QUDIEx.topicId;
+    await ResearchTopicEx_SetIdCurrEduCls(clsPrivateSessionStorage.topicIdInTree);
+    TopicMenuIsHide();
+    clsPubLocalStorage.eduClsTypeId = GetInputValueInDivObj(divName, 'hidEduClsTypeId');
+
+    $('#divContent_list').show();
+    //如果是点击了树菜单、或者是刷新，那么需要做样式控制；
+    //首先要去掉ul下 li a 样式
+    //$("#myTab li a").removeClass();
+    //$("#myTab li").removeClass();
+    //判断根据序号显示不同的数据源
+    const strnum = GetInputValueInDivObj(divName, 'hidTabNum');
+
+    switch (strnum) {
+      case '1':
+        //主题用户关系；
+        this.BindGv_vRTUserRela();
+        break;
+      case '2':
+        //主题论文关系；
+        liPaperClick('01');
+        break;
+      case '3':
+        //主题个人观点关系；
+        liViewsClassificationClick();
+        liViewpointClick();
+        //this.BindGv_vRTViewpointRela();
+        break;
+      case '4':
+        //专家观点
+        liViewsClassificationClick();
+        liExpertViewpointClick();
+        //this.BindGv_vRTExpertViewpointRela();
+        break;
+      case '5':
+        //主题概念关系
+        liViewsClassificationClick();
+        liConceptClick();
+        //this.BindGv_vRTConceptRela();
+        break;
+      case '6':
+        //客观事实关系
+        liViewsClassificationClick();
+        liObjectiveFactClick();
+        //this.BindGv_vRTTopicObjectiveRela();
+        break;
+      case '7':
+        //客观依据关系
+        liViewsClassificationClick();
+        liObjectiveBasisClick();
+        //this.BasisBindGv_vRTTopicObjectiveRela();
+        break;
+      //case "8":
+      //    //研究结果
+      //    this.BindGv_vRTResearchResult();
+      //    break;
+      case '9':
+        //技能
+        liViewsClassificationClick();
+        liSysskillClick();
+        //this.BindGv_vRTSysSkill();
+        break;
+      case '10':
+        //社会关系
+        liViewsClassificationClick();
+        liSysSocialRelationsClick();
+        break;
+      case '11':
+        //研究计划
+        //this.BindGv_vgs_ResearchPlan();
+        liTeacherTaskClick();
+        liResearchPlanClick();
+        break;
+      case '12':
+        //小组论文习作
+        liPaperClick('02');
+        break;
+      case '13':
+        //反思日志
+        ligs_ReflectLog();
+        break;
+      case '14':
+        break;
+      case '15':
+        //论文子观点
+        liPaperSubViewpoint();
+        break;
+      case '16':
+        //会议纪要
+        liMeetingMinutesClick();
+        break;
+      case '17':
+        //论文汇报
+        liPaperReportClick();
+        break;
+      case '18':
+        //待研究问题
+        liTobeStudiedProblemClick();
+        break;
+      case '19':
+        //研究成果
+        liResearchResultClick();
+        break;
+      default:
+        this.BindGv_vRTUserRela();
+        break;
+    }
+  }
+
+  //动态主题数据结构；
+  public async GetTopicData() {
+    const strWhereCond = await this.CombineResearchTopicCondition();
+    //声明主题变量
+    let arrResearchTopicObjLst0: Array<clsResearchTopicEN> = [];
+    // const arrResearchTopicObjLst: Array<clsResearchTopicEN> = [];
+    //声明主题变量
+    let arrCurrEduClsObjLst: Array<clsCurrEduClsEN> = [];
+
+    arrResearchTopicObjLst0 = await ResearchTopic_GetObjLstAsync(strWhereCond);
+    let arridCurrEduCls = '';
+    for (let i = 0; i < arrResearchTopicObjLst0.length; i++) {
+      arridCurrEduCls += `${arrResearchTopicObjLst0[i].idCurrEduCls},`;
+    }
+    if (arridCurrEduCls.length > 0) {
+      arridCurrEduCls = arridCurrEduCls.substring(0, arridCurrEduCls.length - 1);
+
+      const strWhereCond2 = `idCurrEduCls in(${arridCurrEduCls}) order by eduClsName Asc`;
+
+      arrCurrEduClsObjLst = await CurrEduCls_GetObjLstAsync(strWhereCond2);
+      const strRoleName = clsPubLocalStorage.roleName;
+
+      if (strRoleName.indexOf('学生') == -1) {
+        const strTeacherId = clsPubLocalStorage.userId;
+        await CurrEduClsTeacherEx_SetCurrEduClsOrderNum4TeacherId(
+          arrCurrEduClsObjLst,
+          strTeacherId,
+        );
+        arrCurrEduClsObjLst = arrCurrEduClsObjLst.sort(CurrEduClsEx_SortFun_IntTag);
+      }
+    }
+
+    //主题用户关系
+    const strWhereCond3 = `UserID ='${clsPubLocalStorage.userId}'`;
+    let arrRTUserRelaObjLst: Array<clsRTUserRelaEN> = [];
+
+    arrRTUserRelaObjLst = await RTUserRela_GetObjLstAsync(strWhereCond3);
+
+    //$("#TreeBind li").remove();
+    const strUserId = clsPubLocalStorage.userId;
+
+    if (arrCurrEduClsObjLst.length > 0) {
+      //判断如果存在00000050私有教学班，但是没有私有主题，则默认添加一个默认主题
+      const objCurrEduCls = arrCurrEduClsObjLst.find((x) => x.idCurrEduCls == '00000050');
+      if (objCurrEduCls != null) {
+        //有这个教学班，那么查询是否有这个教学班的私有主题，没有则默认添加一个(01代表私有)
+        const strWhereCond = ` 1=1 And idCurrEduCls = '00000050' And updUser = '${strUserId}' And shareId = '01'`;
+        const objResearchTopicEN = await ResearchTopic_GetFirstObjAsync(strWhereCond);
+        if (objResearchTopicEN != null) {
+          console.log('已有私有主题');
+          //主题菜单树展示
+          await this.ShowResearchTopicTree(
+            arrCurrEduClsObjLst,
+            arrResearchTopicObjLst0,
+            arrRTUserRelaObjLst,
+          );
+        } else {
+          //没有则添加一个
+          //没有主题就默认添加一天主题数据；
+          await this.AddPrivateTopic();
+        }
+      } else {
+        //主题菜单树展示
+        await this.ShowResearchTopicTree(
+          arrCurrEduClsObjLst,
+          arrResearchTopicObjLst0,
+          arrRTUserRelaObjLst,
+        );
+      }
+    }
+  }
+
+  //主题菜单树的展示
+  public async ShowResearchTopicTree(
+    arrCurrEduClsObjLst: Array<clsCurrEduClsEN>,
+    arrResearchTopicObjLst0: Array<clsResearchTopicEN>,
+    arrRTUserRelaObjLst: Array<clsRTUserRelaEN>,
+  ) {
+    let strhtml = '';
+    //如果私有教学班没有 则直接显示；
+    for (let j = 0; j < arrCurrEduClsObjLst.length; j++) {
+      //strIdCurrEduclsstreduClsName = arrCurrEduClsObjLst[j].eduClsName;
+      //if (streduClsName.length > 5) {
+      //    streduClsName = streduClsName.substring(0, 5) + "...";
+      //}
+      let htmleduClsName = '';
+      const strEduClsTypeId = arrCurrEduClsObjLst[j].eduClsTypeId;
+      //如果是公共私有教学班那么就不显示
+      if (strEduClsTypeId == '0001') {
+        htmleduClsName += `<a href="javascript:void(0)" id="${arrCurrEduClsObjLst[j].idCurrEduCls}" class="main" title="私有研究" onclick=main_Click("${arrCurrEduClsObjLst[j].idCurrEduCls}")>私有研究</a>`;
+      } else {
+        htmleduClsName += `<a href="javascript:void(0)" id="${arrCurrEduClsObjLst[j].idCurrEduCls}" class="main" title="${arrCurrEduClsObjLst[j].eduClsName}" onclick=main_Click("${arrCurrEduClsObjLst[j].idCurrEduCls}")>${arrCurrEduClsObjLst[j].eduClsName}</a>`;
+      }
+
+      strhtml += '<li class="li">';
+      strhtml += htmleduClsName;
+      //strhtml += '<ul class="submenu" style="display: block;">';
+      strhtml += `<ul class="submenu" id="ul${arrCurrEduClsObjLst[j].idCurrEduCls}">`;
+
+      const arrResearchTopicObjLst = arrResearchTopicObjLst0.filter(
+        (x) => x.idCurrEduCls == arrCurrEduClsObjLst[j].idCurrEduCls,
+      );
+      if (arrResearchTopicObjLst.length > 0) {
+        //循环数据
+        for (let i = 0; i < arrResearchTopicObjLst.length; i++) {
+          const objResearchTopic = arrResearchTopicObjLst[i];
+          let strTopicName = objResearchTopic.topicName;
+          if (strTopicName.length > 15) {
+            strTopicName = `<span>${strTopicName.substring(0, 15)}...</span>`;
+          }
+
+          strhtml += `<li id="li${objResearchTopic.topicId}" onclick=btnSelectResearchTopic("${objResearchTopic.topicId}","${objResearchTopic.idCurrEduCls}","${objResearchTopic.topicName}","${strEduClsTypeId}")>`;
+          //默认存放第一条数据显示；
+
+          //根据主题用户关系得到当前主题和登录用户之间的身份信息
+          let strIcon = '';
+          const objRTUserRela = arrRTUserRelaObjLst.find(
+            (x) => x.topicId == objResearchTopic.topicId,
+          );
+          if (objRTUserRela != null) {
+            switch (objRTUserRela.topicUserRoleId) {
+              case '0001':
+                strIcon +=
+                  '&nbsp;<i class="layui-icon layui-icon-group" style = "font-size: 16px; color: red;" title="指导者" ></i>';
+                break;
+              case '0002':
+                strIcon +=
+                  '&nbsp;<i class="layui-icon layui-icon-friends" style = "font-size:16px; color: #F4606C;" title="组长" ></i>';
+                break;
+              case '0003':
+                strIcon +=
+                  '&nbsp;<i class="layui-icon layui-icon-username" style = "font-size: 16px; color: #19CAAD;" title="成员" ></i>';
+                break;
+            }
+          } else {
+            strIcon +=
+              '&nbsp;<i class="layui-icon layui-icon-set" style = "font-size: 16px; color: #1E9FFF;" title="管理" ></i>';
+          }
+
+          //if (i == 0) {
+          //判断存放的id控件是否为空；
+          if (IsNullOrEmpty(clsPrivateSessionStorage.topicIdInTree) == true) {
+            //存放Id
+            ResearchTopic_QUDIEx.topicId = objResearchTopic.topicId;
+            clsPrivateSessionStorage.topicIdInTree = ResearchTopic_QUDIEx.topicId;
+            clsPubLocalStorage.idCurrEduCls = objResearchTopic.idCurrEduCls;
+            $('#topicName', window.parent.document).html(objResearchTopic.topicName);
+            clsPubLocalStorage.eduClsTypeId = strEduClsTypeId;
+            strhtml += `<a href="javascript:void(0)" title="${objResearchTopic.topicName}" class="selected">${strTopicName}${strIcon}</a>`;
+          } else {
+            strhtml += `<a href="javascript:void(0)" title="${objResearchTopic.topicName}">${strTopicName}${strIcon}</a>`;
+          }
+
+          strhtml += '</li>';
+        }
+      }
+      strhtml += '</ul>';
+      strhtml += '</li>';
+    }
+    //$("#divContent_list").show();
+    $('#TreeBind').html(strhtml);
+    ////首次调用树展开；
+    //给每一个教学班前的图标展示位展开状态
+    //LoadTreeShow(arrCurrEduClsObjLst[j].idCurrEduCls);
+    ////调用关系列表数据
+    $('#hidEduClsTypeId').val(clsPubLocalStorage.eduClsTypeId);
+    //const responseText1 = await this.TopicMenuIsHide();
+
+    await this.GetAllFunctionMethod(clsPrivateSessionStorage.topicIdInTree);
+  }
+
+  //如果当前登录的用户没有教学班主题，那么默认给添加一个私有主题；
+  /* 添加新记录
+ (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_AddNewRecordSave)
+*/
+  public async AddPrivateTopic() {
+    this.DivName = 'divAddNewRecordSave';
+    let strTopicId;
+    const strUserName = clsPubLocalStorage.userName;
+    const objResearchTopicEN: clsResearchTopicEN = new clsResearchTopicEN();
+    //objResearchTopicEN.SetTopicId(strTopicId;// 主题编号
+    objResearchTopicEN.SetTopicName(`${strUserName}私有主题`); // 栏目主题
+    objResearchTopicEN.SetTopicContent(`${strUserName}私有主题`); // 主题内容
+    objResearchTopicEN.SetTopicProposePeople(clsPubLocalStorage.userId); // 主题提出人
+    objResearchTopicEN.SetOrderNum(30); // 序号
+    objResearchTopicEN.SetShareId('01'); //共享
+    objResearchTopicEN.SetIdCurrEduCls('00000050'); //自动添加的都只能添加私有教学班
+    objResearchTopicEN.SetUpdDate(clsPubFun4Web.getNowDate()); // 修改日期
+    objResearchTopicEN.SetUpdUser(clsPubLocalStorage.userId); // 修改人
+    objResearchTopicEN.SetMemo(this.memo); // 备注
+    try {
+      strTopicId = await ResearchTopic_AddNewRecordWithReturnKeyAsync(objResearchTopicEN);
+      //const returnBool: boolean = !!responseText2;
+      //if (returnBool == true) {
+      if (strTopicId != '') {
+        //这里默认添加一个用户数据 ，作为主题用户关系的组长；
+        const objPageEdit = new RTUserRela_EditEx('', this);
+        objPageEdit.AddNewTopicAndRecordSaveUserRela(strTopicId);
+        //完成后重新绑定菜单树
+        await this.GetTopicData();
+
+        // const strInfo = `添加记录成功!`;
+
+        //显示信息框
+        //  alert(strInfo);
+      } else {
+        const strInfo = `添加记录不成功!`;
+
+        //显示信息框
+        alert(strInfo);
+      }
+      return true; //一定要有一个返回值，否则会出错！
+    } catch (e: any) {
+      console.error('catch(e)=');
+      console.error(e);
+      const strMsg = `添加记录不成功,${e}.`;
+      alert(strMsg);
+      return false;
+    }
+    return true; //一定要有一个返回值，否则会出错！
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////3个关系列表数据
+  ////////////////////////////////////////主题用户关系
+  /* 把所有的查询控件内容组合成一个条件串
+(AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_CombineCondition)
+<returns>条件串(strWhereCond)</returns>
+*/
+  public async CombinevRTUserRelaCondition(): Promise<string> {
+    //使条件串的初值为"1 = 1",以便在该串的后面用"and "添加其他条件,
+    //例如 1 = 1 && userName = '张三'
+    let strWhereCond = ' 1 = 1 ';
+    //如果该条件控件的内容不为空,就组成一个条件并添加到总条件串中。
+    try {
+      //判断主题id
+
+      if (IsNullOrEmpty(clsPrivateSessionStorage.topicIdInTree) == true) {
+        strWhereCond += ` And ${clsvRTUserRelaEN.con_TopicId} = '${ResearchTopic_QUDIEx.topicId}'`;
+      }
+      //读取session角色 来判断绑定不同数据列表
+      //判断角色 //管理员
+      if (clsPubLocalStorage.roleId == '00620002') {
+        //教师
+        //根据登录人的Id查询教学班关系表得到教学班id 通过id得到学生数据；然后反向查询得到学生数据；
+        // strWhereCond += "And updUser in ( select stuId from vCurrEduClsStu where idCurrEduCls in ( select idCurrEduCls from vCurrEduClsTeacher where teacherId='" + objvUserRoleRelation.userId + "' And isEffective='1') And isEffective='1')";
+      }
+    } catch (objException) {
+      const strMsg = `(errid:WiTsCs0002)在组合查询条件(CombineRTUserRelaCondition)时出错!请联系管理员!${objException}`;
+      throw strMsg;
+    }
+    return strWhereCond;
+  }
+  /* 根据条件获取相应的记录对象的列表
+ (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_BindGv)
+*/
+  public async BindGv_vRTUserRela() {
+    //strWhereCond = await this.CombinevRTUserRelaCondition();
+    //intCurrPageIndex = this.CurrPageIndexUser;//获取当前页
+    let arrRTUserRelaExObjLst;
+    //arrvUsersObjLst: Array<clsvUsersSimEN> = [];
+    //strIdCurrEduclsarrTopicUserRoleObjLst: Array<clsTopicUserRoleEN> = [];
+    try {
+      const arrRTUserRelaObjLst = await RTUserRelaEx_GetObjLstByTopicId(
+        clsPrivateSessionStorage.topicIdInTree,
+      );
+      arrRTUserRelaExObjLst = arrRTUserRelaObjLst.map(RTUserRelaEx_CopyToEx);
+    } catch (e: any) {
+      console.error('catch(e)=');
+      console.error(e);
+      const strMsg = `根1据条件获取相应的记录对象的列表不成功,${e}.`;
+      console.error(strMsg);
+      alert(strMsg);
+    }
+    if (arrRTUserRelaExObjLst == null) return;
+    try {
+      const objPage = new ResearchTopic_QUDIExB();
+      const objLayOut = objPage.getDivName(enumDivType.LayOut_01);
+      if (objLayOut == null) return;
+      const divRtUserRelaDataLst = GetDivObjInDivObj(objLayOut, 'divRtUserRelaDataLst');
+      await RTUserRelaEx_BindTabvRTUserRela(divRtUserRelaDataLst, arrRTUserRelaExObjLst);
+
+      let arrTopicUserList = '';
+      for (let i = 0; i < arrRTUserRelaExObjLst.length; i++) {
+        arrTopicUserList += `${arrRTUserRelaExObjLst[i].userId},`;
+      }
+      arrTopicUserList = arrTopicUserList.substring(0, arrTopicUserList.length - 1);
+      clsPubLocalStorage.TopicUserList = arrTopicUserList;
+
+      console.log('完成BindGv_vRTUserRela!');
+    } catch (e: any) {
+      console.error('catch(e)=');
+      console.error(e);
+      const strMsg = `绑定对象列表不成功.Error Massage:${e}.`;
+      alert(strMsg);
+    }
+  }
+
+  //主题用户色码修改
+  public async btnUpdateUserRelaInTab_Click(strKeyId: string, strRoleId: string) {
+    //判断主题id
+    let arrgs_ColorObjLst: Array<clsgs_ColorEN> = [];
+
+    // const strLoginUserId = clsPubLocalStorage.userId;
+    if (IsNullOrEmpty(clsPrivateSessionStorage.topicIdInTree) == true) {
+      return;
+    }
+    //拼接后再调用下拉框绑定；
+    //获取用户角色表
+    const arrTopicUserRoleObjLst = await TopicUserRole_GetObjLstCache();
+
+    const lngKeyId = Number(strKeyId);
+    //const objvGetRtUsersEN: clsvRTUserRelaEN = await vRTUserRela_GetObjBymIdAsync(lngKeyId);
+    const objvGetRtUsersEN = await vRTUserRela_GetObjBymIdCache(
+      lngKeyId,
+      clsPubLocalStorage.userId,
+    );
+    if (objvGetRtUsersEN != null) {
+      const strTopicRoleId = objvGetRtUsersEN.topicUserRoleId;
+      const strColorId = objvGetRtUsersEN.colorId;
+      //存入老色码块
+      $('#hidOldColorCode').val(objvGetRtUsersEN.colorCode);
+      $('#hidUpdUserId').val(objvGetRtUsersEN.userId);
+      //if (objGetRtUsersEN.userId == strLoginUserId) {
+      //只要
+
+      ShowUserColor();
+      const strColor = '';
+      const strWhereCond = ` 1=1 And colorId not in (select colorId from RTUserRela where topicId='${ResearchTopic_QUDIEx.topicId}' And colorId != '${strColor}')`;
+      arrgs_ColorObjLst = await gs_Color_GetObjLstAsync(strWhereCond);
+
+      let strhtml = '';
+      // const strUserId = clsPubLocalStorage.userId;
+      strhtml += '<div class="info" id="infogsColor">';
+      strhtml += `<button title="点击确定" class="layui-btn layui-btn btn-sm" onclick=btnOkUserColor_Click("${strColorId}") >确定</button>`;
+      strhtml += '<div class="title btn-4" style="float:left;margin-top:-10px;">';
+      //判断当前用户角色，如果是成员，那么不能修改角色、只有组长和指导员才可以修改；
+      if (strRoleId != '0003') {
+        strhtml +=
+          '<select id="ddlRtUserRole" name="ddlRtUserRole" class="form-control" style="width:180px;">';
+      } else {
+        strhtml +=
+          '<select id="ddlRtUserRole" name="ddlRtUserRole" class="form-control" style="width:180px;" disabled="disabled">';
+      }
+      //如果大于0 则绑定下拉框
+      if (arrTopicUserRoleObjLst.length > 0) {
+        for (let j = 0; j < arrTopicUserRoleObjLst.length; j++) {
+          // const strRoleId0 = arrTopicUserRoleObjLst[j].topicUserRoleId;
+          //如果循环的ID等于当前修改的ID则选中
+          if (arrTopicUserRoleObjLst[j].topicUserRoleId == strTopicRoleId) {
+            strhtml += `<option value="${strRoleId}">${arrTopicUserRoleObjLst[j].topicUserRoleName}</option>`;
+          } else {
+            strhtml += `<option value="${strRoleId}">${arrTopicUserRoleObjLst[j].topicUserRoleName}</option>`;
+          }
+        }
+        //strhtml += '<option value="0001">指导者</option><option value="0002">组长</option><option value="0003">成员</option></select>';
+      }
+
+      //strhtml += '<option value="0001">指导者</option><option value="0002">组长</option><option value="0003">成员</option></select>';
+      strhtml += '</select></div><ul class="artlist">';
+      // let v = 0; //给内容加个序号
+      for (let i = 0; i < arrgs_ColorObjLst.length; i++) {
+        //得到mId；
+        const strcolorId = arrgs_ColorObjLst[i].colorId;
+        const strUserColor = arrgs_ColorObjLst[i].colorCode;
+        // v++;
+
+        strhtml += '<li>';
+        strhtml += `<button style="background:${strUserColor};" title="点击选择" class="layui-btn layui-btn" onclick=btnOkUserColor_Click("${strcolorId}") ></button>`;
+        strhtml += '</li>';
+
+        strhtml += '</br><div style="border-bottom: 1px solid #eee;"></div></br>';
+      }
+      strhtml += '</ul></div>';
+
+      //拼接；
+      $('#divUserColorDataLst').html(strhtml);
+      this.RtUserRoleId = objvGetRtUsersEN.topicUserRoleId;
+    }
+  }
+  //确定选择色码，把色码更新到主题用户关系表；
+  public async btnOkUserColor_Click(strcolorId: string) {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    const strThisFuncName = this.btnOkUserColor_Click.name;
+
+    const strKeyId = GetInputValueInDivObj(divName, 'hidTopicUserId');
+
+    const objRTUserRelaEN: clsRTUserRelaEN = new clsRTUserRelaEN();
+    objRTUserRelaEN.SetmId(Number(strKeyId));
+    objRTUserRelaEN.SetColorId(strcolorId);
+    objRTUserRelaEN.SetTopicUserRoleId(this.RtUserRoleId);
+    objRTUserRelaEN.SetTopicId(clsPrivateSessionStorage.topicIdInTree);
+
+    objRTUserRelaEN.sfUpdFldSetStr = objRTUserRelaEN.updFldString; //设置哪些字段被修改(脏字段)
+    if (objRTUserRelaEN.mId == 0 || objRTUserRelaEN.mId == undefined) {
+      throw Format('关键字不能为空!(in {0}.{1})', this.constructor.name, strThisFuncName);
+    }
+    try {
+      const responseText = await RTUserRela_UpdateRecordAsync(objRTUserRelaEN);
+      const returnBool = !!responseText;
+      if (returnBool == true) {
+        RTUserRela_ReFreshCache(clsPrivateSessionStorage.topicIdInTree);
+        HideUserColor();
+        this.BindGv_vRTUserRela();
+
+        //const objvGetRtUsersEN: clsvRTUserRelaEN = await vRTUserRela_GetObjBymIdAsync(strKeyId);
+        const objvGetRtUsersEN = await vRTUserRela_GetObjBymIdCache(
+          objRTUserRelaEN.mId,
+          clsPubLocalStorage.userId,
+        );
+        if (objvGetRtUsersEN != null) {
+          const OldColorCode = GetInputValueInDivObj(divName, 'hidOldColorCode');
+          //得到新的色码块
+          $('#hidNewColorCode').val(objvGetRtUsersEN.colorCode);
+          //得到修改的用户Id
+          const strUserId = GetInputValueInDivObj(divName, 'hidUpdUserId');
+
+          const OldColor = OldColorCode.substring(1, OldColorCode.length);
+          const NewColor = objvGetRtUsersEN.colorCode.substring(
+            1,
+            objvGetRtUsersEN.colorCode.length,
+          );
+
+          //调用更改当前用户所涉及的所有表背景
+          RTUserRelaEx_UpdateTypeTableHtmlAsync(OldColor, NewColor, strUserId);
+        }
+      }
+      return returnBool;
+    } catch (e: any) {
+      console.error('catch(e)=');
+      console.error(e);
+      const strMsg = `修改记录不成功,${e}.`;
+      alert(strMsg);
+      return false;
+    }
+  }
+
+  //删除主题用户关系
+  public async btnDelUserRelaRecordInTab_Click(strKeyId: string) {
+    try {
+      if (strKeyId == '') {
+        alert('请选择需要删除的记录！');
+        return '';
+      }
+      const strUserId = clsPubLocalStorage.userId;
+
+      const lngKeyId = Number(strKeyId);
+      //const objdelRtUsersEN: clsRTUserRelaEN = await RTUserRela_GetObjBymIdAsync(lngKeyId);
+      const objdelRtUsersEN = await vRTUserRela_GetObjBymIdCache(
+        lngKeyId,
+        clsPubLocalStorage.userId,
+      );
+      if (objdelRtUsersEN == null) return;
+      //const strWhereCond = ` 1=1 And ${clsRTUserRelaEN.con_TopicId} = '${strTopicId}' And ${clsRTUserRelaEN.con_UserId} ='${strUserId}'`;
+      // const strWhereCond = ` 1=1 And ${clsRTUserRelaEN.con_mId} = '${lngKeyId}'`;
+      //根据当前登录人和主题Id 查询主题用户角色是组长还是成员；
+
+      const objvRTUserRela_Cond: clsvRTUserRelaEN = new clsvRTUserRelaEN();
+      objvRTUserRela_Cond.SetCondFldValue(clsvRTUserRelaEN.con_UserId, strUserId, '=');
+
+      const arrRtUsersEN: Array<clsvRTUserRelaEN> = await vRTUserRela_GetSubObjLstCache(
+        objvRTUserRela_Cond,
+        ResearchTopic_QUDIEx.topicId,
+      );
+      if (arrRtUsersEN.length > 0) {
+        if (arrRtUsersEN[0].topicUserRoleId == '0003') {
+          //成员
+          const strMsg = `您当前是成员不能删除数据！`;
+          alert(strMsg);
+          return;
+        } else {
+          if (objdelRtUsersEN.userId == strUserId) {
+            //自己不能删除自己
+            const strMsg = `自己不能删除自己！`;
+            alert(strMsg);
+            return;
+          } else {
+            //指导员0001 //组长0002
+            this.DelUserRelaRecord(lngKeyId);
+            this.btnReOrder_Click();
+          }
+        }
+      }
+    } catch (e: any) {
+      console.error('catch(e)=');
+      console.error(e);
+      const strMsg = `删除记录不成功. ${e}.`;
+      alert(strMsg);
+    }
+  }
+  /* 
+根据关键字删除记录
+ (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_DelRecord)
+*/
+  public async DelUserRelaRecord(lngmId: number) {
+    try {
+      const returnInt: number = await RTUserRela_DelRecordAsync(lngmId);
+      if (returnInt > 0) {
+        RTUserRela_ReFreshCache(clsPrivateSessionStorage.topicIdInTree);
+        //绑定列表
+        this.BindGv_vRTUserRela();
+        const strInfo = `删除记录成功,共删除${returnInt}条记录!`;
+        //显示信息框
+        alert(strInfo);
+      } else {
+        const strInfo = `删除记录不成功!`;
+        //显示信息框
+        alert(strInfo);
+      }
+      console.log('完成DelRecord!');
+    } catch (e: any) {
+      console.error('catch(e)=');
+      console.error(e);
+      const strMsg = `删除记录不成功. ${e}.`;
+      alert(strMsg);
+    }
+  }
+
+  //分页数据
+  /* 函数功能:在数据 列表中跳转到某一页 观点列表
+ (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_IndexPage)
+ <param name = "intPageIndex">页序号</param>
+*/
+  public IndexPageFour(intPageIndex: number) {
+    if (intPageIndex == 0) {
+      intPageIndex = this.objPager.pageCount;
+    }
+    console.log(`跳转到${intPageIndex}页`);
+    this.CurrPageIndexUser = intPageIndex;
+    this.BindGv_vRTUserRela();
+  }
+
+  /* 把所有的查询控件内容组合成一个条件串
+   (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_CombineCondition)
+    <returns>条件串(strWhereCond)</returns>
+  */
+  public async CombineResearchTopicCondition(): Promise<string> {
+    //使条件串的初值为"1 = 1",以便在该串的后面用"and "添加其他条件,
+    //例如 1 = 1 && userName = '张三'
+    let strWhereCond = ' 1 = 1 ';
+    //如果该条件控件的内容不为空,就组成一个条件并添加到总条件串中。
+    try {
+      if (this.topicName_q != '') {
+        strWhereCond += ` And ${clsResearchTopicEN.con_TopicName} like '% ${this.topicName_q}%'`;
+      }
+      //if (this.TopicProposePeople_q != "") {
+      //    strWhereCond += ` And ${clsResearchTopicEN.con_UserName} like '% ${this.TopicProposePeople_q}%'`;
+      //}
+
+      //判断角色
+      //管理员
+      if (clsPubLocalStorage.roleId == '00620001') {
+        strWhereCond += ` And topicId in (select topicId from RTUserRela where UserID ='${clsPubLocalStorage.userId}')`;
+
+        //如果不属于私有教育班那么执行下面的sql
+        if (clsPubLocalStorage.idCurrEduCls != '00000050') {
+          //strWhereCond += " And shareId <> '01'";
+          //strWhereCond += " or idCurrEduCls='" + clsPubLocalStorage.idCurrEduCls + "' And topicId in (select topicId from RTUserRela where UserID ='" + clsPubLocalStorage.userId + "')";
+          strWhereCond += ` or idCurrEduCls='${clsPubLocalStorage.idCurrEduCls}'`;
+          //strWhereCond += " And shareId <> '01'";
+        }
+
+        if (this.topicName_q != '') {
+          strWhereCond += ` And ${clsResearchTopicEN.con_TopicName} like '% ${this.topicName_q}%'`;
+        }
+        //if (this.TopicProposePeople_q != "") {
+        //    strWhereCond += ` And ${clsResearchTopicEN.con_UserName} like '% ${this.TopicProposePeople_q}%'`;
+        //}
+
+        strWhereCond += ' [exclude]or [/exclude]';
+        //  $("#btnDelRecord").show();
+      } else if (clsPubLocalStorage.roleId == '00620002') {
+        //strWhereCond += " and idCurrEduCls='" + clsPubLocalStorage.idCurrEduCls + "'";
+        strWhereCond += ` And topicId in (select topicId from RTUserRela where UserID = '${clsPubLocalStorage.userId}')`;
+        //教师
+        // $("#btnDelRecord").hide();
+        //strWhereCond += ` And ${clsResearchTopicEN.con_IdCurrEduCls} = '${clsPubLocalStorage.idCurrEduCls}'`;
+        //可以查看所有；
+      } else {
+        //学生； //教师
+        //  $("#btnDelRecord").hide();
+        //查询关系表数据 已经主题数据来显示主题方法；
+        strWhereCond += ` And topicId in (select topicId from RTUserRela where UserID = '${clsPubLocalStorage.userId}')`;
+      }
+      strWhereCond += ' order by topicName Asc';
+    } catch (objException) {
+      const strMsg = `(errid:WiTsCs0002)在组合查询条件(CombineResearchTopicCondition)时出错!请联系管理员!${objException}`;
+      throw strMsg;
+    }
+    return strWhereCond;
+  }
+
+  /* 根据条件获取相应的记录对象的列表
+  (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_btnQuery_Click)
+ */
+  public async btnQuery_Click() {
+    await this.GetTopicData();
+  }
+
+  /* 删除记录
+   (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_btnDelRecord_Click)
+  */
+  public async btnDelInRecord_Click(strKeyId: string) {
+    try {
+      //判断登录用户在主题用户中的角色是什么如果是成员，那么则不可以删除主题；
+      const strUserId = clsPubLocalStorage.userId;
+      const strWhere = ` 1=1 And topicId='${strKeyId}' And userId='${strUserId}'`;
+      const ObjRTUserRelaEN = await RTUserRela_GetFirstObjAsync(strWhere);
+      if (ObjRTUserRelaEN != null) {
+        if (ObjRTUserRelaEN.topicUserRoleId == '0003') {
+          //成员角色；
+          const strMsg = `您在当前的主题中角色是成员，不能删除主题`;
+          alert(strMsg);
+          return;
+        } else {
+          await this.DelRecordEx(strKeyId);
+          //树形数据源；
+          await this.GetTopicData();
+        }
+      } else {
+        //成员角色；
+        const strMsg = `您不是当前的主题成员，不能删除主题`;
+        alert(strMsg);
+        return;
+      }
+    } catch (e: any) {
+      console.error('catch(e)=');
+      console.error(e);
+      const strMsg = `删除记录不成功. ${e}.`;
+      alert(strMsg);
+    }
+  }
+  /* 
+    根据关键字删除记录
+     (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_DelRecord)
+   */
+  public async DelRecordEx(strTopicId: string) {
+    try {
+      const returnInt = await ResearchTopicEx_DelRecordAsyncEx(strTopicId);
+      if (returnInt > 0) {
+        const strInfo = `删除记录成功,共删除${returnInt}条记录!`;
+        //显示信息框
+        alert(strInfo);
+        //删除成功后清空主键隐藏id
+        ResearchTopic_QUDIEx.topicId = '';
+        clsPrivateSessionStorage.topicIdInTree = ResearchTopic_QUDIEx.topicId;
+      } else {
+        const strInfo = `当前主题已包含相关关系数据，不能删除!`;
+        //显示信息框
+        alert(strInfo);
+      }
+      console.log('完成DelRecord!');
+    } catch (e: any) {
+      console.error('catch(e)=');
+      console.error(e);
+      const strMsg = `删除记录不成功. ${e}.`;
+      alert(strMsg);
+    }
+  }
+
+  //public btnDetailInTab_Click(strKeyId: string) {
+
+  //    if (strKeyId == "") {
+  //        alert("请选择需要查看的记录！");
+  //        return;
+  //    }
+  //    this.ResearchTopicDetailRecord(strKeyId);
+  //}
+  /* 根据关键字获取相应的记录的对象
+  (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_UpdateRecord)
+  <param name = "sender">参数列表</param>
+*/
+  //public ResearchTopicDetailRecord(strTopicId: string) {
+
+  //    this.keyId = strTopicId;
+  //     const strUserId = clsPubLocalStorage.userId;
+  //    return new Promise((resolve, reject) => {
+  //        try {
+  //            const responseText = ResearchTopic_GetObjByTopicIdAsync(strTopicId).then((jsonData) => {
+  //                const objResearchTopicEN: clsResearchTopicEN = <clsResearchTopicEN>jsonData;
+  //                // //显示当前数据；
+  //                $("#txtTopicNameDetail").html(objResearchTopicEN.topicName);
+  //                $("#txtTopicContentDetail").html(objResearchTopicEN.topicContent);
+  //                $("#txtMemoDetail").html(objResearchTopicEN.memo);
+  //            });
+  //        }
+  //        catch (e:any) {
+  //            console.error(e);
+  //            strIdCurrEduclsstrMsg: string = `当前无数据获取失败,${e}.`;
+  //            alert(strMsg);
+  //        }
+  //    });
+  //}
+
+  //获取不同色码
+  public getRandomColor(): string {
+    return `#${`00000${((Math.random() * 0x1000000) << 0).toString(16)}`.substring(-6)}`;
+  }
+  /*
+重序
+(AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_btnReOrder_Click)
+*/
+  public async btnReOrder_Click() {
+    try {
+      const objOrderByData: clsOrderByData = new clsOrderByData();
+      const jsonObject = {
+        topicId: ResearchTopic_QUDIEx.topicId,
+      };
+      const jsonStr: string = JSON.stringify(jsonObject);
+      objOrderByData.ClassificationFieldValueLst = jsonStr;
+      await RTUserRela_ReOrderAsync(objOrderByData);
+      RTUserRela_ReFreshCache(clsPrivateSessionStorage.topicIdInTree);
+    } catch (e: any) {
+      const strMsg = `重序出错。错误:${e}.(In ${clsStackTrace.GetCurrClassFunction()})`;
+      console.error('Error: ', strMsg);
+      //console.trace();
+      alert(strMsg);
+      return;
+    }
+    //绑定主题用户关系；
+    this.BindGv_vRTUserRela();
+  }
+
+  //确定选择的用户 并添加到关系表中
+  public async btnUserRecordInTab_Click(strkeyId: string) {
+    ////主题用户角色下拉框
+    //const ddl_TopicUserRole_q = await this.BindDdl_TopicUserRole_q("ddlTopicUserRole_q");
+    //需要提示选择角色
+    if (this.TopicUserRole_q != '' && this.TopicUserRole_q != '0') {
+      //存放Id
+      $('#hidUserIdKey').val(strkeyId);
+      //执行添加关系方法
+      this.AddNewRecordSaveUserRela();
+    } else {
+      const strInfo = `请选择用户角色!`;
+
+      //显示信息框
+      alert(strInfo);
+      return;
+    }
+  }
+
+  /* 添加新记录
+(AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_AddNewRecordSave)
+*/
+  public async AddNewRecordSaveUserRela() {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    const strThisFuncName = this.AddNewRecordSaveUserRela.name;
+    // const strPaperId = GetHidPaperId(divName);
+    const strUserId = GetInputValueInDivObj(divName, 'hidUserIdKey');
+    const objRTUserRelaEN: clsRTUserRelaEN = new clsRTUserRelaEN();
+    this.PutDataToRTUserRelaClass(objRTUserRelaEN);
+    //获取缓存色码表；
+    let arrGs_ColorObjLst: Array<clsgs_ColorEN> = [];
+    try {
+      // 同一主题 同一用户 只能添加一次；
+      const strWhere = ` 1 = 1 And topicId = '${ResearchTopic_QUDIEx.topicId}' And userId = '${strUserId}'`;
+      const responseText = await RTUserRela_IsExistRecordAsync(strWhere);
+      const bolIsExist: boolean = responseText;
+      if (bolIsExist == true) {
+        // const strMsg = `同一主题不能重复添加同一个用户！`;
+        //alert(strMsg);
+        console.log('同一主题不能重复添加同一个用户！');
+      } else {
+        const returnBool = await RTUserRela_AddNewRecordAsync(objRTUserRelaEN);
+        if (returnBool == true) {
+          RTUserRela_ReFreshCache(clsPrivateSessionStorage.topicIdInTree);
+          const strInfo = `添加成功!`;
+          //隐藏用户框
+          HideDialogFour();
+          //显示信息框
+          alert(strInfo);
+          await this.btnReOrder_Click();
+        }
+      }
+      //获取色码数据
+      arrGs_ColorObjLst = await gs_Color_GetObjLstCache();
+      //添加完成后把根据用户排序号得到色码表 样式把样式更新到主题用户关系表；
+
+      //const responseText = await RTUserRela_GetFirstObjAsync(strWhere);
+      const objRTUserRelaEN0 = await RTUserRela_GetFirstObjAsync(strWhere);
+      if (objRTUserRelaEN0 == null) {
+        const strMsg = Format(
+          '根据关键字获取相应的记录的对象为空.(in {0}.{1})',
+          this.constructor.name,
+          strThisFuncName,
+        );
+        console.error(strMsg);
+        alert(strMsg);
+        return;
+      }
+
+      //得到用户排序号
+      const Objgs_Color = arrGs_ColorObjLst.find((x) => x.userNo == objRTUserRelaEN.orderNum);
+      if (Objgs_Color != null) {
+        //得到色码
+
+        const objUpdateRTUserRelaEN: clsRTUserRelaEN = new clsRTUserRelaEN();
+        objUpdateRTUserRelaEN.SetmId(objRTUserRelaEN.mId);
+        objUpdateRTUserRelaEN.SetColorId(Objgs_Color.colorId);
+        objUpdateRTUserRelaEN.SetUserBgColor(Objgs_Color.colorCode); //用户背景色码；
+
+        objUpdateRTUserRelaEN.sfUpdFldSetStr = objUpdateRTUserRelaEN.updFldString; //设置哪些字段被修改(脏字段)
+        const returnBool = await RTUserRela_UpdateRecordAsync(objUpdateRTUserRelaEN);
+        if (returnBool == true) {
+          return true;
+        } else {
+          const strInfo = `修改用户色码不成功!`;
+          alert(strInfo);
+          console.log('修改用户色码不成功');
+          return false;
+        }
+      }
+      this.BindGv_vRTUserRela();
+
+      return true; //一定要有一个返回值，否则会出错！
+    } catch (e: any) {
+      console.error('catch(e)=');
+      console.error(e);
+      const strMsg = `添加记录不成功,${e}.`;
+      alert(strMsg);
+      return false;
+    }
+    return true; //一定要有一个返回值，否则会出错！
+  }
+  //添加完成后把根据用户排序号得到色码表 样式把样式更新到主题用户关系表；
+
+  /* 函数功能:把界面上的属性数据传到类对象中
+     (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_PutDataToClass)
+     <param name = "pobjRTUserRelaEN">数据传输的目的类对象</param>
+   */
+  public PutDataToRTUserRelaClass(pobjRTUserRelaEN: clsRTUserRelaEN) {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    // const strPaperId = GetHidPaperId(divName);
+    const strUserIdKey = GetInputValueInDivObj(divName, 'hidUserIdKey');
+    const strUserId = clsPubLocalStorage.userId;
+
+    pobjRTUserRelaEN.SetIdCurrEduCls(clsPubLocalStorage.idCurrEduCls);
+    pobjRTUserRelaEN.SetTopicId(clsPrivateSessionStorage.topicIdInTree); // 主题编号
+    pobjRTUserRelaEN.SetUserId(strUserIdKey); // 用户ID
+    pobjRTUserRelaEN.SetUpdDate(clsPubFun4Web.getNowDate()); // 修改日期
+    pobjRTUserRelaEN.SetTopicUserRoleId(this.TopicUserRole_q);
+    pobjRTUserRelaEN.SetOrderNum(30);
+    pobjRTUserRelaEN.SetColorId('');
+    pobjRTUserRelaEN.SetUpdUser(strUserId); // 修改人
+    pobjRTUserRelaEN.SetMemo(this.memo); // 备注
+  }
+
+  /*
+   * 设置排序字段-相当使用ViewState功能
+   */
+  public set hidSortQxUsersBy(value: string) {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    SetInputValueInDivObj(divName, 'hidSortQxUsersBy', value);
+  }
+  /*
+   * 设置排序字段
+   */
+  public get hidSortQxUsersBy(): string {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    return GetInputValueInDivObj(divName, 'hidSortQxUsersBy');
+  }
+
+  //////////////////////用户列表条件
+  /*
+   * 用户ID
+   */
+  public get userId_q(): string {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    return GetInputValueInDivObj(divName, 'txtUserId_q');
+  }
+  /*
+   * 用户名
+   */
+  public get userName_q(): string {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    return GetInputValueInDivObj(divName, 'txtUserName_q');
+  }
+  //主题用户角色
+  public get TopicUserRole_q(): string {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    return GetSelectValueInDivObj(divName, 'ddlTopicUserRole_q');
+  }
+  /*
+   * 主题用户角色
+   */
+  public set TopicUserRole_q(value: string) {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    SetSelectValueByIdInDivObj(divName, 'ddlTopicUserRole_q', value);
+  }
+  /*
+   * 设置排序字段-相当使用ViewState功能  主题用户关系
+   */
+  public set hidSortvRTUserRelaBy(value: string) {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    SetInputValueInDivObj(divName, 'hidSortvRTUserRelaBy', value);
+  }
+  /*
+   * 设置排序字段
+   */
+  public get hidSortvRTUserRelaBy(): string {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    return GetInputValueInDivObj(divName, 'hidSortvRTUserRelaBy');
+  }
+
+  /*
+   * 获取当前页序号 -------用户
+   */
+  public get CurrPageIndexUser(): number {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    return GetInputValueInDivObjN(divName, 'hidCurrPageIndexUser');
+  }
+  /*
+   * 设置当前页序号  -------用户
+   */
+  public set CurrPageIndexUser(value: number) {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    SetInputValueInDivObj(divName, 'hidCurrPageIndexUser', value);
+  }
+
+  //////////////////////////////////////////////所有数据列表排序功能///////////////////////////////////////////////////
+
+  /* 主题用户关系表头排序
+   */
+  public async SortByRTUser(strSortByFld: string) {
+    if (this.hidSortvRTUserRelaBy.indexOf(strSortByFld) >= 0) {
+      if (this.hidSortvRTUserRelaBy.indexOf('Asc') >= 0) {
+        this.hidSortvRTUserRelaBy = `${strSortByFld} Desc`;
+      } else {
+        this.hidSortvRTUserRelaBy = `${strSortByFld} Asc`;
+      }
+    } else {
+      this.hidSortvRTUserRelaBy = `${strSortByFld} Asc`;
+    }
+    await this.BindGv_vRTUserRela();
+  }
+
+  /*
+   * 设置排序字段-相当使用ViewState功能
+   */
+  public set hidSortvTopicObjectiveBy(value: string) {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    SetInputValueInDivObj(divName, 'hidSortvTopicObjectiveBy', value);
+  }
+  /*
+   * 设置排序字段
+   */
+  public get hidSortvTopicObjectiveBy(): string {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    return GetInputValueInDivObj(divName, 'hidSortvTopicObjectiveBy');
+  }
+
+  //--------------------------------------------------------------------------tab页切换事件
+  //小组成员
+  public async liUserClick() {
+    try {
+      await this.BindGv_vRTUserRela();
+    } catch (e: any) {
+      console.error('catch(e)=');
+      console.error(e);
+      const strMsg = `获取主题用户列表不成功,${e}.`;
+      alert(strMsg);
+    }
+  }
+
+  /*
+   * 分享
+   */
+  public set shareId(value: string) {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    SetSelectValueByIdInDivObj(divName, 'ddlShareId', value);
+  }
+  /*
+   * 分享
+   */
+  public get shareId(): string {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    return GetSelectValueInDivObj(divName, 'ddlShareId');
+  }
+
+  /*
+   *  修改主题用户角色
+   */
+  public set RtUserRoleId(value: string) {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    SetSelectValueByIdInDivObj(divName, 'ddlRtUserRole', value);
+  }
+  /*
+   * 修改主题用户角色
+   */
+  public get RtUserRoleId(): string {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    return GetSelectValueInDivObj(divName, 'ddlRtUserRole');
+  }
+
+  /*
+   * 论文标题
+   */
+  public get paperTitle_q(): string {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    return GetInputValueInDivObj(divName, 'txtPaperTitle_q');
+  }
+
+  /*
+   * 设置取消按钮的标题
+   */
+  public set btnCancel(value: string) {
+    $('#btnCancel').html(value);
+  }
+  /*
+   * 设置确定按钮的标题
+   */
+  public set btnOKUpd(value: string) {
+    $('#btnOKUpd').html(value);
+  }
+  /*
+   * 获取按钮的标题
+   */
+  public get btnOKUpd(): string {
+    return $('#btnOKUpd').html();
+  }
+  /*
+   * 获取当前页序号
+   */
+  public get CurrPageIndex(): number {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    return GetInputValueInDivObjN(divName, 'hidCurrPageIndex');
+  }
+  /*
+   * 设置当前页序号
+   */
+  public set CurrPageIndex(value: number) {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    SetInputValueInDivObj(divName, 'hidCurrPageIndex', value);
+  }
+  /*
+   * 添加、修改用的层名
+   */
+  public set DivName(value: string) {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    SetInputValueInDivObj(divName, 'hidDivName', value);
+  }
+  /*
+   * 设置排序字段-相当使用ViewState功能
+   */
+  public set hidSortResearchTopicBy(value: string) {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    SetInputValueInDivObj(divName, 'hidSortResearchTopicBy', value);
+  }
+  /*
+   * 设置排序字段
+   */
+  public get hidSortResearchTopicBy(): string {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    return GetInputValueInDivObj(divName, 'hidSortResearchTopicBy');
+  }
+  /*
+   * 用户Id
+   */
+  public get hidUserId(): string {
+    return clsPubLocalStorage.userId;
+  }
+  /*
+   * 设置关键字的值
+   */
+  public set keyId(value: string) {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    SetInputValueInDivObj(divName, 'hidKeyId', value);
+  }
+  /*
+   * 设置关键字的值
+   */
+  public get keyId(): string {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    return GetInputValueInDivObj(divName, 'hidKeyId');
+  }
+  /*
+   * 备注
+   */
+  public set memo(value: string) {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    SetInputValueInDivObj(divName, 'txtMemo', value);
+  }
+  /*
+   * 备注
+   */
+  public get memo(): string {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    return GetInputValueInDivObj(divName, 'txtMemo');
+  }
+  /*
+   * 设置操作类型：Add||Update||Detail
+   */
+  public set opType(value: string) {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    SetInputValueInDivObj(divName, 'hidOpType', value);
+  }
+  /*
+   * 序号
+   */
+  public set orderNum(value: number) {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    SetInputValueInDivObj(divName, 'txtOrderNum', value);
+  }
+  /*
+   * 序号
+   */
+  public get orderNum(): number {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    return GetInputValueInDivObjN(divName, 'txtOrderNum');
+  }
+  /*
+   * 主题内容
+   */
+  public set topicContent(value: string) {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    SetInputValueInDivObj(divName, 'txtTopicContent', value);
+  }
+  /*
+   * 主题内容
+   */
+  public get topicContent(): string {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    return GetInputValueInDivObj(divName, 'txtTopicContent');
+  }
+  /*
+   * 主题编号
+   */
+  public set topicId(value: string) {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    SetInputValueInDivObj(divName, 'txtTopicId', value);
+  }
+  /*
+   * 主题编号
+   */
+  public get topicId(): string {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    return GetInputValueInDivObj(divName, 'txtTopicId');
+  }
+  /*
+   * 栏目主题
+   */
+  public set topicName(value: string) {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    SetInputValueInDivObj(divName, 'txtTopicName', value);
+  }
+  /*
+   * 栏目主题
+   */
+  public get topicName(): string {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    return GetInputValueInDivObj(divName, 'txtTopicName');
+  }
+  /*
+   * 栏目主题
+   */
+  public get topicName_q(): string {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    return GetInputValueInDivObj(divName, 'txtTopicName_q');
+  }
+  /*
+   * 主题提出人
+   */
+  public set topicProposePeople(value: string) {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    SetInputValueInDivObj(divName, 'txtTopicProposePeople', value);
+  }
+  /*
+   * 主题提出人
+   */
+  public get topicProposePeople(): string {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+    return GetInputValueInDivObj(divName, 'txtTopicProposePeople');
+  }
+  /*
+   * 主题提出人
+   */
+  public get TopicProposePeople_q(): string {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+
+    return GetInputValueInDivObj(divName, 'txtTopicProposePeople_q');
+  }
+  /*
+   * 修改日期
+   */
+  public set updDate(value: string) {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+
+    SetInputValueInDivObj(divName, 'txtUpdDate', value);
+  }
+  /*
+   * 修改日期
+   */
+  public get updDate(): string {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+
+    return GetInputValueInDivObj(divName, 'txtUpdDate');
+  }
+  /*
+   * 修改人
+   */
+  public set updUser(value: string) {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+
+    SetInputValueInDivObj(divName, 'txtUpdUser', value);
+  }
+  /*
+   * 修改人
+   */
+  public get updUser(): string {
+    const divName = this.getDivName(enumDivType.LayOut_01);
+
+    return GetInputValueInDivObj(divName, 'txtUpdUser');
+  }
+
+  //添加 研究计划
+  public btnAddResearchPlan_Click() {
+    const strKeyId = ResearchTopic_QUDIEx.topicId; // clsPrivateSessionStorage.topicIdInTree;
+    const strIdCurrEduCls = clsPubLocalStorage.idCurrEduCls;
+    clsPrivateSessionStorage.topicIdInTree = strKeyId;
+    if (strKeyId == '') {
+      alert('请选择数据！');
+      return;
+    } else {
+      //存放选择id
+      //strIdCurrEduclsstrObjectiveType = "02";
+      //$('#hidObjectiveTypeId').val(strObjectiveType);
+
+      //xadmin.open('添加研究计划', '../GradEduPublicPage/AddResearchPlan?topicId=' + strKeyId + '&IdCurrEduCls=' + strIdCurrEduCls, 1200, 800);
+      xadminopen2(
+        '添加研究计划',
+        `../GradEduPublicPage/AddResearchPlan?topicId=${strKeyId}&IdCurrEduCls=${strIdCurrEduCls}`,
+        1200,
+        800,
+      );
+    }
+  }
+
+  /*
+     删除记录的事件函数
+    (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnDelRecord_Click)
+    */
+  public async btnDelResearchTopic_Click() {
+    const strThisFuncName = this.btnDelResearchTopic_Click.name;
+    //得到选择的topicId
+    const strKeyId = clsPrivateSessionStorage.topicIdInTree;
+
+    if (strKeyId == '') {
+      alert('请选择需要删除的主题！');
+      return;
+    } else {
+      const objResearchTopic = await ResearchTopic_GetObjByTopicIdAsync(strKeyId);
+      if (objResearchTopic == null) {
+        const strMsg = Format(
+          '根据关键字获取相应的记录的对象为空.(in {0}.{1})',
+          this.constructor.name,
+          strThisFuncName,
+        );
+        console.error(strMsg);
+        alert(strMsg);
+        return;
+      }
+      const strMsg = Format('确定删除主题:[{0}]及所有关联数据吗？', objResearchTopic.topicName);
+      if (confirm(strMsg)) {
+        await this.btnDelInRecord_Click(strKeyId);
+        return true;
+      }
+      return false;
+    }
+  }
+
+  //维护论文子观点
+  public btnAddpdfPaperSubViewpoint_Click() {
+    const strTopicId = clsPrivateSessionStorage.topicIdInTree;
+
+    //查询主题论文 参数01；
+    $('#hidPaperTypeId').val('01');
+    if (strTopicId == '') {
+      alert('请选择需要添加关系的主题！');
+      return;
+    } else {
+      ShowDialogPaperSubViewpoint();
+      //调用用户列表绑定；
+      const objPage = new Public_PaperSubViewpoint();
+      objPage.SelectPaper(strTopicId);
+    }
+  }
+
+  //--------------------------------------------------------------------------------pdf添加事件
+  ///pdf添加个人观点  01
+  public btnAddpdfViewPointRela_Click() {
+    const strKeyId = clsPrivateSessionStorage.topicIdInTree;
+    const strIdCurrEduCls = clsPubLocalStorage.idCurrEduCls;
+    if (strKeyId == '') {
+      alert('请选择需要添加关系的主题！');
+      return;
+    } else {
+      //存放选择id
+      const strUserTypeId = '01';
+      $('#hidUserTypeId').val(strUserTypeId);
+      xadminOpen(
+        '添加个人观点',
+        `../GradEduTopic/Pdfiframe?PageType=01&TopicId=${strKeyId}&IdCurrEduCls=${strIdCurrEduCls}`,
+      );
+    }
+  }
+
+  //pdf添加专家观点02
+  public btnAddpdfExpertViewPointRel_Click() {
+    const strKeyId = clsPrivateSessionStorage.topicIdInTree;
+    const strIdCurrEduCls = clsPubLocalStorage.idCurrEduCls;
+    if (strKeyId == '') {
+      alert('请选择需要添加关系的主题！');
+      return;
+    } else {
+      //存放选择id
+      const strUserTypeId = '02';
+      $('#hidUserTypeId').val(strUserTypeId);
+
+      xadminOpen(
+        '添加专家观点',
+        `../GradEduTopic/Pdfiframe?PageType=02&TopicId=${strKeyId}&IdCurrEduCls=${strIdCurrEduCls}`,
+      );
+    }
+  }
+
+  //添加主题概念03
+  public btnAddpdfNewConceptRela_Click() {
+    const strKeyId = clsPrivateSessionStorage.topicIdInTree;
+    const strIdCurrEduCls = clsPubLocalStorage.idCurrEduCls;
+    if (strKeyId == '') {
+      alert('请选择需要添加关系的主题！');
+      return;
+    } else {
+      xadminOpen(
+        '添加概念',
+        `../GradEduTopic/Pdfiframe?PageType=03&TopicId=${strKeyId}&IdCurrEduCls=${strIdCurrEduCls}`,
+      );
+    }
+  }
+
+  ///添加客观事实04
+  public btnAddpdfObjectiveFact_Click() {
+    const strKeyId = clsPrivateSessionStorage.topicIdInTree;
+    const strIdCurrEduCls = clsPubLocalStorage.idCurrEduCls;
+    if (strKeyId == '') {
+      alert('请选择需要添加关系的主题！');
+      return;
+    } else {
+      //存放选择id客观事实
+      const strObjectiveType = '01';
+      $('#hidObjectiveTypeId').val(strObjectiveType);
+
+      xadminOpen(
+        '添加客观事实',
+        `../GradEduTopic/Pdfiframe?PageType=04&TopicId=${strKeyId}&IdCurrEduCls=${strIdCurrEduCls}`,
+      );
+    }
+  }
+
+  ///添加客观数据按钮05
+  public btnAddpdfBasisObjective_Click() {
+    const strKeyId = clsPrivateSessionStorage.topicIdInTree;
+    const strIdCurrEduCls = clsPubLocalStorage.idCurrEduCls;
+    if (strKeyId == '') {
+      alert('请选择需要添加关系的主题！');
+      return;
+    } else {
+      //存放选择id客观数据
+      const strObjectiveType = '02';
+      $('#hidObjectiveTypeId').val(strObjectiveType);
+
+      xadminOpen(
+        '添加客观数据',
+        `../GradEduTopic/Pdfiframe?PageType=05&TopicId=${strKeyId}&IdCurrEduCls=${strIdCurrEduCls}`,
+      );
+    }
+  }
+
+  //选择客观数据按钮
+  public btnAddBasisObjectiveRelaInTab_Click() {
+    const strKeyId = clsPrivateSessionStorage.topicIdInTree;
+
+    if (strKeyId == '') {
+      alert('请选择需要添加关系的主题！');
+      return;
+    } else {
+      //存放选择id客观数据
+      const strObjectiveType = '02';
+      $('#hidObjectiveTypeId').val(strObjectiveType);
+
+      ShowDialogEight();
+      //调用用户列表绑定；
+      const objPage = new ResearchTopicObjectiveEx();
+      objPage.btnAddTopicObjectiveRela_Click();
+    }
+  }
+
+  //选择客观事实按钮
+  public btnAddTopicObjectiveRelaRecordInTab_Click() {
+    const strKeyId = clsPrivateSessionStorage.topicIdInTree;
+
+    if (strKeyId == '') {
+      alert('请选择需要添加关系的主题！');
+      return;
+    } else {
+      //存放选择id客观事实
+      const strObjectiveType = '01';
+      $('#hidObjectiveTypeId').val(strObjectiveType);
+
+      ShowDialogEight();
+      //调用用户列表绑定；
+      const objPage = new ResearchTopicObjectiveEx();
+      objPage.btnAddTopicObjectiveRela_Click();
+    }
+  }
+
+  //选择主题概念
+  public btnAddConceptRelaRecordInTab_Click() {
+    const strKeyId = clsPrivateSessionStorage.topicIdInTree;
+
+    if (strKeyId == '') {
+      alert('请选择需要添加关系的主题！');
+      return;
+    } else {
+      //存放选择id
+      //  $('#hidTopicRelaId').val(strKeyId);
+
+      ShowDialogSeven();
+      //调用用户列表绑定；
+      const objPage = new ResearchTopicConceptEx();
+      objPage.btnAddConceptRela_Click();
+    }
+  }
+
+  //选择主题个人观点关系
+  public btnAddViewPointRelaRecordInTab_Click() {
+    const strKeyId = clsPrivateSessionStorage.topicIdInTree;
+
+    if (strKeyId == '') {
+      alert('请选择需要添加关系的主题！');
+      return;
+    } else {
+      //存放选择id
+      // $('#hidTopicRelaId').val(strKeyId);
+      //存放选择类型Id 个人观点
+      const UsertypeId = '01';
+      $('#hidUserTypeId').val(UsertypeId);
+      ShowDialogTwo();
+      //调用专业方向绑定；
+      const objPage = new ResearchTopicViewpointEx();
+      objPage.btnAddRela_Click();
+    }
+  }
+
+  //选择主题专家观点关系
+  public btnAddExpertViewPointRelaRecordInTab_Click() {
+    const strKeyId = clsPrivateSessionStorage.topicIdInTree;
+
+    if (strKeyId == '') {
+      alert('请选择需要添加关系的主题！');
+      return;
+    } else {
+      //存放选择类型Id 专家观点
+      const UsertypeId = '02';
+      $('#hidUserTypeId').val(UsertypeId);
+
+      ShowDialogTwo();
+      //调用专业方向绑定；
+      const objPage = new ResearchTopicViewpointEx();
+      objPage.btnAddRela_Click();
+    }
+  }
+
+  //自研论文
+  public btnAddNewgs_PaperRela_Click() {
+    const strKeyId = clsPrivateSessionStorage.topicIdInTree;
+    if (strKeyId == '') {
+      alert('请选择需要添加关系的主题！');
+      return;
+    } else {
+      //存放选择id
+      xadminOpen(
+        '添加主题论文',
+        `../GradEduPublicPage/P_Paper_Edit?PaperLogTypeId=01&TopicId=${strKeyId}`,
+      );
+    }
+  }
+
+  /*****************************************************************论文相关*****************************************************************/
+  //添加主题论文关系
+  public btnAddNewPaperRela_Click() {
+    const strKeyId = clsPrivateSessionStorage.topicIdInTree;
+
+    if (strKeyId == '') {
+      alert('请选择需要添加关系的主题！');
+      return;
+    } else {
+      //存放选择id
+      //strIdCurrEduclsstrObjectiveType = "02";
+      //$('#hidObjectiveTypeId').val(strObjectiveType);
+      xadminOpen('添加主题论文', `../GradEduPublicPage/P_Paper_EditV2?TopicId=${strKeyId}`);
+    }
+  }
+
+  /****************************************主题权限设置****************************************/
+  //主题权限设置
+  public btnRoleTool_Click() {
+    //得到选择的topicId
+    const strKeyId = clsPrivateSessionStorage.topicIdInTree;
+
+    if (strKeyId == '') {
+      alert('请选择需要设置权限的主题！');
+      return;
+    } else {
+      const objPage = new gs_TopicRoleCRUDEx();
+      objPage.btnRoleTool_Click();
+    }
+  }
+
+  //添加 会议纪要
+  public btnAddNewMeetingMinutes_Click() {
+    //instantiateTextbox();
+    const objPageEdit = new gs_MeetingMinutes_EditEx('', this);
+    gs_MeetingMinutes_Edit.IdCurrEduClsStatic = clsPubLocalStorage.idCurrEduCls;
+    objPageEdit.divName4Edit = 'divEdit_gs_MeetingMinutes';
+    objPageEdit.btnAddNewRecord_Click();
+  }
+
+  //添加 论文汇报
+  public btnAddNewPaperReport_Click() {
+    const objPageEdit = new gs_PaperReport_EditEx('', this);
+    gs_PaperReport_Edit.IdCurrEduClsStatic = clsPubLocalStorage.idCurrEduCls;
+    objPageEdit.divName4Edit = 'divEdit_gs_PaperReport';
+    objPageEdit.btnAddNewRecord_Click();
+  }
+
+  ///添加技能Pdf
+  public btnAddpdfSysskill_Click() {
+    const strKeyId = clsPrivateSessionStorage.topicIdInTree;
+    const strIdCurrEduCls = clsPubLocalStorage.idCurrEduCls;
+    if (strKeyId == '') {
+      alert('请选择需要添加关系的主题！');
+      return;
+    } else {
+      //存放选择id客观数据
+      //strIdCurrEduclsstrObjectiveType = "02";
+      //$('#hidObjectiveTypeId').val(strObjectiveType);
+
+      xadminOpen(
+        '添加技能数据',
+        `../GradEduTopic/Pdfiframe?PageType=06&TopicId=${strKeyId}&IdCurrEduCls=${strIdCurrEduCls}`,
+      );
+    }
+  }
+  //点击选择社会关系
+  public btnAddRTSysSocialRelaInTab_Click() {
+    const strKeyId = clsPrivateSessionStorage.topicIdInTree;
+
+    if (strKeyId == '') {
+      alert('请选择需要添加关系的主题！');
+      return;
+    } else {
+      ShowDialogTen();
+      //调用用户列表绑定；
+      const objPage = new ResearchTopicSysSocialRelaEx();
+      objPage.btnAddRTSysSocialRelaInTab_Click();
+    }
+  }
+
+  ///添加社会关系Pdf
+  public btnAddpdfSysSocialRela_Click() {
+    const strKeyId = clsPrivateSessionStorage.topicIdInTree;
+    const strIdCurrEduCls = clsPubLocalStorage.idCurrEduCls;
+    if (strKeyId == '') {
+      alert('请选择需要添加关系的主题！');
+      return;
+    } else {
+      //存放选择id客观数据
+      //strIdCurrEduclsstrObjectiveType = "02";
+      //$('#hidObjectiveTypeId').val(strObjectiveType);
+
+      xadminOpen(
+        '添加社会关系',
+        `../GradEduTopic/Pdfiframe?PageType=07&TopicId=${strKeyId}&IdCurrEduCls=${strIdCurrEduCls}`,
+      );
+    }
+  }
+
+  //添加 待研究问题
+  public btnAddNewTobeStudiedProblem_Click() {
+    //instantiateTextbox();
+
+    //gs_TobeStudiedProblemCRUDEx.btn_Click("Create", strKeyId);
+    const objPageEdit = new gs_TobeStudiedProblem_EditEx('', this);
+    gs_TobeStudiedProblem_Edit.IdCurrEduClsStatic = clsPubLocalStorage.idCurrEduCls;
+    objPageEdit.divName4Edit = 'divEdit_gs_TobeStudiedProblem';
+    objPageEdit.btnAddNewRecord_Click();
+  }
+  //添加 待研究问题
+  public btnUpdateRecordInTab_gs_TobeStudiedProblem_Click(strKeyId: string) {
+    //instantiateTextbox();
+
+    //gs_TobeStudiedProblemCRUDEx.btn_Click("Create", strKeyId);
+    const objPageEdit = new gs_TobeStudiedProblem_EditEx('', this);
+    gs_TobeStudiedProblem_Edit.IdCurrEduClsStatic = clsPubLocalStorage.idCurrEduCls;
+    objPageEdit.divName4Edit = 'divEdit_gs_TobeStudiedProblem';
+    objPageEdit.btnUpdateRecordInTab_Click(strKeyId);
+  }
+
+  //添加 研究成果
+  public btnAddNewResearchResult_Click() {
+    const objPageEdit = new gs_ResearchResult_EditEx('', this);
+    gs_ResearchResult_Edit.IdCurrEduClsStatic = clsPubLocalStorage.idCurrEduCls;
+    objPageEdit.divName4Edit = 'divEdit_gs_ResearchResult';
+    objPageEdit.btnAddNewRecord_Click();
+  }
+
+  public btnUpdateRecordInTab_gs_ViewsClassification_Click(strKeyId: string) {
+    //instantiateTextbox();
+
+    //gs_ViewsClassificationCRUDEx.btn_Click("Create", strKeyId);
+    const objPageEdit = new gs_ViewsClassification_EditEx('', this);
+    gs_ViewsClassification_Edit.IdCurrEduClsStatic = clsPubLocalStorage.idCurrEduCls;
+    objPageEdit.divName4Edit = 'divEdit_gs_ViewsClassification';
+    objPageEdit.btnUpdateRecordInTab_Click(strKeyId);
+  }
+
+  public btnUpdateRecordInTab_gs_ResearchResult_Click(strKeyId: string) {
+    //instantiateTextbox();
+
+    //gs_ResearchResultCRUDEx.btn_Click("Create", strKeyId);
+    const objPageEdit = new gs_ResearchResult_EditEx('', this);
+    gs_ResearchResult_Edit.IdCurrEduClsStatic = clsPubLocalStorage.idCurrEduCls;
+    objPageEdit.divName4Edit = 'divEdit_gs_ResearchResult';
+    objPageEdit.btnUpdateRecordInTab_Click(strKeyId);
+  }
+  public btnUpdateRecordInTab_gs_PaperReport_Click(strKeyId: string) {
+    const objPageEdit = new gs_PaperReport_EditEx('', this);
+    gs_PaperReport_Edit.IdCurrEduClsStatic = clsPubLocalStorage.idCurrEduCls;
+    objPageEdit.divName4Edit = 'divEdit_gs_PaperReport';
+    objPageEdit.btnUpdateRecordInTab_Click(strKeyId);
+  }
+  public btnUpdateRecordInTab_gs_MeetingMinutes_Click(strKeyId: string) {
+    const objPageEdit = new gs_MeetingMinutes_EditEx('', this);
+    gs_MeetingMinutes_Edit.IdCurrEduClsStatic = clsPubLocalStorage.idCurrEduCls;
+    objPageEdit.divName4Edit = 'divEdit_gs_MeetingMinutes';
+    objPageEdit.btnUpdateRecordInTab_Click(strKeyId);
+  }
+
+  //点击选择技能数据按钮
+  public btnAddSysskillInTab_Click() {
+    const strKeyId = clsPrivateSessionStorage.topicIdInTree;
+
+    if (strKeyId == '') {
+      alert('请选择需要添加关系的主题！');
+      return;
+    } else {
+      ShowDialogNine();
+      //调用用户列表绑定；
+      const objPage = new ResearchTopicSysskillEx();
+      objPage.btnAddSysskillInTab_Click();
+    }
+  }
+
+  //添加 会议纪要
+  public btnAddgs_TeacherTask_Click() {
+    //const objPageEdit = new gs_TeacherTask_EditEx('', this);
+    //objPageEdit.divName4Edit = "divEdit_gs_TeacherTask";
+    //objPageEdit.btnAddNewRecord_Click();
+    const strKeyId = ResearchTopic_QUDIEx.topicId; // clsPrivateSessionStorage.topicIdInTree;
+    const strIdCurrEduCls = clsPubLocalStorage.idCurrEduCls;
+    clsPrivateSessionStorage.topicIdInTree = strKeyId;
+    if (strKeyId == '') {
+      alert('请选择数据！');
+      return;
+    } else {
+      //xadmin.open('添加研究计划', '../GradEduPublicPage/AddResearchPlan?topicId=' + strKeyId + '&IdCurrEduCls=' + strIdCurrEduCls, 1200, 800);
+      xadminopen2(
+        '添加教师任务',
+        `../GradEduPublicPage/Addgs_TeacherTask?topicId=${strKeyId}&IdCurrEduCls=${strIdCurrEduCls}`,
+        1200,
+        800,
+      );
+    }
+  }
+
+  /*
+ 教师任务布置 修改；
+(AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_btnUpdateRecordInTab_Click)
+*/
+  public btnUpdategs_TeacherTask_Click(mId: number) {
+    //require(["../js/GradEduTopic/ResearchTopic_QUDIEx.js"], function (gs_researchplan) {
+    const strKeyId = clsPrivateSessionStorage.topicIdInTree;
+    if (strKeyId == '') {
+      alert('请选择数据！');
+      return;
+    }
+    //const objPage = new gs_researchplan.ResearchTopic_QUDIEx();
+    //objPage.btnUpdateRecordInTab_Click(strKeyId);
+    xadminOpen_Width_Height(
+      '修改任务',
+      `../GradEduPublicPage/Addgs_TeacherTask?TopicId=${strKeyId}&mId=${mId}`,
+      1200,
+      800,
+    );
+    //  });
+  }
+  /*
+ 教师任务布置 修改；
+(AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_btnUpdateRecordInTab_Click)
+*/
+  public btnUpdategs_ReflectLog_Click(mId: number) {
+    const objPageEdit = new gs_ReflectLog_EditEx('', this);
+    gs_ReflectLog_Edit.IdCurrEduClsStatic = clsPubLocalStorage.idCurrEduCls;
+    objPageEdit.divName4Edit = 'divEdit_gs_ReflectLog';
+    objPageEdit.btnUpdateRecordInTab_Click(mId.toString());
+    //const objPage = new gs_researchplan.ResearchTopic_QUDIEx();
+    //objPage.btnUpdateRecordInTab_Click(strKeyId);
+    //xadminOpen_Width_Height('修改任务', '../GradEduPublicPage/Addgs_TeacherTask?TopicId=' + strKeyId + '&mId=' + mId, 1200, 800);
+    //  });
+  }
+  //修改主题用户色码块；
+  public btnUpdateUserRelaInTab0_Click(strKeyId: string, strRoleId: string) {
+    if (strKeyId == '') {
+      alert('请选择需要删除的记录！');
+      return;
+    }
+
+    $('#hidTopicUserId').val(strKeyId);
+    const objPage = new ResearchTopic_QUDIEx();
+    objPage.btnUpdateUserRelaInTab_Click(strKeyId, strRoleId);
+  }
+}

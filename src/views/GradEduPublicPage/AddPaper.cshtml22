@@ -1,0 +1,1414 @@
+﻿@page
+@model GraduateStudyWebApp.Pages.GraduateEduPublicPage.AddPaperModel
+@{
+    Layout = "~/Pages/Shared/_Layout_PC.cshtml";
+    ViewData["Title"] = "添加论文";
+    //操作Session样例，方法1：
+    //Model.seUserId = "TestUserId";
+    var strUserId_Value = Model.seUserId;
+    //操作Session样例，方法2：
+    Model.SetSession("UserId1", "TestUserId1");
+    var strUserId1_Value = Model.GetSession("UserId1");
+    //请参见页尾的隐形控件hidUserid和hidUserId1的使用。
+}
+@section Styles{
+
+    <link rel="stylesheet" href="../lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="../css/site.css" />
+
+    <link rel="stylesheet" href="~/lib/Xadmin/css/font.css">
+    <link rel="stylesheet" href="~/lib/Xadmin/css/xadmin.css">
+    <link rel="stylesheet" href="~/css/comment.css">
+    <link rel="stylesheet" href="~/css/paperlist.css" />
+    <link rel="stylesheet" href="~/css/public.css" />
+
+    <link rel="stylesheet" type="text/css" href="~/textboxio/example.css" />
+
+
+
+
+}
+@section Scripts{
+    <script>
+        layui.use(['laydate', 'form'],
+            function () {
+                var laydate = layui.laydate;
+
+                //执行一个laydate实例
+                laydate.render({
+                    elem: '#txtUpdDate_q' //指定元素
+                });
+
+                //执行一个laydate实例
+                //laydate.render({
+                //    elem: '#end' //指定元素
+                //});
+            });
+    </script>
+
+    <script src="../lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/Xadmin/lib/layui/layui.js" charset="utf-8"></script>
+    <script src="~/lib/Xadmin/js/xadmin.js" type="text/javascript"></script>
+    <script src="../lib/bootstrap/dist/js/bootstrap.js"></script>
+
+    <script src="../lib/jquery-form.js"></script>
+    <script src="../lib/jquery.min.js"></script>
+    <script src="../lib/tzPubFun.js"></script>
+
+    //=================================
+
+    <script type='text/javascript' src='~/textboxio/textboxio.js'></script>
+    <script src="../lib/bootstrap/dist/js/popper.js" type="module"></script>
+    <script src="../lib/require/require.js" data-main="../js/src/config"></script>
+
+    @*<script type='text/javascript'>
+            $(function () {
+                function tab(pa) {
+                    $(pa + ".title li").click(function () {
+                        //找到是点击第几个
+                        var ind = $(pa + "#title li").index($(this));
+                        //alert(ind);
+                        //以前显示的隐藏
+                        $(pa + ".wrap div:visible").hide();
+                        //第几个显示
+                        $(pa + ".wrap div:eq(" + ind + ")").show();
+                        //有高亮ho 去掉高亮ho
+                        $(pa + ".title li.ho").removeClass("ho");
+                        //被点击的元素添加ho
+                        $(this).addClass("ho");
+
+                    }) //clicked
+                } //tab ed
+                tab(".tab1 ");
+
+                $("#btnOK").click(function () { alert('ok') });
+                $("#btnCancel").click(function () { alert('cancel') });
+            })
+        </script>*@
+}
+<script>
+    ////基本信息
+    //SimpleEdit_Click
+    ////扩展信息
+    //extendEdit_Click
+</script>
+<script>
+
+var strUrl_Session_SetString = "@Model.Url_Session_SetString";
+var strUrl_Session_GetString = "@Model.Url_Session_GetString";
+        var strCurrPrjId = "@Model.CurrPrjId";
+
+
+    /*
+     提交编辑
+    (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_mySubmit)
+    */
+    function mySubmit(pstrOp: string) {
+        //    alert("提交" + strOp);
+        //require(["../js/GraduateEduPublicPage/AddPaperEx.js"], function (paper) {
+        //    var objPage = new paper.AddPaperEx();
+        //    objPage.btnOKUpd_Click();
+        //});
+        const strLiteratureTypeId = $("#ddlLiteratureTypeId").val();
+        console.error(strLiteratureTypeId);
+        if ($("#txtPaperTitle").val() == "") {
+            layer.msg('论文标题不能为空!', {
+                icon: 3,
+                time: 1000
+            });
+        }
+        if ($("#txtPaperTitle").val().length > 100) {
+            layer.msg('论文标题长度不能超过100', {
+                icon: 3,
+                time: 1000
+            });
+        }
+        
+        //else if ($("#txtPaperContent").val() == "") {
+        //    layer.msg('论文内容不能为空!', {
+        //        icon: 3,
+        //        time: 1000
+        //    });
+        //}
+        else if ($("#txtPeriodical").val() == "") {
+            layer.msg('期刊不能为空!', {
+                icon: 3,
+                time: 1000
+            });
+        }
+        else if ($("#txtPeriodical").val().length > 50) {
+            layer.msg('期刊长度不能超过50!', {
+                icon: 3,
+                time: 1000
+            });
+        }
+        else if ($("#txtAuthor").val() == "") {
+            layer.msg('论文作者不能为空!', {
+                icon: 3,
+                time: 1000
+            });
+        }
+        else if ($("#txtAuthor").val().length > 100) {
+            layer.msg('论文作者长度不能超过100!', {
+                icon: 3,
+                time: 1000
+            });
+        }
+
+        else if ($("#txtResearchQuestion").val().length > 500) {
+            layer.msg('研究问题长度不能超过500!', {
+                icon: 3,
+                time: 1000
+            });
+        }
+        else if ($("#txtLiteratureSources").val().length > 500) {
+            layer.msg('文献来源长度不能超过500!', {
+                icon: 3,
+                time: 1000
+            });
+        }
+        else if ($("#txtLiteratureLink").val().length > 500) {
+            layer.msg('文献链接长度不能超过500!', {
+                icon: 3,
+                time: 1000
+            });
+        }
+        else if ($("#ddlLiteratureTypeId").val() == 0) {
+            layer.msg('文献类型(论文类型)不能为空!', {
+                icon: 3,
+                time: 1000
+            });
+        }
+        else {
+            $("#divLoading").show();
+            //防止重复提交
+            $('#btnOKUpd').attr("disabled", true);
+            //判断文件格式；
+            IsHasFile();
+
+
+        }
+    }
+
+    //判断图片附件格式、以及文件附件格式
+    function IsHasFile() {
+        console.error("Enter IsFile");
+
+        var pic1 = $("#txtUploadfileUrl").val();
+
+        if (pic1 != "") {
+            strs = pic1.split('.');
+            var suffix = strs[strs.length - 1];
+
+            if (suffix != 'jpg' && suffix != 'gif' && suffix != 'png') {
+                alert("请选择图片格式！");
+                var obj = document.getElementById('txtUploadfileUrl');
+                obj.outerHTML = obj.outerHTML; //这样清空，在IE8下也能执行成功
+                return;
+                //obj.select(); document.selection.clear();这种方法也可以清空 input file 的value值
+            }
+
+        }
+        //文件
+        var InputsWrapper = $("#InputsWrapper");
+        //var MaxInputs = 2;
+        var y = InputsWrapper.length;
+
+        //循环得到的个数
+        for (var i = 0; i < y; i++) {
+            if (i == 0) {
+                var file1 = $("#txtUploadfile").val();
+                console.error("file1");
+                console.error(file1);
+                if (file1 != "") {
+                    strs = file1.split('.');
+                    var suffix = strs[strs.length - 1];
+                    if (suffix != 'doc' && suffix != 'docx' && suffix != 'pdf') {
+                        alert("请选择word或pdf格式文件！");
+                        var obj = document.getElementById('txtUploadfile');
+                        obj.outerHTML = obj.outerHTML; //这样清空，在IE8下也能执行成功
+                        return;
+                        //obj.select(); document.selection.clear();这种方法也可以清空 input file 的value值
+                    }
+                }
+                else {
+                    return false;
+                }
+            }
+            else if (i == 1) {
+                var file2 = $("#txtUploadfile2").val();
+
+                if (file2 != "") {
+                    strs = file2.split('.');
+                    var suffix = strs[strs.length - 1];
+
+                    if (suffix != 'doc' && suffix != 'docx' && suffix != 'pdf') {
+                        alert("请选择word或pdf格式文件！");
+                        var obj = document.getElementById('txtUploadfile2');
+                        obj.outerHTML = obj.outerHTML; //这样清空，在IE8下也能执行成功
+                        return;
+                        //obj.select(); document.selection.clear();这种方法也可以清空 input file 的value值
+                    }
+                }
+            }
+           else if (i == 2) {
+
+                var file3 = $("#txtUploadfile3").val();
+
+                if (file3 != "") {
+                    strs = file3.split('.');
+                    var suffix = strs[strs.length - 1];
+
+                    if (suffix != 'doc' && suffix != 'docx' && suffix != 'pdf') {
+                        alert("请选择word或pdf格式文件！");
+                        var obj = document.getElementById('txtUploadfile3');
+                        obj.outerHTML = obj.outerHTML; //这样清空，在IE8下也能执行成功
+                        return;
+                        //obj.select(); document.selection.clear();这种方法也可以清空 input file 的value值
+                    }
+
+                }
+
+            }
+        }
+        //上传
+        doUpload();
+    }
+
+
+    //let strRootPath = getRootPath();
+    //require(["../js/TS/PubFun/tzPubFun.js"], function (tzpubfun) {
+    //    strRootPath = tzpubfun.getRootPath();
+    //    console.log("strRootPath1:", strRootPath);
+    //    if (strRootPath == "") {
+    //        alert("当前根目录为空，请检查！");
+    //        return;
+    //    }
+    //});
+    //console.log("strRootPath2:", strRootPath);
+
+        //上传方法
+    function doUpload() {
+        console.error("Enter doUpload");
+
+        var formData = new FormData($("#uploadForm")[0]);
+        let strUrl = '@Url.Action("UploadFile", "testUploadPic")';
+        console.log("strUrl1:", strUrl);
+        
+        if (strUrl == '') {
+//            strUrl = 'https://www.sh-tz.com/GS/ApitestUploadPic/';
+            strUrl = 'http://localhost:49590/GraduateStudyWebApp/Api/testUploadPic/UploadFile/';
+        }
+        //const strUrl = getUploadPaperUrl();
+        console.log("strUrl:", strUrl);
+        $.ajax({
+            url: strUrl,
+            type: 'post',
+            data: formData,
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (returndata) {
+                console.error("returndata.status");
+                //console.error(returndata);
+                console.error(returndata.status);
+                //成功/为空
+                if (returndata.status == 0 || returndata.status == -1) {
+
+                    //如果图片地址为空，那么是修改 则不用存放地址；
+                    if (returndata.fileNamePic != "") {
+                        $("#hdnpic").val(returndata.fileNamePic);
+                    }
+                    //如果文件地址为空，那么是修改 则不用存放地址；返回3个文件地址；
+                    if (returndata.fileNameOne != "") {
+                        $("#hdnFileOne").val(returndata.fileNameOne);
+                    }
+                    if (returndata.fileNameTwo != "") {
+                        $("#hdnFileTwo").val(returndata.fileNameTwo);
+                    }
+                    if (returndata.fileNameThree != "") {
+                        $("#hdnFileThree").val(returndata.fileNameThree);
+                    }
+
+                    var editors = textboxio.get('#txtPaperContent');
+                    var editor = editors[0];
+                    $("#txtPaperContent").val(editor.content.get());
+
+                    require(["../js/GraduateEduPublicPage/AddPaperEx.js"], function (Thesis) {
+                        var objPage = new Thesis.AddPaperEx();
+                        objPage.btnOKUpd_Click();
+                    });
+                    // var aa = JSON.stringify(returndata);
+
+                    //alert(returndata.message);
+
+                }
+                else {
+                    alert('请选择正确文件!(in AddPaper.doUpload)')
+                }
+            },
+            error: function (returndata) {
+                alert(returndata);
+            }
+        });
+    }
+
+
+    /**获取地址栏参数 */
+    //获取地址栏参数名称；
+    function GetRequest() {
+        var url = location.search; //获取url中"?"符后的字串
+        var theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1);
+            strs = str.split("&");
+            for (var i = 0; i < strs.length; i++) {
+                theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+            }
+        }
+        return theRequest;
+    }
+    /**获取论文读写类型ID */
+    function GetReadWriteTypeId() {
+        var Request = new Object();
+        Request = GetRequest();
+        var str1;
+        str1 = Request['TopicId'];
+        $('#hidTopicId').val(str1);
+    }
+
+    function GetPaperTypeId_load() {
+        var Request = new Object();
+        Request = GetRequest();
+        var str1;
+        str1 = Request['TopicId'];
+        //测试01
+        // str1 = "01";
+        $('#hidTopicId').val(str1);
+
+        var str7 = Request['Id_CurrEduCls'];
+        $("#hidId_CurrEduCls").val(str7);
+        //var stPaperTypeId = $('#hidPaperTypeId').val();
+
+
+
+        if (str1 != null) {
+
+
+            require(["../js/GraduateEduPublicPage/AddPaperEx.js"], function (paper) {
+                var objPage = new paper.AddPaperEx();
+                objPage.Page_Load();
+                instantiateTextbox();
+            });
+
+        }
+        else {
+            require(["../js/GraduateEduPublicPage/AddPaperEx.js"], function (paper) {
+                var objPage = new paper.AddPaperEx();
+                objPage.Page_Load();
+                instantiateTextbox();
+            });
+        }
+    }
+    /*
+页面导入-在导入页面后运行的函数
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_Page_Load)
+*/
+
+
+
+    window.onload = function () {
+        //require(["../js/GraduateEduPublicPage/PaperReadListEx.js"], function (paperreadwrite) {
+        //    var objPage = new paperreadwrite.PaperReadListEx();
+        //    objPage.Page_Load();
+        //});
+        var MaxInputs = 2;
+        var InputsWrapper = $("#InputsWrapper");
+        //var AddButton = $("#AddMoreFileBox");
+        var x = InputsWrapper.length;
+        var FieldCount = 1;
+        $("#AddMoreFileBox").click(function () {
+
+            // $(AddButton).click(function (e) {
+            if (x <= MaxInputs) {
+                FieldCount++;
+                //add input box
+                $("#InputsWrapper").append('<br/><input type="file" name="txtUploadfile' + FieldCount + '" id="txtUploadfile' + FieldCount + '"/>');
+                x++; //text box increment
+            }
+            return false;
+            // });
+        })
+
+
+
+
+        GetPaperTypeId_load();
+
+        //$(function () {
+            function tab(pa) {
+                $(pa + ".title li").click(function () {
+                    //找到是点击第几个
+                    var ind = $(pa + "#title li").index($(this));
+                    //alert(ind);
+                    //以前显示的隐藏
+                    $(pa + ".wrap div:visible").hide();
+                    //第几个显示
+                    $(pa + ".wrap div:eq(" + ind + ")").show();
+                    //有高亮ho 去掉高亮ho
+                    $(pa + ".title li.ho").removeClass("ho");
+                    //被点击的元素添加ho
+                    $(this).addClass("ho");
+
+                }) //clicked
+            } //tab ed
+            tab(".tab1 ");
+
+            //$("#btnOK").click(function () { alert('ok') });
+            //$("#btnCancel").click(function () { alert('cancel') });
+        //})
+
+        //require(["../js/GraduateEduPublicPage/PaperReadListEx.js"], function (paperreadwrite) {
+        //    var objPage = new paperreadwrite.PaperReadListEx();
+        //    objPage.Page_Load();
+        //});
+
+
+
+    }
+    function CloseWindow() {
+
+        try {
+
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            parent.layer.close(index); //再执行关闭
+            parent.location.reload();//完成刷新
+        } catch (e) {
+            window.opener.location = "父页面地址";
+            window.opener = null;
+            window.close();
+        }
+
+        //window.parent.opener.location.reload();
+        //var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+        //parent.layer.close(index); //再执行关闭
+        ///window.location.reload();
+    }
+
+
+    //$(document).ready(function () {
+
+    //    var MaxInputs = 3;
+    //    var InputsWrapper = $("#InputsWrapper");
+    //    var AddButton = $("#AddMoreFileBox");
+    //    var x = InputsWrapper.length;
+    //    var FieldCount = 1;
+    //    $(AddButton).click(function (e) {
+    //        if (x <= MaxInputs) {
+    //            FieldCount++;
+    //            //add input box
+    //            $(InputsWrapper).append('<tr><td class="NameTD"></td><td class="ValueTD"><input type="file" name="txtUploadfileUrl' + FieldCount + '" id="txtUploadfileUrl' + FieldCount + '"/><td></tr>');
+    //            x++; //text box increment
+    //        }
+    //        return false;
+    //    });
+
+
+    //    //$("body").on("click", ".removeclass", function (e) { //user click on remove text
+    //    //    if (x > 1) {
+    //    //        $(this).parent('div').remove(); //remove text box
+    //    //        x--; //decrement textbox
+    //    //    }
+    //    //    return false;
+    //    //})
+    //});
+
+
+
+    ///*
+    // 页面导入-在导入页面后运行的函数
+    //(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_Page_Load)
+    //*/
+    //window.onload = function () {
+    //    require(["../js/GraduateEduPublicPage/AddPaperEx.js"], function (paper) {
+    //        var objPage = new paper.AddPaperEx();
+    //        objPage.Page_Load();
+    //        instantiateTextbox();
+    //    });
+    //}
+
+    function instantiateTextbox() {
+        textboxio.replaceAll('textarea', {
+            paste: {
+                style: 'clean'
+            },
+            css: {
+                stylesheets: ['../textboxio/example.css']
+            }
+        });
+    };
+
+
+    /*
+详细记录
+(AutoGCLib.WA_ViewScript_TS4CSharp:btnDetailRecord_Click)
+*/
+    function btnDetailRecordInTab_Click(strKeyId: string) {
+        GetReadWriteTypeId();
+        require(["../js/GraduateEduPublicPage/AddPaperEx.js"], function (paperreadwrite) {
+            if (strKeyId == "") {
+                alert("请选择需要查看的记录！");
+                return;
+            }
+            window.location.href = "../GraduateEduPublicPage/PaperDetail?PaperId=" + strKeyId;
+            //var objPage = new paperreadwrite.PaperReadWrite_QUDI_TSEx();
+            //objPage.btnDetailRecord_Click();
+        });
+    }
+    /*
+详细记录
+(AutoGCLib.WA_ViewScript_TS4CSharp:btnDetailRecord_Click)
+*/
+    function btnDetailRecord_Click() {
+        GetReadWriteTypeId();
+        require(["../js/GraduateEduPublicPage/AddPaperEx.js", "../js/TS/PubFun/clsCommonFunc4Web.js"], function (paperreadwrite, commonfunc) {
+            var strKeyId = commonfunc.clsCommonFunc4Web.GetFirstCheckedKeyId('divList');
+            if (strKeyId == "") {
+                alert("请选择需要查看的记录！");
+                return;
+            }
+            window.location.href = "../GraduateEduPublicPage/PaperDetail?PaperId='" + strKeyId + "'";
+            //var objPage = new paperreadwrite.PaperReadWrite_QUDI_TSEx();
+            //objPage.btnDetailRecord_Click();
+        });
+    }
+
+
+    ////查看专业关系
+    //function btnSelectMajorRela_Click() {
+    //    GetReadWriteTypeId();
+    //    require(["../js/GraduateEduPublicPage/AddPaperEx.js", "../js/TS/PubFun/clsCommonFunc4Web.js"], function (paperreadwrite, commonfunc) {
+    //        var strKeyId = commonfunc.clsCommonFunc4Web.GetFirstCheckedKeyId('divList');
+    //        if (strKeyId == "") {
+    //            alert("请选择需要查看的记录！");
+    //            return;
+    //        }
+    //        window.location.href = "../GraduateEduPublicPage/PaperAddXzmajorRela?PaperId=" + strKeyId;
+    //        //var objPage = new paperreadwrite.PaperReadWrite_QUDI_TSEx();
+    //        //objPage.btnDetailRecord_Click();
+    //    });
+    //}
+
+
+    //论文审核
+    function btnAudit_Click() {
+        GetReadWriteTypeId();
+        require(["../js/GraduateEduPublicPage/AddPaperEx.js", "../js/TS/PubFun/clsCommonFunc4Web.js"], function (paper, commonfunc) {
+            var strKeyId = commonfunc.clsCommonFunc4Web.GetFirstCheckedKeyId('divList');
+            if (strKeyId == "") {
+                alert("请选择需要查看的记录！");
+                return;
+            }
+
+            var objPage = new paper.AddPaperEx();
+            objPage.btnAudit_Click(strKeyId);
+        });
+    }
+
+
+//    /*
+// 查询记录 查询专业方向
+//(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+//*/
+//    function btnQueryMajorDirection_Click() {
+//        require(["../js/GraduateEduPublicPage/AddPaperEx.js"], function (paper) {
+//            $("#Text1").val("进入函数：btnQuery_Click");
+//            var objPage = new paper.AddPaperEx();
+//            objPage.btnQueryMajorDirection_Click();
+//        });
+//    }
+
+ /*
+  添加新记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnAddNewRecord_Click)
+ */
+function btnAddNewRecord_Click() {
+   require(["../js/GraduateEduPublicPage/AddPaperEx.js"], function(paper) {
+ShowDialog('Add');
+var objPage = new paper.AddPaperEx();
+objPage.btnAddNewRecord_Click();
+});
+}
+
+
+    //添加论文节
+    function btnAddSection_Click() {
+        require(["../js/GraduateEduPublicPage/AddPaperEx.js", "../js/TS/PubFun/clsCommonFunc4Web.js"], function (paper, commonfunc) {
+            var strKeyId = commonfunc.clsCommonFunc4Web.GetFirstCheckedKeyId('divList');
+            if (strKeyId == "") {
+                alert("请选择需要的论文！");
+                return;
+            }
+            window.location.href = "../GraduateEduPublicPage/Section_QUDI_TS?PaperId=" + strKeyId;
+            //var objPage = new paperreadwrite.PaperReadWrite_QUDI_TSEx();
+            //objPage.btnDetailRecord_Click();
+        });
+    }
+
+    ////添加论文专业关系
+    //function btnAddXzMajorRela_Click() {
+    //    require(["../js/GraduateEduPublicPage/AddPaperEx.js", "../js/TS/PubFun/clsCommonFunc4Web.js"], function (paper, commonfunc) {
+    //        var strKeyId = commonfunc.clsCommonFunc4Web.GetFirstCheckedKeyId('divList');
+    //        if (strKeyId == "") {
+    //            alert("请选择需要的论文！");
+    //            return;
+    //        }
+    //        $('#hidPaperId').val(strKeyId);
+    //        ShowDialogOne();
+    //        //调用专业方向绑定；
+    //            var objPage = new paper.AddPaperEx();
+    //            objPage.btnMajorDirection_Click();
+
+    //        //window.location.href = "../GraduateEduPublicPage/PaperAddXzmajorRela?PaperId=" + strKeyId;
+
+    //        //var objPage = new paperreadwrite.PaperReadWrite_QUDI_TSEx();
+    //        //objPage.btnDetailRecord_Click();
+    //    });
+    //}
+
+ /*
+  删除记录的事件函数
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnDelRecord_Click)
+ */
+function btnDelRecord_Click() {
+   require(["../js/GraduateEduPublicPage/AddPaperEx.js", "../js/TS/PubFun/clsCommonFunc4Web.js"], function(paper, commonfunc) {
+var arrKeyIds = commonfunc.clsCommonFunc4Web.GetCheckedKeyIds();
+if (arrKeyIds.length == 0)
+{
+alert("请选择需要删除的记录！");
+return;
+}
+var objPage = new paper.AddPaperEx();
+objPage.btnDelRecord_Click();
+});
+}
+
+
+ /*
+  在数据表里删除记录的事件函数
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnDelRecordInTab_Click)
+ */
+function btnDelRecordInTab_Click(strKeyId: string) {
+   require(["../js/GraduateEduPublicPage/AddPaperEx.js"], function(paper) {
+if (strKeyId == "")
+{
+alert("请选择需要删除的记录！");
+return;
+}
+var objPage = new paper.AddPaperEx();
+objPage.btnDelRecordInTab_Click(strKeyId);
+});
+}
+
+    //用来选择专业记录方法；
+    function btnOkInTab_Click(strKeyId: string) {
+        require(["../js/GraduateEduPublicPage/AddPaperEx.js"], function (paper) {
+            if (strKeyId == "") {
+                alert("请选择需要的记录！");
+                return;
+            }
+            var objPage = new paper.AddPaperEx();
+            objPage.btnOkInTab_Click(strKeyId);
+        });
+    }
+
+ /*
+  查询记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+ */
+function btnQuery_Click()
+{
+   require(["../js/GraduateEduPublicPage/AddPaperEx.js"], function(paper) {
+$("#Text1").val("进入函数：btnQuery_Click");
+var objPage = new paper.AddPaperEx();
+objPage.btnQuery_Click();
+});
+    }
+
+
+    /*
+所有论文
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+*/
+    function liAllPaper_Click() {
+        require(["../js/GraduateEduPublicPage/AddPaperEx.js"], function (paper) {
+            $("#Text1").val("进入函数：liAllPaper_Click");
+            var objPage = new paper.AddPaperEx();
+            objPage.liAllPaper_Click();
+        });
+    }
+
+
+    /*
+本专业
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+*/
+    function liMajor_Click() {
+        require(["../js/GraduateEduPublicPage/AddPaperEx.js"], function (paper) {
+            $("#Text1").val("进入函数：liMajor_Click");
+            var objPage = new paper.AddPaperEx();
+            objPage.liMajor_Click();
+        });
+    }
+
+    /*
+本专业方向
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+*/
+    function liMajorDirection_Click() {
+        require(["../js/GraduateEduPublicPage/AddPaperEx.js"], function (paper) {
+            $("#Text1").val("进入函数：liMajorDirection_Click");
+            var objPage = new paper.AddPaperEx();
+            objPage.liMajorDirection_Click();
+        });
+    }
+
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnUpdateRecord_Click)
+ */
+function btnUpdateRecord_Click() {
+   require(["../js/GraduateEduPublicPage/AddPaperEx.js", "../js/TS/PubFun/clsCommonFunc4Web.js"], function(paper, commonfunc) {
+       var strKeyId = commonfunc.clsCommonFunc4Web.GetFirstCheckedKeyId('divList');
+    if (strKeyId == "")
+{
+alert("请选择需要修改的记录！");
+return;
+}
+//ShowDialog('Update');
+var objPage = new paper.AddPaperEx();
+       objPage.btnUpdateRecord_Click(strKeyId);
+       //setTextboxio();
+
+   });
+    //var editors = $("#txtPaperContent").val();
+
+
+    //editor.content.set(editors);
+    //editor.content.set(editors1);
+    }
+
+    function setTextboxio()
+    {
+        var editors1 = $("#txtPaperContent").val();
+        var editors = textboxio.get('#txtPaperContent');
+        var editor = editors[0];
+        editor.content.set(editors1);
+    }
+
+
+ /*
+  在数据表里修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnUpdateRecordInTab_Click)
+ */
+function btnUpdateRecordInTab_Click(strKeyId: string) {
+   require(["../js/GraduateEduPublicPage/AddPaperEx.js"], function(paper) {
+    if (strKeyId == "")
+{
+alert("请选择需要修改的记录！");
+return;
+}
+ShowDialog('Update');
+var objPage = new paper.AddPaperEx();
+  objPage.btnUpdateRecordInTab_Click(strKeyId);
+});
+}
+
+
+ /*
+  单击数据列表中每行首列的复选框所引发的事件
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_ChkClick)
+ */
+function ChkClick(myThis)
+{
+require(["../js/GraduateEduPublicPage/AddPaperEx.js", "../js/TS/PubFun/clsCommonFunc4Web.js"], function(paper, commonfunc) {
+var strId = myThis.id;
+var strKey = strId.substring(3);
+var arrKeys = commonfunc.arrSelectedKeys;
+if (myThis.checked == true) {
+if (arrKeys.indexOf(strKey) < 0)
+{
+arrKeys.push(strKey);
+}
+}
+else {
+var index = arrKeys.indexOf(strKey);
+if (index > -1)
+{
+arrKeys.splice(index, 1);
+}
+}
+var sstrKey = "";
+for (let strK of arrKeys)
+{
+sstrKey += `${ strK},`;
+}
+$('#spanResult').html(sstrKey);
+});
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_ExpandDiv)
+ */
+         function ExpandDiv(divName) {
+//基于RequireJS来调用tzPubFun.ts中的函数OnlyShowDiv。
+require(["../js/TS/PubFun/tzPubFun"], function (pubfun) {
+      pubfun.OnlyShowDiv(divName, "function", "content");
+});
+}
+
+ /*
+  获取数据列表中的所选记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_GetAllCkechedKeys)
+ */
+function GetAllCkechedKeys(tabName)
+{
+var arrKeys = tabName.getElementsByTagName('chkInTab');
+alert(arrKeys.length.toString());
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_IndexPage)
+ */
+function IndexPage(intPageIndex)
+{
+console.log("跳转到" + intPageIndex + "页");
+require(["../js/GraduateEduPublicPage/AddPaperEx.js"], function(paper) {
+var objPage = new paper.AddPaperEx();
+objPage.IndexPage(intPageIndex);
+});
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_JumpToPage)
+ */
+function JumpToPage()
+{
+var intCurrPageIndex = $('#input_number').val();
+var intPageIndex = Number(intCurrPageIndex);
+console.log("跳转到" + intPageIndex + "页");
+require(["../js/GraduateEduPublicPage/AddPaperEx.js"], function(paper) {
+var objPage = new paper.AddPaperEx();
+objPage.IndexPage(intPageIndex);
+});
+}
+
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_NextPage)
+ */
+function NextPage()
+{
+var intCurrPageIndex = $('#hidCurrPageIndex').val();
+var intPageIndex = Number(intCurrPageIndex) + 1;
+console.log("跳转到" + intPageIndex + "页");
+require(["../js/GraduateEduPublicPage/AddPaperEx.js"], function(paper) {
+var objPage = new paper.AddPaperEx();
+objPage.IndexPage(intPageIndex);
+});
+}
+
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_PageNum)
+ */
+function PageNum(intPageIndex)
+{
+console.log("跳转到" + intPageIndex + "页");
+require(["../js/GraduateEduPublicPage/AddPaperEx.js"], function(paper) {
+var objPage = new paper.AddPaperEx();
+objPage.IndexPage(intPageIndex);
+});
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_PrevPage)
+ */
+function PrevPage()
+{
+var intCurrPageIndex = $('#hidCurrPageIndex').val();
+var intPageIndex = Number(intCurrPageIndex) - 1;
+console.log("跳转到" + intPageIndex + "页");
+require(["../js/GraduateEduPublicPage/AddPaperEx.js"], function(paper) {
+var objPage = new paper.AddPaperEx();
+objPage.IndexPage(intPageIndex);
+});
+}
+
+ /*
+  全选数据列表中的所有记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_SetAllCkechedKeys)
+ */
+function SetAllCkechedKeys(tabName)
+{
+var thisChk = event.target;
+require(["../js/TS/PubFun/clsCommonFunc4Web.js"], function (commonfunc) {
+console.log(tabName);
+console.log(thisChk);
+commonfunc.clsCommonFunc4Web.SetAllCkechedKeys(tabName, thisChk);
+});
+}
+
+ /*
+  显示对话框
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_ShowDialog)
+ */
+function ShowDialog(pstrOp: string) {
+   strOp = pstrOp;
+   require(['jquery', 'bootstrap'], function($) {
+       if (strOp === "Add") {
+           $('#myModalLabel').html('添加记录');
+//AddPaperEx.GetMaxStrId('#txtPaperId');
+        }
+else if (strOp === "Update")
+{
+            $('#myModalLabel').html('修改记录');
+}
+else if (strOp === "Detail")
+{
+            $('#btnOKUpd').hide();
+            $('#myModalLabel').html('详细信息');
+}
+        $('#divEditRegion').modal('show');
+  });
+}
+
+ /*
+  隐藏对话框
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_HideDialog)
+ */
+function HideDialog() {
+  require(['jquery', 'bootstrap'], function($) {
+      $('#divEditRegion').modal('hide');
+  });
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_SortBy)
+ */
+function SortBy(strFldName)
+{
+console.log("按：" + strFldName + "排序");
+require(["../js/GraduateEduPublicPage/AddPaperEx.js"], function(paper) {
+var objPage = new paper.AddPaperEx();
+objPage.SortBy(strFldName);
+});
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_UpdateRecord)
+ */
+function UpdateRecord() {
+   require(["../js/GraduateEduPublicPage/AddPaperEx.js", "../js/TS/PubFun/clsCommonFunc4Web.js"], function(paper, commonfunc) {
+       var strKeyId = commonfunc.clsCommonFunc4Web.GetFirstCheckedKeyId('divList');
+if (strKeyId == "")
+{
+alert("请选择需要修改的记录！");
+return;
+}
+ShowDialog('Update');
+var objPage = new paper.AddPaperEx();
+objPage.ShowData(strKeyId);
+return true;
+});
+        }
+
+
+    //关闭详情
+    function close_Click() {
+
+        HideDialogOne();
+    }
+
+    /*
+显示对话框
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_ShowDialog)
+*/
+    function ShowDialogOne() {
+        require(['jquery', 'bootstrap'], function ($) {
+            $('#divMajorDirectionList').modal('show');
+        });
+    }
+
+    /*
+隐藏对话框
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_HideDialog)
+*/
+    function HideDialogOne() {
+        require(['jquery', 'bootstrap'], function ($) {
+            $('#divMajorDirectionList').modal('hide');
+        });
+    }
+
+
+
+    /*
+ 修改记录
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_IndexPage)
+*/
+    function IndexPageOne(intPageIndex: number) {
+        console.log("跳转到" + intPageIndex + "页");
+        require(["../js/GraduateEduPublicPage/AddPaperEx.js"], function (xzmajordirection) {
+            var objPage = new xzmajordirection.AddPaperEx();
+            objPage.IndexPageOne(intPageIndex);
+        });
+    }
+
+    /*
+     修改记录
+    (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_JumpToPage)
+    */
+    function JumpToPageOne() {
+        var intCurrPageIndex = $('#input_numberOne').val();
+        var intPageIndex = Number(intCurrPageIndex);
+        console.log("跳转到" + intPageIndex + "页");
+        require(["../js/GraduateEduPublicPage/AddPaperEx.js"], function (xzmajordirection) {
+            var objPage = new xzmajordirection.AddPaperEx();
+            objPage.IndexPageOne(intPageIndex);
+        });
+    }
+    /*
+ 修改记录
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_PageNum)
+*/
+    function PageNumOne(intPageIndex: number) {
+        console.log("跳转到" + intPageIndex + "页");
+        require(["../js/GraduateEduPublicPage/AddPaperEx.js"], function (xzmajordirection) {
+            var objPage = new xzmajordirection.AddPaperEx();
+            objPage.IndexPageOne(intPageIndex);
+        });
+    }
+
+    /*
+     修改记录
+    (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_PrevPage)
+    */
+    function PrevPageOne() {
+        var intCurrPageIndex = $('#hidCurrPageIndex').val();
+        var intPageIndex = Number(intCurrPageIndex) - 1;
+        console.log("跳转到" + intPageIndex + "页");
+        require(["../js/GraduateEduPublicPage/AddPaperEx.js"], function (xzmajordirection) {
+            var objPage = new xzmajordirection.AddPaperEx();
+            objPage.IndexPageOne(intPageIndex);
+        });
+    }
+    /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_NextPage)
+ */
+    function NextPageOne() {
+        var intCurrPageIndex = $('#hidCurrPageIndex').val();
+        var intPageIndex = Number(intCurrPageIndex) + 1;
+        console.log("跳转到" + intPageIndex + "页");
+        require(["../js/GraduateEduPublicPage/AddPaperEx.js"], function (xzmajordirection) {
+            var objPage = new xzmajordirection.AddPaperEx();
+            objPage.IndexPageOne(intPageIndex);
+        });
+    }
+
+    //论文下拉框改变事件
+
+    function ddlPaperTypeChange() {
+
+        require(["../js/GraduateEduPublicPage/AddPaperEx.js", "../js/TS/PubFun/clsCommonFunc4Web.js"], function (paper, commonfunc) {
+
+            //ShowDialog('Update');
+            var objPage = new paper.AddPaperEx();
+            objPage.ddlPaperTypeChange();
+
+        });
+
+    }
+
+
+    //信息提示
+    function layui_Alert(iconKey, strMsg) {
+
+        layer.msg(strMsg, {
+            icon: iconKey,
+            time: 2000
+        });
+    }
+</script>
+
+<div id="divLoading" class="loading">
+    <img src="~/images/CirclePoint.gif" />
+</div>
+<div id="tabLayout" class="tab_layout">
+    <ul class="nav nav-pills" role="tablist">
+        <li class="nav-item" li="liSimpleEdit">
+            <a class="nav-link active" data-toggle="pill" href="#SimpleEdit">基本信息</a>
+        </li>
+        <li class="nav-item" id="liextendEdit">
+            <a class="nav-link" data-toggle="pill" href="#extendEdit">扩展信息</a>
+        </li>
+    </ul>
+
+    <div id="divEditRegion" tabindex="-1">
+
+        <form id="uploadForm" method="post" enctype="multipart/form-data">
+
+            <div style="width: 98%;margin-left:10px;">
+                <div class="tab-content">
+                    <div id="SimpleEdit" class="tab-pane active">
+                        <table id="tabwucPaper" name="tabwucPaper" style="width: 100%; padding: 1px; border:0px" class="table table-bordered table-hover">
+                            <tr style="display:none;">
+                                <td class="NameTD">
+                                    <Label id="lblPaperId" name="lblPaperId" class="col-form-label text-right" style="width:90px;">
+                                        论文Id
+                                    </Label>
+                                </td>
+                                <td class="ValueTD" colspan="3">
+                                    <input id="txtPaperId" name="txtPaperId" class="form-control" style="width:200px;" />
+                                </td>
+
+                            </tr>
+                            <tr>
+                                <td class="NameTD">
+                                    <Label id="lblPaperTitle" name="lblPaperTitle" class="col-form-label text-right" style="width:90px;">
+                                        论文标题
+                                    </Label>
+                                </td>
+                                <td class="ValueTD">
+                                    <input id="txtPaperTitle" name="txtPaperTitle" class="form-control" style="width:400px;" />
+                                </td>
+                                <td class="NameTD"></td>
+                                <td class="ValueTD">
+                                    <span class="form-control" style="width:200px;">
+                                        <input type="checkbox" id="chkIsQuotethesis" name="chkIsQuotethesis" Text="是否引用论文"><label for="chkIsQuotethesis">是否引用论文</label>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                               
+                                <td class="NameTD">
+                                    <Label id="lblLiteratureTypeId" name="lblLiteratureTypeId" class="col-form-label text-right" style="width:90px;">
+                                        文献类型
+                                    </Label>
+                                </td>
+                                <td class="ValueTD">
+                                    <select id="ddlLiteratureTypeId" name="ddlLiteratureTypeId" class="form-control" style="width:200px;" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="NameTD">
+                                    <Label id="lblPaperContent" name="lblPaperContent" class="col-form-label text-right" style="width:90px;">
+                                        主题内容
+                                    </Label>
+                                </td>
+                                <td class="ValueTD" colspan="3">
+                                    <textarea id="txtPaperContent" name="txtPaperContent" class="form-control" style="width: 100%; height: 300px;"></textarea>
+                                </td>
+
+                            </tr>
+                            <tr style="display:none;">
+                                <td class="NameTD">
+                                    <Label id="lblPaperTypeId" name="lblPaperTypeId" class="col-form-label text-right" style="width:90px;">
+                                        论文类型
+                                    </Label>
+                                </td>
+                                <td class="ValueTD">
+                                    <select id="ddlPaperTypeId" name="ddlPaperTypeId" class="form-control" style="width:200px;" onchange="ddlPaperTypeChange()" />
+                                </td>
+                                <td class="NameTD">
+                                    <Label id="lblPaperStatusId" name="lblPaperStatusId" class="col-form-label text-right" style="width:90px;">
+                                        论文状态
+                                    </Label>
+                                </td>
+                                <td class="ValueTD">
+                                    <select id="ddlPaperStatusId" name="ddlPaperStatusId" class="form-control" style="width:200px;" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="NameTD">
+                                    <Label id="lblPeriodical" name="lblPeriodical" class="col-form-label text-right" style="width:90px;">
+                                        期刊
+                                    </Label>
+                                </td>
+                                <td class="ValueTD">
+                                    <input id="txtPeriodical" name="txtPeriodical" class="form-control" style="width:200px;" />
+                                </td>
+                                <td class="NameTD">
+                                    <Label id="lblAuthor" name="lblAuthor" class="col-form-label text-right" style="width:90px;">
+                                        作者
+                                    </Label>
+                                </td>
+                                <td class="ValueTD">
+                                    <input id="txtAuthor" name="txtAuthor" class="form-control" style="width:200px;" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="NameTD">
+                                    <Label id="lblUploadfileUrl" name="lblUploadfileUrl" class="col-form-label text-right" style="width:90px;">
+                                        上传附件
+                                    </Label>
+                                </td>
+                                <td class="ValueTD" id="InputsWrapper" colspan="3">
+                                    <input type="file" id="txtUploadfile" name="txtUploadfile">
+                                    <button id="AddMoreFileBox" type="button" class="btn btn-primary" data-dismiss="modal">添加更多附件</button>
+
+                                </td>
+
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div id="extendEdit" class="tab-pane fade">
+                        <table id="tabwucPaper" name="tabwucPaper" style="width: 100%; padding: 1px; border:0px" class="table table-bordered table-hover">
+                            <tr>
+                                <td class="NameTD">
+                                    <Label id="lblResearchQuestion" name="lblResearchQuestion" class="col-form-label text-right" style="width:90px;">
+                                        研究问题
+                                    </Label>
+                                </td>
+                                <td class="ValueTD">
+                                    <input id="txtResearchQuestion" name="txtResearchQuestion" class="form-control" style="width:400px;" />
+                                </td>
+                                <td class="NameTD">
+                                    <Label id="lblKeyword" name="lblKeyword" class="col-form-label text-right" style="width:90px;">
+                                        关键字
+                                    </Label>
+                                </td>
+                                <td class="ValueTD">
+                                    <input id="txtKeyword" name="txtKeyword" class="form-control" style="width:400px;" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="NameTD">
+                                    <Label id="lblLiteratureSources" name="lblLiteratureSources" class="col-form-label text-right" style="width:90px;">
+                                        文献来源
+                                    </Label>
+                                </td>
+                                <td class="ValueTD">
+                                    <input id="txtLiteratureSources" name="txtLiteratureSources" class="form-control" style="width:400px;" />
+                                </td>
+                                <td class="NameTD">
+                                    <Label id="lblLiteratureLink" name="lblLiteratureLink" class="col-form-label text-right" style="width:90px;">
+                                        文献链接
+                                    </Label>
+                                </td>
+                                <td class="ValueTD">
+                                    <input id="txtLiteratureLink" name="txtLiteratureLink" class="form-control" style="width:400px;" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="NameTD">
+                                    <Label id="lblShareId" name="lblShareId" class="col-form-label text-right" style="width:90px;">
+                                        分享
+                                    </Label>
+                                </td>
+                                <td class="ValueTD" colspan="3">
+                                    <select id="ddlShareId" name="ddlShareId" class="form-control" style="width:200px;" />
+
+                                </td>
+
+                            </tr>
+
+                            <tr>
+                                <td class="NameTD">
+                                    <Label id="lblUploadfileUrl" name="lblUploadfileUrl" class="col-form-label text-right" style="width:90px;">
+                                        上传图片
+                                    </Label>
+                                </td>
+                                <td class="ValueTD" colspan="3">
+                                    <input type="file" id="txtUploadfileUrl" name="txtUploadfileUrl">
+                                    @*<input id="txtUploadfileUrl" name="txtUploadfileUrl" class="form-control" style="width:200px;" />*@
+                                </td>
+
+                            </tr>
+                            <tr style="display:none;">
+                                <td class="NameTD"></td>
+                                <td class="ValueTD">
+                                    <span class="form-control" style="width:200px;">
+                                        <input type="checkbox" id="chkIsChecked" name="chkIsChecked" Text="是否检查"><label for="chkIsChecked">是否检查</label>
+                                    </span>
+                                </td>
+
+                            </tr>
+                            <tr style="display:none;">
+                                <td class="NameTD">
+                                    <Label id="lblChecker" name="lblChecker" class="col-form-label text-right" style="width:90px;">
+                                        审核人
+                                    </Label>
+                                </td>
+                                <td class="ValueTD">
+                                    <input id="txtChecker" name="txtChecker" class="form-control" style="width:200px;" />
+                                </td>
+
+                            </tr>
+                            <tr>
+                                <td class="NameTD">
+                                    <Label id="lblMemo" name="lblMemo" class="col-form-label text-right" style="width:90px;">
+                                        备注
+                                    </Label>
+                                </td>
+                                <td class="ValueTD" colspan="3">
+
+                                    <input id="txtMemo" name="txtMemo" class="form-control" style="width:500px;height:40px;" />
+                                </td>
+
+                            </tr>
+                        </table>
+
+                    </div>
+                    <div class="modal-footer">
+                        @*<button id="btnCancel" type="button" class="btn btn-default" data-dismiss="modal">关闭</button>*@
+                        <button id="btnCancel" type="button" class="btn btn-default btn-sm" onclick="CloseWindow()">关闭</button>
+                        <button id="btnOKUpd" type="button" class="btn btn-primary" onclick="mySubmit()">添加</button>
+                    </div>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+            <!-- /.modal -->
+        </form>
+
+    </div>
+
+
+</div>
+<input id="hidOpType" type="hidden" />
+<input id="hidKeyId" type="hidden" />
+<input id="hidCurrPageIndex" type="hidden" value="1" />
+<input id="hidSortvPaperBy" type="hidden" value="" />
+
+@*<input id="hidUserInfo" type="hidden" value="@Model.GetSession("objvUserRoleRelation")" />*@
+<input id="hdnpic" type="hidden" />
+<input id="hidPaperTypeId" type="hidden" />
+
+<input id="hdnFileOne" type="hidden" />
+<input id="hdnFileTwo" type="hidden" />
+<input id="hdnFileThree" type="hidden" />
+
+
+<input id="hidSortvXzMajorDirectionBy" type="hidden" value="" />
+
+<input id="hidMajorDirectionId" type="hidden" />
+<input id="hidUserId" type="hidden" />
+
+<!-- 主题Id  -->
+<input id="hidTopicId" type="hidden" />
+<!-- 论文Id  -->
+<input id="hidPaperId" type="hidden" />
+
+@* 教学班Id *@
+<input id="hidId_CurrEduCls" type="hidden" />

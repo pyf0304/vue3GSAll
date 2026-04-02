@@ -1,0 +1,509 @@
+﻿@page
+@{
+    Layout = "~/Pages/Shared/_Layout_PC.cshtml";
+    ViewData["Title"] = "用户关系图";
+}
+@section Styles{
+
+    <link rel="stylesheet" href="../lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/lib/Xadmin/css/font.css">
+    <link rel="stylesheet" href="~/lib/Xadmin/css/xadmin.css">
+    <link rel="stylesheet" href="~/css/public.css" />
+    <link href="~/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <style>
+        .panel-default {
+            border: none;
+            border-radius: 0px;
+            margin-bottom: 0px;
+            box-shadow: none;
+            -webkit-box-shadow: none;
+        }
+
+            .panel-default > .panel-heading {
+                color: #777;
+                background-color: #fff;
+                border-color: #e6e6e6;
+                padding: 10px 10px;
+            }
+
+            .panel-default > .panel-body {
+                padding: 10px;
+                padding-bottom: 0px;
+            }
+
+                .panel-default > .panel-body ul {
+                    overflow: hidden;
+                    padding: 0;
+                    margin: 0px;
+                    margin-top: -5px;
+                }
+
+                    .panel-default > .panel-body ul li {
+                        line-height: 27px;
+                        list-style-type: none;
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
+                    }
+
+                        .panel-default > .panel-body ul li .time {
+                            color: #a1a1a1;
+                            float: right;
+                            padding-right: 5px;
+                        }
+    </style>
+
+}
+@section Scripts{
+    <script src="../lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/echarts.js"></script>
+    <script src="~/lib/Xadmin/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="~/lib/Xadmin/js/xadmin.js"></script>
+    @*<script src="../lib/jquery/dist/jquery.js"></script>*@
+    <script src="../lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="~/lib/bootstrap.min.js"></script>
+    <script src="../lib/require/require.js" data-main="../js/src/config"></script>
+}
+<script>
+    window.onload = function () {
+        require(["../js/GraduateEduTools/gs_UserRela.js"], function (UserRela) {
+            $("#hidQueryStata").val("1");
+            $("#li_IntelligenceArray").addClass("btn-info");
+            var objPage = new UserRela.gs_UserRela();
+            objPage.Page_Load();
+        });
+    }
+
+    /*
+     查询记录
+    (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+    */
+    function btnQuery_Click() {
+        require(["../js/GraduateEduTools/gs_UserRela.js"], function (UserRela) {
+
+            var objPage = new UserRela.gs_UserRela();
+            objPage.Bind_AllData();
+        });
+    }
+
+
+    //同步回答统计记录
+    function btnSynUserRelaNum_Click() {
+        require(["../js/GraduateEduTools/gs_UserRela.js"], function (UserRela) {
+            var objPage = new UserRela.gs_UserRela();
+            objPage.btnSynUserRelaNum_Click();
+        });
+    }
+
+
+
+    function Alert_layer(strIcon, strMsg) {
+
+        layer.msg(strMsg, {
+            icon: strIcon,
+            time: 2000
+        });
+    }
+
+    var nodeLength = 0;
+    var strUserRelax_y = [];
+    //同步回答统计记录
+    function UserRelaCanvas(strUserInfo1Json, strUserInfo2Json, strUserRelaJson, strUserId) {
+
+        var graph = {  //这是数据项目中一般都是获取到的
+            nodes: strUserInfo1Json,
+            links: strUserRelaJson
+            //nodes: [
+            //    { "id": "0", "name": "id0", "attributes": { "modularity_class": 0 } },
+            //    { "id": "1", "name": "id1", "attributes": { "modularity_class": 1 } },
+            //    { "id": "2", "name": "id2", "attributes": { "modularity_class": 2 } },
+            //    { "id": "3", "name": "id3", "attributes": { "modularity_class": 3 } },
+            //    { "id": "4", "name": "id4", "attributes": { "modularity_class": 4 } }
+            //],
+            //links: [
+            //    { "id": "0", "source": "0", "target": "1" },
+            //    { "id": "1", "source": "0", "target": "2" },
+            //    { "id": "2", "source": "0", "target": "3" },
+            //    { "id": "3", "source": "1", "target": "2" },
+            //    { "id": "4", "source": "2", "target": "3" },
+            //    { "id": "5", "source": "2", "target": "4" },
+            //    { "id": "6", "source": "3", "target": "4" }
+            //]
+
+        }
+        var myChart = echarts.init(document.getElementById('main'));
+        var categories = strUserInfo2Json;
+        //var categories = [
+        //    {
+        //        id: 0,
+        //        name: '手机',
+        //        itemStyle: { normal: { color: '#c23531' } },
+        //        symbolSize: [68, 68]
+        //    },
+        //    {
+        //        id: 1,
+        //        name: 'QQ',
+        //        itemStyle: { normal: { color: '#61a0a8' } },
+        //        symbolSize: [42, 42]
+        //    },
+        //    {
+        //        id: 2,
+        //        name: '微信',
+        //        itemStyle: { normal: { color: '#749f83' } },
+        //        symbolSize: [42, 42]
+        //    },
+        //    {
+        //        id: 3,
+        //        name: '微博',
+        //        itemStyle: { normal: { color: '#d48265' } },
+        //        symbolSize: [42, 42]
+        //    },
+        //    {
+        //        id: 4,
+        //        name: 'lyl',
+        //        itemStyle: { normal: { color: '#2E3F4C' } },
+        //        symbolSize: [42, 42]
+        //    }
+        //];
+        var winWidth = document.body.clientWidth;
+        var winHeight = document.body.clientHeight;
+
+        nodeLength = 0;
+        graph.nodes.forEach(function (node) {
+            if ($("#hidQueryStata").val() == "2") {
+                node.x = parseInt(Math.random() * 1000);  //这里是最重要的如果数据中有返回节点x,y位置这里就不用设置，如果没有这里一定要设置node.x和node.y，不然无法定位节点 也实现不了拖拽了；
+                node.y = parseInt(Math.random() * 1000);
+            }
+            nodeLength++;
+            //if (node.attributes.modularity_class != 0) {
+            if (node.id != strUserId) {
+                node.symbolSize = [42, 42];
+                node.sizeFlag = [42, 42];
+            } else {
+                node.symbolSize = [64, 64];
+                node.sizeFlag = [64, 64];
+            }
+            node.category = node.attributes.modularity_class;
+            node.label = {
+                normal: {
+                    show: true
+                }
+            }
+        });
+        var option = {    //这里是option配置
+            legend: [{    //图例组件
+                data: categories.map(function (a) {
+                    return a.name;
+                }),
+                top: 0,
+                left: (winWidth - 1300) / 2,         //这里是图例组件定位使用的，自定义
+                itemGap: 26,
+                textStyle: {
+                    padding: [0, 12]
+                },
+                backgroundColor: '#f5f5f5'
+            }],
+            animationDurationUpdate: 1500,
+            animationEasingUpdate: 'quinticInOut',
+            series: [
+                {
+                    type: 'graph',
+                    layout: 'none',           //因为节点的位置已经有了就不用在这里使用布局了
+                    circular: { rotateLabel: true },
+                    animation: false,
+                    data: graph.nodes,
+                    links: graph.links,
+                    categories: categories,   //节点分类的类目
+                    roam: true,   //添加缩放和移动
+                    draggable: false,   //注意这里设置为false，不然拖拽鼠标和节点有偏移
+                    label: {
+                        normal: {
+                            position: 'bottom',
+                            rich: {
+                                bg: {
+                                    backgroundColor: '#f5f5f5'
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        };
+        myChart.setOption(option);
+        initInvisibleGraphic();
+        function initInvisibleGraphic() {
+            // Add shadow circles (which is not visible) to enable drag.
+            myChart.setOption({
+                graphic: echarts.util.map(option.series[0].data, function (item, dataIndex) {
+                    //使用图形元素组件在节点上划出一个隐形的图形覆盖住节点
+                    var tmpPos = myChart.convertToPixel({ 'seriesIndex': 0 }, [item.x, item.y]);
+                    return {
+                        type: 'circle',
+                        id: dataIndex,
+                        position: tmpPos,
+                        shape: {
+                            cx: 0,
+                            cy: 0,
+                            r: 20
+                        },
+                        // silent:true,
+                        invisible: true,
+                        draggable: true,
+                        ondrag: echarts.util.curry(onPointDragging, dataIndex),
+                        z: 100              //使图层在最高层
+                    };
+                })
+            });
+            window.addEventListener('resize', updatePosition);
+            myChart.on('dataZoom', updatePosition);
+        }
+        myChart.on('graphRoam', updatePosition);
+        function updatePosition() {    //更新节点定位的函数
+            myChart.setOption({
+                graphic: echarts.util.map(option.series[0].data, function (item, dataIndex) {
+                    var tmpPos = myChart.convertToPixel({ 'seriesIndex': 0 }, [item.x, item.y]);
+                    return {
+                        position: tmpPos
+                    };
+                })
+            });
+
+        }
+
+
+
+        function onPointDragging(dataIndex) {      //节点上图层拖拽执行的函数
+            var tmpPos = myChart.convertFromPixel({ 'seriesIndex': 0 }, this.position);
+            option.series[0].data[dataIndex].x = tmpPos[0];
+            option.series[0].data[dataIndex].y = tmpPos[1];
+
+            strUserRelax_y = [];
+            for (i = 0; i < nodeLength; i++) {
+                //for (i = 0; i < option.series[0].data.nodeLength; i++) {
+                var strUserId = option.series[0].data[i].id;
+                var strX = option.series[0].data[i].x;
+                var strY = option.series[0].data[i].y;
+                strUserRelax_y.push({ 'id': strUserId, 'x': strX, 'y': strY });
+            }
+            myChart.setOption(option);
+            updatePosition();
+        }
+
+    }
+
+
+    /*
+     查询记录
+    (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+    */
+    function btnQuery_Click() {
+        require(["../js/GraduateEduTools/gs_UserRela.js"], function (UserRela) {
+            var objPage = new UserRela.gs_UserRela();
+            objPage.Bind_UserRela();
+        });
+    }
+
+
+    
+    //系统智能排列
+    function li_Diagram_Click(strKey) {
+        $("#hidQueryStata").val(strKey);
+        switch (strKey) {
+            case 1: //系统智能排列
+                $("#btnSaveUserRela").hide();
+                //先清除背景色
+                //$("#li_IntelligenceArray").removeClass("btn-info");
+                $("#li_RandomArray").removeClass("btn-info");
+                $("#li_UserArray").removeClass("btn-info");
+                $("#li_Anonymous").removeClass("btn-info");
+                
+                //添加背景色
+                $("#li_IntelligenceArray").addClass("btn-info");
+                break;
+            case 2://系统随机排列
+                $("#btnSaveUserRela").show();
+                //先清除背景色
+                $("#li_IntelligenceArray").removeClass("btn-info");
+                //$("#li_RandomArray").removeClass("btn-info");
+                $("#li_UserArray").removeClass("btn-info");
+                $("#li_Anonymous").removeClass("btn-info");
+                //添加背景色
+                $("#li_RandomArray").addClass("btn-info");
+                break;
+            case 3: //用户保存关系图
+                $("#btnSaveUserRela").hide();
+                //先清除背景色
+                $("#li_IntelligenceArray").removeClass("btn-info");
+                $("#li_RandomArray").removeClass("btn-info");
+                //$("#li_UserArray").removeClass("btn-info");
+                $("#li_Anonymous").removeClass("btn-info");
+                //添加背景色
+                $("#li_UserArray").addClass("btn-info");
+                break;
+            case 4: //匿名关系图
+                $("#btnSaveUserRela").hide();
+                //先清除背景色
+                $("#li_IntelligenceArray").removeClass("btn-info");
+                $("#li_RandomArray").removeClass("btn-info");
+                $("#li_UserArray").removeClass("btn-info");
+                //添加背景色
+                $("#li_Anonymous").addClass("btn-info");
+                
+                break;
+        }
+
+        this.btnQuery_Click();
+    }
+
+    //系统智能排列
+    //function li_IntelligenceArray_Click() {
+    //    $("#hidQueryStata").val("1");
+    //    $("#btnSaveUserRela").hide();
+
+    //    //先清除背景色
+    //    //$("#li_IntelligenceArray").removeClass("btn-info");
+    //    $("#li_RandomArray").removeClass("btn-info");
+    //    $("#li_UserArray").removeClass("btn-info");
+
+    //    //添加背景色
+    //    $("#li_IntelligenceArray").addClass("btn-info");
+
+    //    this.btnQuery_Click();
+    //}
+
+    ////系统随机排列
+    //function li_RandomArray_Click() {
+    //    $("#hidQueryStata").val("2");
+    //    $("#btnSaveUserRela").show();
+
+    //    //先清除背景色
+    //    $("#li_IntelligenceArray").removeClass("btn-info");
+    //    //$("#li_RandomArray").removeClass("btn-info");
+    //    $("#li_UserArray").removeClass("btn-info");
+
+    //    //添加背景色
+    //    $("#li_RandomArray").addClass("btn-info");
+
+    //    this.btnQuery_Click();
+    //}
+
+    ////用户保存关系图
+    //function li_UserArray_Click() {
+    //    $("#hidQueryStata").val("3");
+    //    $("#btnSaveUserRela").hide();
+
+    //    //先清除背景色
+    //    $("#li_IntelligenceArray").removeClass("btn-info");
+    //    $("#li_RandomArray").removeClass("btn-info");
+    //    //$("#li_UserArray").removeClass("btn-info");
+
+    //    //添加背景色
+    //    $("#li_UserArray").addClass("btn-info");
+
+    //    this.btnQuery_Click();
+    //}
+
+    //保存当前排列关系图
+    function btnSaveUserRela_Click() {
+        //var strJson = "";
+        //for (i = 0; i < strUserRelax_y.le; i++) {
+
+        //}
+        if (strUserRelax_y.length == 0) {
+            Alert_layer(2, "请修改拖动关系图然后再保存!");
+        } else {
+            require(["../js/GraduateEduTools/gs_UserRela.js"], function (UserRela) {
+                var objPage = new UserRela.gs_UserRela();
+                objPage.btnSaveUserRela_Click(strUserRelax_y);
+            });
+        }
+    }
+
+
+</script>
+
+
+<div id="divLoading" class="loading">
+    <img src="~/images/CirclePoint.gif" />
+</div>
+
+<div id="tabLayout">
+    @*-- 标题层 --*@
+    <div class="x-nav">
+        <span class="layui-breadcrumb">
+            <a href="">首页</a>
+            <a href="">个人中心</a>
+            <a>
+                <cite>用户关系图</cite>
+            </a>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:crimson;line-height:40px;">(提示：如果需要定制个性化的关系图需要在“系统随机排列”的基础上进行保存，保存好以后可以在“用户保存关系图”内查看！)</span>
+        </span>
+        <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+            <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+        </a>
+
+    </div>
+
+
+
+    @*<div id="divQuery" class="div_query">
+
+            <table id="tabQuery" name="tabQuery" style="width: 50%; " class="table table-bordered table-hover table td table-sm">
+                <tr>
+                    <td>
+                        <button class="btn btn-primary" style="width:200px;" id="btnSynUserRelaNum" name="btnDelRecord" onclick="btnSynUserRelaNum_Click()"><i class="layui-icon">&#xe605;</i>同步用户关系</button>
+                    </td>
+
+                </tr>
+
+            </table>
+        </div>*@
+
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div style="height:40px;">
+                        <div class="btn-group" style="float:left;">
+
+                            <button class="btn" id="li_IntelligenceArray" name="li_IntelligenceArray" onclick="li_Diagram_Click(1)"><i class="layui-icon">&#xe66c;</i>系统智能排列</button>
+                            <button class="btn" id="li_RandomArray" name="li_RandomArray" onclick="li_Diagram_Click(2)"><i class="layui-icon">&#xe614;</i>系统随机排列</button>
+
+                            <button class="btn" id="li_UserArray" name="li_UserArray" onclick="li_Diagram_Click(3)"><i class="layui-icon">&#xe770;</i>用户保存关系图</button>
+                            <button class="btn" id="li_Anonymous" name="li_Anonymous" onclick="li_Diagram_Click(4)"><i class="layui-icon">&#xe612;</i>匿名保存关系图</button>
+                            @*<button class="btn btn-danger" id="btnUserCommentNum" name="btnDelRecord" onclick="liUserCommentNum_Click()"><i class="layui-icon">&#xe613;</i>用户周评论数统计图</button>
+        <button class="btn btn-warning" id="btnUserDiscussNum" name="btnDelRecord" onclick="liUserDiscussNum_Click()"><i class="layui-icon">&#xe613;</i>用户周讨论回答统计图</button>*@
+
+
+                        </div>
+
+                        <div class="btn-group" style="float:right;">
+                            <button class="btn btn-danger" id="btnSynUserRelaNum" name="btnSynUserRelaNum" onclick="btnSynUserRelaNum_Click()"><i class="layui-icon">&#xe66c;</i>同步用户关系</button>
+                        </div>
+                        <div class="btn-group" style="float:right; margin-right:10px;">
+                            <button style="display:none;" class="btn btn-warning" id="btnSaveUserRela" name="btnSaveUserRela" onclick="btnSaveUserRela_Click()"><i class="layui-icon">&#xe613;</i>保存当前排列关系图</button>
+                        </div>
+                    </div>
+
+
+                    @*<div id="TeaClassNum" style="padding:5px;">
+                        <div style="width: 100%; padding:10px;">*@
+                    <div style="width: 100%;height:790px; padding:10px; border: 1px solid #e6e6e6; background-color: #fff;">
+                        @*<div class="panel panel-default">*@
+                        @*<div class="panel-heading">
+                                <i class="fa fa-bar-chart fa-lg" style="padding-right: 5px;"></i>用户关系图
+                            </div>*@
+                        <div id="main" style="width: 100%;height:780px;"></div>
+
+                        @*</div>*@
+                    </div>
+                    @*</div>
+                        </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input id="hidQueryStata" type="hidden" />

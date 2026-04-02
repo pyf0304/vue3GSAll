@@ -1,0 +1,499 @@
+﻿@page
+@model GraduateStudyWebApp.Pages.ParameterTable.ExplainType_QUDI_TSModel
+@{
+
+    Layout = "~/Pages/Shared/_Layout_PC.cshtml";
+    ViewData["Title"] = "说明类型维护";
+    //操作Session样例，方法1：
+    //Model.seUserId = "TestUserId";
+    var strUserId_Value = Model.seUserId;
+    //操作Session样例，方法2：
+    Model.SetSession("UserId1", "TestUserId1");
+    var strUserId1_Value = Model.GetSession("UserId1");
+    //请参见页尾的隐形控件hidUserid和hidUserId1的使用。
+}
+@section Styles{
+    <link rel="stylesheet" href="../lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="../css/site.css" />
+
+    <link rel="stylesheet" href="~/lib/Xadmin/css/font.css">
+    <link rel="stylesheet" href="~/lib/Xadmin/css/xadmin.css">
+    <!-- <link rel="stylesheet" href="./css/theme5.css"> -->
+    <script src="~/lib/Xadmin/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="~/lib/Xadmin/js/xadmin.js"></script>
+
+    <link rel="stylesheet" href="~/css/public.css" />
+}
+@section Scripts{
+    <script src="../lib/jquery/dist/jquery.js"></script>
+    <script src="../lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="../js/site.js" asp-append-version="true"></script>
+    <script src="../lib/bootstrap/dist/js/popper.js"></script>
+    <script src="../lib/require/require.js" data-main="../js/src/config"></script>
+}
+<script>
+
+var strUrl_Session_SetString = "@Model.Url_Session_SetString";
+var strUrl_Session_GetString = "@Model.Url_Session_GetString";
+var strCurrPrjId = "@Model.CurrPrjId";
+
+ /*
+  添加新记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnAddNewRecord_Click)
+ */
+function btnAddNewRecord_Click() {
+   require(["../js/ParameterTable/ExplainType_QUDI_TSEx.js"], function(explaintype) {
+ShowDialog('Add');
+var objPage = new explaintype.ExplainType_QUDI_TSEx();
+objPage.btnAddNewRecord_Click();
+});
+}
+
+ /*
+  删除记录的事件函数
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnDelRecord_Click)
+ */
+function btnDelRecord_Click() {
+   require(["../js/ParameterTable/ExplainType_QUDI_TSEx.js", "../js/TS/PubFun/clsCommonFunc4Web.js"], function(explaintype, commonfunc) {
+var arrKeyIds = commonfunc.clsCommonFunc4Web.GetCheckedKeyIds();
+if (arrKeyIds.length == 0)
+{
+alert("请选择需要删除的记录！");
+return;
+}
+var objPage = new explaintype.ExplainType_QUDI_TSEx();
+objPage.btnDelRecord_Click();
+});
+}
+
+
+ /*
+  在数据表里删除记录的事件函数
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnDelRecordInTab_Click)
+ */
+function btnDelRecordInTab_Click(strKeyId) {
+   require(["../js/ParameterTable/ExplainType_QUDI_TSEx.js"], function(explaintype) {
+if (strKeyId == "")
+{
+alert("请选择需要删除的记录！");
+return;
+}
+var objPage = new explaintype.ExplainType_QUDI_TSEx();
+objPage.btnDelRecordInTab_Click(strKeyId);
+});
+}
+
+
+ /*
+  查询记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+ */
+function btnQuery_Click()
+{
+   require(["../js/ParameterTable/ExplainType_QUDI_TSEx.js"], function(explaintype) {
+$("#Text1").val("进入函数：btnQuery_Click");
+var objPage = new explaintype.ExplainType_QUDI_TSEx();
+objPage.btnQuery_Click();
+});
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnUpdateRecord_Click)
+ */
+function btnUpdateRecord_Click() {
+   require(["../js/ParameterTable/ExplainType_QUDI_TSEx.js", "../js/TS/PubFun/clsCommonFunc4Web.js"], function(explaintype, commonfunc) {
+       var strKeyId = commonfunc.clsCommonFunc4Web.GetFirstCheckedKeyId('divList');
+    if (strKeyId == "")
+{
+alert("请选择需要修改的记录！");
+return;
+}
+ShowDialog('Update');
+var objPage = new explaintype.ExplainType_QUDI_TSEx();
+       objPage.btnUpdateRecord_Click(strKeyId);
+});
+}
+
+
+ /*
+  在数据表里修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnUpdateRecordInTab_Click)
+ */
+function btnUpdateRecordInTab_Click(strKeyId) {
+   require(["../js/ParameterTable/ExplainType_QUDI_TSEx.js"], function(explaintype) {
+    if (strKeyId == "")
+{
+alert("请选择需要修改的记录！");
+return;
+}
+ShowDialog('Update');
+var objPage = new explaintype.ExplainType_QUDI_TSEx();
+  objPage.btnUpdateRecordInTab_Click(strKeyId);
+});
+}
+
+
+ /*
+  单击数据列表中每行首列的复选框所引发的事件
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_ChkClick)
+ */
+function ChkClick(myThis)
+{
+require(["../js/ParameterTable/ExplainType_QUDI_TSEx.js", "../js/TS/PubFun/clsCommonFunc4Web.js"], function(explaintype, commonfunc) {
+var strId = myThis.id;
+var strKey = strId.substring(3);
+var arrKeys = commonfunc.arrSelectedKeys;
+if (myThis.checked == true) {
+if (arrKeys.indexOf(strKey) < 0)
+{
+arrKeys.push(strKey);
+}
+}
+else {
+var index = arrKeys.indexOf(strKey);
+if (index > -1)
+{
+arrKeys.splice(index, 1);
+}
+}
+var sstrKey = "";
+for (let strK of arrKeys)
+{
+sstrKey += `${ strK},`;
+}
+$('#spanResult').html(sstrKey);
+});
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_ExpandDiv)
+ */
+         function ExpandDiv(divName) {
+//基于RequireJS来调用tzPubFun.ts中的函数OnlyShowDiv。
+require(["../js/TS/PubFun/tzPubFun"], function (pubfun) {
+      pubfun.OnlyShowDiv(divName, "function", "content");
+});
+}
+
+ /*
+  获取数据列表中的所选记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_GetAllCkechedKeys)
+ */
+function GetAllCkechedKeys(tabName)
+{
+var arrKeys = tabName.getElementsByTagName('chkInTab');
+alert(arrKeys.length.toString());
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_IndexPage)
+ */
+function IndexPage(intPageIndex)
+{
+console.log("跳转到" + intPageIndex + "页");
+require(["../js/ParameterTable/ExplainType_QUDI_TSEx.js"], function(explaintype) {
+var objPage = new explaintype.ExplainType_QUDI_TSEx();
+objPage.IndexPage(intPageIndex);
+});
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_JumpToPage)
+ */
+function JumpToPage()
+{
+var intCurrPageIndex = $('#input_number').val();
+var intPageIndex = Number(intCurrPageIndex);
+console.log("跳转到" + intPageIndex + "页");
+require(["../js/ParameterTable/ExplainType_QUDI_TSEx.js"], function(explaintype) {
+var objPage = new explaintype.ExplainType_QUDI_TSEx();
+objPage.IndexPage(intPageIndex);
+});
+}
+
+ /*
+  提交编辑
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_mySubmit)
+ */
+function mySubmit(pstrOp) {
+//    alert("提交" + strOp);
+   require(["../js/ParameterTable/ExplainType_QUDI_TSEx.js"], function(explaintype) {
+var objPage = new explaintype.ExplainType_QUDI_TSEx();
+           objPage.btnOKUpd_Click();
+    });
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_NextPage)
+ */
+function NextPage()
+{
+var intCurrPageIndex = $('#hidCurrPageIndex').val();
+var intPageIndex = Number(intCurrPageIndex) + 1;
+console.log("跳转到" + intPageIndex + "页");
+require(["../js/ParameterTable/ExplainType_QUDI_TSEx.js"], function(explaintype) {
+var objPage = new explaintype.ExplainType_QUDI_TSEx();
+objPage.IndexPage(intPageIndex);
+});
+}
+
+ /*
+  页面导入-在导入页面后运行的函数
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_Page_Load)
+ */
+window.onload = function() {
+   require(["../js/ParameterTable/ExplainType_QUDI_TSEx.js"], function(explaintype) {
+var objPage = new explaintype.ExplainType_QUDI_TSEx();
+objPage.Page_Load();
+});
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_PageNum)
+ */
+function PageNum(intPageIndex)
+{
+console.log("跳转到" + intPageIndex + "页");
+require(["../js/ParameterTable/ExplainType_QUDI_TSEx.js"], function(explaintype) {
+var objPage = new explaintype.ExplainType_QUDI_TSEx();
+objPage.IndexPage(intPageIndex);
+});
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_PrevPage)
+ */
+function PrevPage()
+{
+var intCurrPageIndex = $('#hidCurrPageIndex').val();
+var intPageIndex = Number(intCurrPageIndex) - 1;
+console.log("跳转到" + intPageIndex + "页");
+require(["../js/ParameterTable/ExplainType_QUDI_TSEx.js"], function(explaintype) {
+var objPage = new explaintype.ExplainType_QUDI_TSEx();
+objPage.IndexPage(intPageIndex);
+});
+}
+
+ /*
+  全选数据列表中的所有记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_SetAllCkechedKeys)
+ */
+function SetAllCkechedKeys(tabName)
+{
+var thisChk = event.target;
+require(["../js/TS/PubFun/clsCommonFunc4Web.js"], function (commonfunc) {
+console.log(tabName);
+console.log(thisChk);
+commonfunc.clsCommonFunc4Web.SetAllCkechedKeys(tabName, thisChk);
+});
+}
+
+ /*
+  显示对话框
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_ShowDialog)
+ */
+function ShowDialog(pstrOp) {
+   strOp = pstrOp;
+   require(['jquery', 'bootstrap'], function($) {
+       if (strOp === "Add") {
+           $('#myModalLabel').html('添加记录');
+//ExplainType_QUDI_TSEx.GetMaxStrId('#txtExplainTypeId');
+        }
+else if (strOp === "Update")
+{
+            $('#myModalLabel').html('修改记录');
+}
+else if (strOp === "Detail")
+{
+            $('#btnOKUpd').hide();
+            $('#myModalLabel').html('详细信息');
+}
+        $('#divEditRegion').modal('show');
+  });
+}
+
+ /*
+  隐藏对话框
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_HideDialog)
+ */
+function HideDialog() {
+  require(['jquery', 'bootstrap'], function($) {
+      $('#divEditRegion').modal('hide');
+  });
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_SortBy)
+ */
+function SortBy(strFldName)
+{
+console.log("按：" + strFldName + "排序");
+require(["../js/ParameterTable/ExplainType_QUDI_TSEx.js"], function(explaintype) {
+var objPage = new explaintype.ExplainType_QUDI_TSEx();
+objPage.SortBy(strFldName);
+});
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_UpdateRecord)
+ */
+function UpdateRecord() {
+   require(["../js/ParameterTable/ExplainType_QUDI_TSEx.js", "../js/TS/PubFun/clsCommonFunc4Web.js"], function(explaintype, commonfunc) {
+       var strKeyId = commonfunc.clsCommonFunc4Web.GetFirstCheckedKeyId('divList');
+if (strKeyId == "")
+{
+alert("请选择需要修改的记录！");
+return;
+}
+ShowDialog('Update');
+var objPage = new explaintype.ExplainType_QUDI_TSEx();
+objPage.ShowData(strKeyId);
+return true;
+});
+}
+</script>
+
+
+<div id="divLoading" class="loading">
+    <img src="~/images/CirclePoint.gif" />
+</div>
+<div id="tabLayout" class="tab_layout">
+    @*-- 标题层 --*@
+
+    <div class="x-nav">
+        <span class="layui-breadcrumb">
+            <a href="">首页</a>
+            <a href="">论文管理</a>
+            <a>
+                <cite>子观点类型</cite>
+            </a>
+            <Label id="lblMsg_List" name="lblMsg_List"></Label>
+        </span>
+        <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+            <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+        </a>
+    </div>
+
+
+    @*-- 查询层 --*@
+
+    <div id="divQuery" class="div_query">
+        <table id="tabQuery" name="tabQuery" style="width: 10%; " class="table table-bordered table-hover table td table-sm">
+            <tr>
+
+                <td>
+                    <input id="txtExplainTypeName_q" name="txtExplainTypeName_q" placeholder="说明类型" class="layui-input" style="width:200px;" />
+                </td>
+                <td>
+                    <button class="layui-btn" lay-submit="" lay-filter="sreach" onclick="btnQuery_Click()">
+                        <i class="layui-icon">&#xe615;</i>
+                    </button>
+                </td>
+
+            </tr>
+        </table>
+    </div>
+    @*-- 功能区 --*@
+
+    <div id="divFunction" class="table table-bordered table-hover">
+        <ul class="nav">
+            <li class="nav-item" style="width:100%;">
+                <Label id="lblExplainTypeList" name="lblExplainTypeList" class="col-form-label text-info" style="width:250px;">
+
+                </Label>
+            </li>
+            <li class="nav-item ml-3">
+                <button id="btnAddNewRecord" name="btnAddNewRecord" class="btn btn-outline-info text-nowrap btn-sm" onclick="btnAddNewRecord_Click()">添加说明类型</button>
+            </li>
+            <li class="nav-item ml-3">
+                <button id="btnUpdateRecord" name="btnUpdateRecord" class="btn btn-outline-info text-nowrap btn-sm" onclick="btnUpdateRecord_Click()">修改说明类型</button>
+            </li>
+            <li class="nav-item ml-3">
+                <button id="btnDelRecord" name="btnDelRecord" class="btn btn-outline-info text-nowrap btn-sm" onclick="btnDelRecord_Click()">删除说明类型</button>
+            </li>
+        </ul>
+    </div>
+    @*-- 列表层 --*@
+    <div id="divList" class="div_List">
+        <div id="divDataLst" class="div_List">
+        </div>
+        <div id="divPager" class="pager" value="1">
+           
+        </div>
+    </div>
+    @*-- 编辑层 --*@
+
+    <div class="modal fade" id="divEditRegion" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" style="width: 800px;">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">模态框（Modal）标题</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                <div class="modal-body">
+                    <table id="tabwucExplainType" name="tabwucExplainType" style="width: 600px; padding: 1px; border:0px" class="table table-bordered table-hover">
+                        <tr>
+                            <td class="NameTD">
+                                <Label id="lblExplainTypeId" name="lblExplainTypeId" class="col-form-label text-right" style="width:90px;">
+                                    说明类型Id
+                                </Label>
+                            </td>
+                            <td class="ValueTD">
+                                <input id="txtExplainTypeId" name="txtExplainTypeId" class="form-control" style="width:200px;" />
+                            </td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td class="NameTD">
+                                <Label id="lblExplainTypeName" name="lblExplainTypeName" class="col-form-label text-right" style="width:90px;">
+                                    说明类型名
+                                </Label>
+                            </td>
+                            <td class="ValueTD">
+                                <input id="txtExplainTypeName" name="txtExplainTypeName" class="form-control" style="width:200px;" />
+                            </td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td class="NameTD">
+                                <Label id="lblMemo" name="lblMemo" class="col-form-label text-right" style="width:90px;">
+                                    备注
+                                </Label>
+                            </td>
+                            <td class="ValueTD">
+                                <input id="txtMemo" name="txtMemo" class="form-control" style="width:200px;" />
+                            </td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnCancel" type="button" class="btn btn-default btn-sm" data-dismiss="modal">关闭</button>
+                    <button id="btnOKUpd" type="button" class="btn btn-primary btn-sm" onclick="mySubmit()">添加</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal -->
+    </div>
+</div>
+<input id="hidOpType" type="hidden" />
+<input id="hidKeyId" type="hidden" />
+@*<input id="hidUserId" type="hidden" value="@Model.seUserId" />*@
+<input id="hidUserId1" type="hidden" value="@strUserId1_Value" />
+<input id="hidCurrPageIndex" type="hidden" value="1" />
+<input id="hidSortExplainTypeBy" type="hidden" value="" />
+<input id="hidUserInfo" type="hidden" value="@Model.GetSession("objvUserRoleRelation")" />
+<input id="hidUserId" type="hidden" />

@@ -1,0 +1,1746 @@
+﻿@page
+@{
+    Layout = "~/Pages/Shared/_Layout_PC.cshtml";
+    ViewData["Title"] = "论文表维护";
+
+}
+@section Styles{
+<link rel="stylesheet" href="../lib/bootstrap/dist/css/bootstrap.css" />
+
+<link rel="stylesheet" href="~/lib/Xadmin/css/font.css">
+<link rel="stylesheet" href="~/lib/Xadmin/css/xadmin.css">
+<script type='text/javascript' src='~/textboxio/textboxio.js'></script>
+<link rel="stylesheet" type="text/css" href="~/textboxio/example.css" />
+<link rel="stylesheet" href="~/css/public.css" />
+<link rel="stylesheet" href="~/css/Tabs.css" />
+
+}
+@section Scripts{
+<script src="../lib/jquery/dist/jquery.js"></script>
+<script src="~/lib/Xadmin/lib/layui/layui.js" charset="utf-8"></script>
+<script src="~/lib/Xadmin/js/xadmin.js" type="text/javascript"></script>
+<script src="../lib/bootstrap/dist/js/bootstrap.js"></script>
+
+    @*Excel.js*@
+<script src="~/lib/xlsx.core.min.js"></script>
+<script src="~/lib/xlsx.full.min.js"></script>
+
+<script src="../lib/jquery-form.js"></script>
+<script src="../lib/jquery.min.js"></script>
+
+<script>
+    layui.use(['laydate', 'form'],
+        function () {
+            var laydate = layui.laydate;
+
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#txtUpdDate_q' //指定元素
+            });
+
+            //执行一个laydate实例
+            //laydate.render({
+            //    elem: '#end' //指定元素
+            //});
+        });
+</script>
+<script src="../lib/require/require.js" data-main="../js/src/config"></script>
+
+}
+<script>
+           /**
+     按钮单击,用于调用Js函数中btn_Click
+    (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_btn_Click)
+    **/
+    function btn_Click(strCommandName, strKeyId) {
+        require(["../js/GraduateEduEx/Paper_QUDI.js"], function (paper_qudi) {
+            paper_qudi.Paper_QUDI.btn_Click(strCommandName, strKeyId);
+        });
+    }
+
+
+    function selectFile() {
+        document.getElementById('file').click();
+    }
+
+    //// 读取本地excel文件
+    //function readWorkbookFromLocalFile(file, callback) {
+    //    var reader = new FileReader();
+    //    reader.onload = function (e) {
+    //        var data = e.target.result;
+    //        var workbook = XLSX.read(data, { type: 'binary' });
+    //        if (callback) callback(workbook);
+    //    };
+    //    reader.readAsBinaryString(file);
+    //}
+
+    //// 从网络上读取某个excel文件，url必须同域，否则报错
+    //function readWorkbookFromRemoteFile(url, callback) {
+    //    var xhr = new XMLHttpRequest();
+    //    xhr.open('get', url, true);
+    //    xhr.responseType = 'arraybuffer';
+    //    xhr.onload = function (e) {
+    //        if (xhr.status == 200) {
+    //            var data = new Uint8Array(xhr.response)
+    //            var workbook = XLSX.read(data, { type: 'array' });
+    //            if (callback) callback(workbook);
+    //        }
+    //    };
+    //    xhr.send();
+    //}
+
+    // 读取 excel文件
+    function outputWorkbook(workbook) {
+        var sheetNames = workbook.SheetNames; // 工作表名称集合
+        sheetNames.forEach(name => {
+            var worksheet = workbook.Sheets[name]; // 只能通过工作表名称来获取指定工作表
+            for (var key in worksheet) {
+                // v是读取单元格的原始值
+                console.log(key, key[0] === '!' ? worksheet[key] : worksheet[key].v);
+            }
+        });
+    }
+
+    function readWorkbook(workbook) {
+        var sheetNames = workbook.SheetNames; // 工作表名称集合
+        var worksheet = workbook.Sheets[sheetNames[0]]; // 这里我们只读取第一张sheet
+        var csv = XLSX.utils.sheet_to_csv(worksheet);
+        document.getElementById('result').innerHTML = csv2table(csv);
+    }
+
+    // 将csv转换成表格
+    function csv2table(csv) {
+        var html = '<table>';
+        var rows = csv.split('\n');
+        rows.pop(); // 最后一行没用的
+        rows.forEach(function (row, idx) {
+            var columns = row.split(',');
+            columns.unshift(idx + 1); // 添加行索引
+            if (idx == 0) { // 添加列索引
+                html += '<tr>';
+                for (var i = 0; i < columns.length; i++) {
+                    html += '<th>' + (i == 0 ? '' : String.fromCharCode(65 + i - 1)) + '</th>';
+                }
+                html += '</tr>';
+            }
+            html += '<tr>';
+            columns.forEach(function (column) {
+                html += '<td>' + column + '</td>';
+            });
+            html += '</tr>';
+        });
+        html += '</table>';
+        return html;
+    }
+
+    function table2csv(table) {
+        var csv = [];
+        $(table).find('tr').each(function () {
+            var temp = [];
+            $(this).find('td').each(function () {
+                temp.push($(this).html());
+            })
+            temp.shift(); // 移除第一个
+            csv.push(temp.join(','));
+        });
+        csv.shift();
+        return csv.join('\n');
+    }
+
+    // csv转sheet对象
+    function csv2sheet(csv) {
+        var sheet = {}; // 将要生成的sheet
+        csv = csv.split('\n');
+        csv.forEach(function (row, i) {
+            row = row.split(',');
+            if (i == 0) sheet['!ref'] = 'A1:' + String.fromCharCode(65 + row.length - 1) + (csv.length - 1);
+            row.forEach(function (col, j) {
+                sheet[String.fromCharCode(65 + j) + (i + 1)] = { v: col };
+            });
+        });
+        return sheet;
+    }
+
+    // 将一个sheet转成最终的excel文件的blob对象，然后利用URL.createObjectURL下载
+    function sheet2blob(sheet, sheetName) {
+        sheetName = sheetName || 'sheet1';
+        var workbook = {
+            SheetNames: [sheetName],
+            Sheets: {}
+        };
+        workbook.Sheets[sheetName] = sheet;
+        // 生成excel的配置项
+        var wopts = {
+            bookType: 'xlsx', // 要生成的文件类型
+            bookSST: false, // 是否生成Shared String Table，官方解释是，如果开启生成速度会下降，但在低版本IOS设备上有更好的兼容性
+            type: 'binary'
+        };
+        var wbout = XLSX.write(workbook, wopts);
+        var blob = new Blob([s2ab(wbout)], { type: "application/octet-stream" });
+        // 字符串转ArrayBuffer
+        function s2ab(s) {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+            for (var i = 0; i != s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+            return buf;
+        }
+        return blob;
+    }
+
+    @*/**
+        * 通用的打开下载对话框方法，没有测试过具体兼容性
+        * @param url 下载地址，也可以是一个blob对象，必选
+        * @param saveName 保存文件名，可选
+        */*@
+    function openDownloadDialog(url, saveName) {
+        if (typeof url == 'object' && url instanceof Blob) {
+            url = URL.createObjectURL(url); // 创建blob地址
+        }
+        var aLink = document.createElement('a');
+        aLink.href = url;
+        aLink.download = saveName || ''; // HTML5新增的属性，指定保存文件名，可以不要后缀，注意，file:///模式下不会生效
+        var event;
+        if (window.MouseEvent) event = new MouseEvent('click');
+        else {
+            event = document.createEvent('MouseEvents');
+            event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+        }
+        aLink.dispatchEvent(event);
+    }
+
+    $(function () {
+        document.getElementById('file').addEventListener('change', function (e) {
+            var files = e.target.files;
+            if (files.length == 0) return;
+            var f = files[0];
+            if (!/\.xlsx$/g.test(f.name)) {
+                alert('仅支持读取xlsx格式！');
+                return;
+            }
+            readWorkbookFromLocalFile(f, function (workbook) {
+                readWorkbook(workbook);
+            });
+        });
+        loadRemoteFile('./sample/test.xlsx');
+    });
+
+    function loadRemoteFile(url) {
+        readWorkbookFromRemoteFile(url, function (workbook) {
+            readWorkbook(workbook);
+        });
+    }
+
+    function exportExcel() {
+        //var csv = table2csv($('#result table')[0]);
+        //var csv = table2csv($('#divDataLst table')[0]);
+
+        //var sheet = csv2sheet(csv);
+        //var blob = sheet2blob(sheet);
+
+        //openDownloadDialog(blob, '导出.xlsx');
+
+        var sheet = XLSX.utils.table_to_sheet($('#divDataLst table')[0]);
+        openDownloadDialog(sheet2blob(sheet), '导出论文.xlsx');
+
+    }
+
+    function exportSpecialExcel() {
+        var aoa = [
+            ['主要信息', null, null, '其它信息'], // 特别注意合并的地方后面预留2个null
+            ['姓名', '性别', '年龄', '注册时间'],
+            ['张三', '男', 18, new Date()],
+            ['李四', '女', 22, new Date()]
+        ];
+        var sheet = XLSX.utils.aoa_to_sheet(aoa);
+        sheet['!merges'] = [
+            // 设置A1-C1的单元格合并
+            { s: { r: 0, c: 0 }, e: { r: 0, c: 2 } }
+        ];
+        openDownloadDialog(sheet2blob(sheet), '单元格合并示例.xlsx');
+    }
+
+</script>
+
+<script>
+
+    @*var strUrl_Session_SetString = "@Model.Url_Session_SetString";
+        var strUrl_Session_GetString = "@Model.Url_Session_GetString";
+        var strCurrPrjId = "@Model.CurrPrjId";*@
+
+
+
+        /**获取地址栏参数 */
+        //获取地址栏参数名称；
+        function GetRequest() {
+            var url = location.search; //获取url中"?"符后的字串
+            var theRequest = new Object();
+            if (url.indexOf("?") != -1) {
+                var str = url.substr(1);
+                strs = str.split("&");
+                for (var i = 0; i < strs.length; i++) {
+                    theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+                }
+            }
+            return theRequest;
+        }
+        /**获取论文读写类型ID */
+        function GetReadWriteTypeId() {
+            var Request = new Object();
+            Request = GetRequest();
+            var str1;
+            str1 = Request['PaperTypeId'];
+            $('#hidPaperTypeId').val(str1);
+        }
+
+        function GetPaperTypeId_load() {
+            var Request = new Object();
+            Request = GetRequest();
+            var str1;
+            str1 = Request['PaperTypeId'];
+            //测试01
+            // str1 = "01";
+            $('#hidPaperTypeId').val(str1);
+            var stPaperTypeId = $('#hidPaperTypeId').val();
+
+            if (stPaperTypeId == "01") {
+                $('#lbltitle').html("论文维护");
+
+            }
+            else if (stPaperTypeId == "02") {
+
+                $('#lbltitle').html("论文查看");
+                $('#btnAddNewRecord').hide();
+                $('#btnUpdateRecord').hide();
+                $('#btnAddSection').hide();
+                $('#btnDelRecord').hide();
+                $('#btnAddXzMajorRela').hide();
+                $('#btnSelectMajorRela').hide();
+
+
+
+            }
+
+
+            if (str1 != null) {
+
+
+                require(["../js/GraduateEduEx/Paper_QUDI.js"], function (paper) {
+                    var objPage = new paper.Paper_QUDI();
+                    objPage.Page_Load();
+                    instantiateTextbox();
+                });
+
+            }
+            else {
+                require(["../js/GraduateEduEx/Paper_QUDI.js"], function (paper) {
+                    var objPage = new paper.Paper_QUDI();
+                    objPage.Page_Load();
+                    instantiateTextbox();
+                });
+            }
+        }
+        /*
+    页面导入-在导入页面后运行的函数
+    (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_Page_Load)
+    */
+
+
+
+        window.onload = function () {
+            //require(["../js/GraduateEduEx/PaperReadListEx.js"], function (paperreadwrite) {
+            //    var objPage = new paperreadwrite.PaperReadListEx();
+            //    objPage.Page_Load();
+            //});
+            var MaxInputs = 2;
+            var InputsWrapper = $("#InputsWrapper");
+            //var AddButton = $("#AddMoreFileBox");
+            var x = InputsWrapper.length;
+            var FieldCount = 1;
+            $("#AddMoreFileBox").click(function () {
+                // $(AddButton).click(function (e) {
+                if (x <= MaxInputs) {
+                    FieldCount++;
+                    //add input box
+                    $("#InputsWrapper").append('<br/><input type="file" name="txtUploadfile' + FieldCount + '" id="txtUploadfile' + FieldCount + '"/>');
+                    x++; //text box increment
+                }
+                return false;
+                // });
+            })
+            GetPaperTypeId_load();
+
+                function tab(pa) {
+                    $(pa + ".title li").click(function () {
+                        //找到是点击第几个
+                        var ind = $(pa + "#title li").index($(this));
+                        //alert(ind);
+                        //以前显示的隐藏
+                        $(pa + ".wrap div:visible").hide();
+                        //第几个显示
+                        $(pa + ".wrap div:eq(" + ind + ")").show();
+                        //有高亮ho 去掉高亮ho
+                        $(pa + ".title li.ho").removeClass("ho");
+                        //被点击的元素添加ho
+                        $(this).addClass("ho");
+
+                    }) //clicked
+                } //tab ed
+                tab(".tab1 ");
+        }
+
+
+
+        function instantiateTextbox() {
+            textboxio.replaceAll('textarea', {
+                paste: {
+                    style: 'clean'
+                },
+                css: {
+                    stylesheets: ['../textboxio/example.css']
+                }
+            });
+        };
+
+
+        /*
+    详细记录
+    (AutoGCLib.WA_ViewScript_TS4CSharp:btnDetailRecord_Click)
+    */
+        function btnDetailRecordInTab_Click(strKeyId: string) {
+            GetReadWriteTypeId();
+            require(["../js/GraduateEduEx/Paper_QUDI.js"], function (paperreadwrite) {
+                if (strKeyId == "") {
+                    alert("请选择需要查看的记录！");
+                    return;
+                }
+                //window.location.href = "../GraduateEduEx/PaperDetail?PaperId=" + strKeyId;
+                xadmin.open('论文详情', '../GraduateEduEx/PaperDetail?PaperId=' + strKeyId);
+                //var objPage = new paperreadwrite.PaperReadWrite_QUDI_TSEx();
+                //objPage.btnDetailRecord_Click();
+            });
+        }
+        /*
+    详细记录
+    (AutoGCLib.WA_ViewScript_TS4CSharp:btnDetailRecord_Click)
+    */
+        function btnDetailRecord_Click() {
+            GetReadWriteTypeId();
+            require(["../js/GraduateEduEx/Paper_QUDI.js", "../js/TS/PubFun/clsCommFunc4Ctrl.js"], function (paperreadwrite, commonfunc) {
+                var strKeyId = commonfunc.GetFirstCheckedKeyIdInDiv('divList');
+                if (strKeyId == "") {
+                    alert("请选择需要查看的记录！");
+                    return;
+                }
+                window.location.href = "../GraduateEduEx/PaperDetail?PaperId='" + strKeyId + "'";
+
+            });
+        }
+
+
+
+        //论文审核
+        function btnAudit_Click() {
+            GetReadWriteTypeId();
+            require(["../js/GraduateEduEx/Paper_QUDI.js", "../js/TS/PubFun/clsCommFunc4Ctrl.js"], function (paper, commonfunc) {
+                var strKeyId = commonfunc.GetFirstCheckedKeyIdInDiv('divList');
+                if (strKeyId == "") {
+                    alert("请选择需要查看的记录！");
+                    return;
+                }
+
+                var objPage = new paper.Paper_QUDI();
+                objPage.btnAudit_Click(strKeyId);
+            });
+        }
+
+
+    //    /*
+    // 查询记录 查询专业方向
+    //(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+    //*/
+    //    function btnQueryMajorDirection_Click() {
+    //        require(["../js/GraduateEduEx/Paper_QUDI.js"], function (paper) {
+    //            $("#Text1").val("进入函数：btnQuery_Click");
+    //            var objPage = new paper.Paper_QUDI();
+    //            objPage.btnQueryMajorDirection_Click();
+    //        });
+    //    }
+
+     /*
+      添加新记录
+     (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnAddNewRecord_Click)
+     */
+        function btnAddNewRecord_Click() {
+            //$("#divLoading").show();
+            $("#btnOKUpd").attr("disabled", false);
+       require(["../js/GraduateEduEx/Paper_QUDI.js"], function(paper) {
+    ShowDialog('Add');
+    var objPage = new paper.Paper_QUDI();
+    objPage.btnAddNewRecord_Click();
+    });
+    }
+
+
+        //添加论文节
+        function btnAddSection_Click() {
+            require(["../js/GraduateEduEx/Paper_QUDI.js", "../js/TS/PubFun/clsCommFunc4Ctrl.js"], function (paper, commonfunc) {
+                var strKeyId = commonfunc.GetFirstCheckedKeyIdInDiv('divList');
+                if (strKeyId == "") {
+                    alert("请选择需要的论文！");
+                    return;
+                }
+                //window.location.href = "../ParameterTable/Section_QUDI_TS?PaperId=" + strKeyId;
+
+                //xadmin.open('论文子观点', '../GraduateEduTopic/Pdfiframe?PageType=01&TopicId=' + strKeyId, '', '', true)
+                xadmin.open('论文节维护', '../ParameterTable/Section_QUDI_TS?PaperId=' + strKeyId);
+
+            });
+        }
+
+
+     /*
+      删除记录的事件函数
+     (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnDelRecord_Click)
+     */
+    function btnDelRecord_Click() {
+       require(["../js/GraduateEduEx/Paper_QUDI.js", "../js/TS/PubFun/clsCommFunc4Ctrl.js"], function(paper, commonfunc) {
+    var arrKeyIds = commonfunc.GetCheckedKeyIdsInDiv('divList');
+    if (arrKeyIds.length == 0)
+    {
+    alert("请选择需要删除的记录！");
+    return;
+    }
+    var objPage = new paper.Paper_QUDI();
+    objPage.btnDelRecord_Click();
+    });
+    }
+
+
+     /*
+      在数据表里删除记录的事件函数
+     (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnDelRecordInTab_Click)
+     */
+    function btnDelRecordInTab_Click(strKeyId: string) {
+       require(["../js/GraduateEduEx/Paper_QUDI.js"], function(paper) {
+    if (strKeyId == "")
+    {
+    alert("请选择需要删除的记录！");
+    return;
+    }
+    var objPage = new paper.Paper_QUDI();
+    objPage.btnDelRecordInTab_Click(strKeyId);
+    });
+    }
+
+        //用来选择专业记录方法；
+        function btnOkInTab_Click(strKeyId: string) {
+            require(["../js/GraduateEduEx/Paper_QUDI.js"], function (paper) {
+                if (strKeyId == "") {
+                    alert("请选择需要的记录！");
+                    return;
+                }
+                var objPage = new paper.Paper_QUDI();
+                objPage.btnOkInTab_Click(strKeyId);
+            });
+        }
+
+     /*
+      查询记录
+     (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+     */
+    function btnQuery_Click()
+    {
+        require(["../js/GraduateEduEx/Paper_QUDI.js"], function(paper) {
+    $("#Text1").val("进入函数：btnQuery_Click");
+            var objPage = new paper.Paper_QUDI();
+    objPage.btnQuery_Click();
+    });
+        }
+
+
+        /*
+    所有论文
+    (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+    */
+        function liAllPaper_Click() {
+            require(["../js/GraduateEduEx/Paper_QUDI.js"], function (paper) {
+                $("#Text1").val("进入函数：liAllPaper_Click");
+                var objPage = new paper.Paper_QUDI();
+                objPage.liAllPaper_Click();
+            });
+        }
+
+
+        /*
+    本专业
+    (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+    */
+        function liMajor_Click() {
+            require(["../js/GraduateEduEx/Paper_QUDI.js"], function (paper) {
+                $("#Text1").val("进入函数：liMajor_Click");
+                var objPage = new paper.Paper_QUDI();
+                objPage.liMajor_Click();
+            });
+        }
+
+        /*
+    本专业方向
+    (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+    */
+        function liMajorDirection_Click() {
+            require(["../js/GraduateEduEx/Paper_QUDI.js"], function (paper) {
+                $("#Text1").val("进入函数：liMajorDirection_Click");
+                var objPage = new paper.Paper_QUDI();
+                objPage.liMajorDirection_Click();
+            });
+        }
+
+
+     /*
+      修改记录
+     (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnUpdateRecord_Click)
+     */
+        function btnUpdateRecord_Click() {
+            $("#btnOKUpd").attr("disabled", false);
+       require(["../js/GraduateEduEx/Paper_QUDI.js", "../js/TS/PubFun/clsCommFunc4Ctrl.js"], function(paper, commonfunc) {
+           var strKeyId = commonfunc.GetFirstCheckedKeyIdInDiv('divList');
+        if (strKeyId == "")
+    {
+    alert("请选择需要修改的记录！");
+    return;
+    }
+    //ShowDialog('Update');
+    var objPage = new paper.Paper_QUDI();
+           objPage.btnUpdateRecord_Click(strKeyId);
+           //setTextboxio();
+
+       });
+        //var editors = $("#txtPaperContent").val();
+
+
+        //editor.content.set(editors);
+        //editor.content.set(editors1);
+        }
+
+        function setTextboxio()
+        {
+            var editors1 = $("#txtPaperContent").val();
+            var editors = textboxio.get('#txtPaperContent');
+            var editor = editors[0];
+            editor.content.set(editors1);
+        }
+
+
+     /*
+      在数据表里修改记录
+     (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnUpdateRecordInTab_Click)
+     */
+    function btnUpdateRecordInTab_Click(strKeyId: string) {
+       require(["../js/GraduateEduEx/Paper_QUDI.js"], function(paper) {
+        if (strKeyId == "")
+    {
+    alert("请选择需要修改的记录！");
+    return;
+    }
+    ShowDialog('Update');
+    var objPage = new paper.Paper_QUDI();
+      objPage.btnUpdateRecordInTab_Click(strKeyId);
+    });
+    }
+
+
+     /*
+      单击数据列表中每行首列的复选框所引发的事件
+     (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_ChkClick)
+     */
+    function ChkClick(myThis)
+    {
+    require(["../js/GraduateEduEx/Paper_QUDI.js", "../js/TS/PubFun/clsCommonFunc4Web.js"], function(paper, commonfunc) {
+    var strId = myThis.id;
+    var strKey = strId.substring(3);
+    var arrKeys = commonfunc.arrSelectedKeys;
+    if (myThis.checked == true) {
+    if (arrKeys.indexOf(strKey) < 0)
+    {
+    arrKeys.push(strKey);
+    }
+    }
+    else {
+    var index = arrKeys.indexOf(strKey);
+    if (index > -1)
+    {
+    arrKeys.splice(index, 1);
+    }
+    }
+    var sstrKey = "";
+    for (let strK of arrKeys)
+    {
+    sstrKey += `${ strK},`;
+    }
+    $('#spanResult').html(sstrKey);
+    });
+    }
+
+     /*
+      修改记录
+     (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_ExpandDiv)
+     */
+             function ExpandDiv(divName) {
+    //基于RequireJS来调用tzPubFun.ts中的函数OnlyShowDiv。
+    require(["../js/TS/PubFun/tzPubFun"], function (pubfun) {
+          pubfun.OnlyShowDiv(divName, "function", "content");
+    });
+    }
+
+     /*
+      获取数据列表中的所选记录
+     (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_GetAllCkechedKeys)
+     */
+    function GetAllCkechedKeys(tabName)
+    {
+    var arrKeys = tabName.getElementsByTagName('chkInTab');
+    alert(arrKeys.length.toString());
+    }
+
+     /*
+      修改记录
+     (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_IndexPage)
+     */
+    function IndexPage(intPageIndex)
+    {
+    console.log("跳转到" + intPageIndex + "页");
+    require(["../js/GraduateEduEx/Paper_QUDI.js"], function(paper) {
+    var objPage = new paper.Paper_QUDI();
+    objPage.IndexPage(intPageIndex);
+    });
+    }
+
+     /*
+      修改记录
+     (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_JumpToPage)
+     */
+    function JumpToPage()
+    {
+    var intCurrPageIndex = $('#input_number').val();
+    var intPageIndex = Number(intCurrPageIndex);
+    console.log("跳转到" + intPageIndex + "页");
+    require(["../js/GraduateEduEx/Paper_QUDI.js"], function(paper) {
+    var objPage = new paper.Paper_QUDI();
+    objPage.IndexPage(intPageIndex);
+    });
+    }
+
+
+     /*
+      修改记录
+     (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_NextPage)
+     */
+    function NextPage()
+    {
+    var intCurrPageIndex = $('#hidCurrPageIndex').val();
+    var intPageIndex = Number(intCurrPageIndex) + 1;
+    console.log("跳转到" + intPageIndex + "页");
+    require(["../js/GraduateEduEx/Paper_QUDI.js"], function(paper) {
+    var objPage = new paper.Paper_QUDI();
+    objPage.IndexPage(intPageIndex);
+    });
+    }
+
+
+     /*
+      修改记录
+     (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_PageNum)
+     */
+    function PageNum(intPageIndex)
+    {
+    console.log("跳转到" + intPageIndex + "页");
+    require(["../js/GraduateEduEx/Paper_QUDI.js"], function(paper) {
+    var objPage = new paper.Paper_QUDI();
+    objPage.IndexPage(intPageIndex);
+    });
+    }
+
+     /*
+      修改记录
+     (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_PrevPage)
+     */
+    function PrevPage()
+    {
+    var intCurrPageIndex = $('#hidCurrPageIndex').val();
+    var intPageIndex = Number(intCurrPageIndex) - 1;
+    console.log("跳转到" + intPageIndex + "页");
+    require(["../js/GraduateEduEx/Paper_QUDI.js"], function(paper) {
+    var objPage = new paper.Paper_QUDI();
+    objPage.IndexPage(intPageIndex);
+    });
+    }
+
+     /*
+      全选数据列表中的所有记录
+     (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_SetAllCkechedKeys)
+     */
+    function SetAllCkechedKeys(tabName)
+    {
+    var thisChk = event.target;
+    require(["../js/TS/PubFun/clsCommonFunc4Web.js"], function (commonfunc) {
+    console.log(tabName);
+    console.log(thisChk);
+    commonfunc.SetAllCkechedKeys(tabName, thisChk);
+    });
+    }
+
+     /*
+      显示对话框
+     (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_ShowDialog)
+     */
+    function ShowDialog(pstrOp: string) {
+       strOp = pstrOp;
+       require(['jquery', 'bootstrap'], function($) {
+           if (strOp === "Add") {
+               $('#myModalLabel').html('添加记录');
+    //Paper_QUDI.GetMaxStrId('#txtPaperId');
+            }
+    else if (strOp === "Update")
+    {
+                $('#myModalLabel').html('修改记录');
+    }
+    else if (strOp === "Detail")
+    {
+                $('#btnOKUpd').hide();
+                $('#myModalLabel').html('详细信息');
+    }
+            $('#divEditRegion').modal('show');
+      });
+    }
+
+     /*
+      隐藏对话框
+     (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_HideDialog)
+     */
+    function HideDialog() {
+      require(['jquery', 'bootstrap'], function($) {
+          $('#divEditRegion').modal('hide');
+      });
+    }
+
+     /*
+      修改记录
+     (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_SortBy)
+     */
+    function SortBy(strFldName)
+    {
+    console.log("按：" + strFldName + "排序");
+    require(["../js/GraduateEduEx/Paper_QUDI.js"], function(paper) {
+    var objPage = new paper.Paper_QUDI();
+    objPage.SortBy(strFldName);
+    });
+    }
+
+
+        /*
+         提交编辑
+        (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_mySubmit)
+        */
+        function mySubmit(pstrOp: string) {
+
+            //    alert("提交" + strOp);
+            //require(["../js/GraduateEduEx/Paper_QUDI.js"], function (paper) {
+            //    var objPage = new paper.Paper_QUDI();
+            //    objPage.btnOKUpd_Click();
+            //});
+            if ($("#txtPaperTitle").val() == "") {
+                layer.msg('论文标题不能为空!', {
+                    icon: 3,
+                    time: 1000
+                });
+                }
+
+            //else if ($("#ddlShareId").val() == "" || $("#ddlShareId").val() == "0") {
+            //    layer.msg('分享不能为空!', {
+            //        icon: 3,
+            //        time: 1000
+            //    });
+            //}
+            //else if ($("#txtPaperContent").html() == "") {
+            //    layer.msg('论文摘要不能为空!', {
+            //        icon: 3,
+            //        time: 1000
+            //    });
+            //}
+            else if ($("#txtPeriodical").val() == "") {
+                layer.msg('期刊不能为空!', {
+                    icon: 3,
+                    time: 1000
+                });
+            }
+            else if ($("#txtAuthor").val() == "") {
+                layer.msg('论文作者不能为空!', {
+                    icon: 3,
+                    time: 1000
+                });
+            }
+            //else if ($("#txtKeyword").val() == "") {
+            //    layer.msg('关键字不能为空!', {
+            //        icon: 3,
+            //        time: 1000
+            //    });
+            //}
+
+            //else if ($("#ddlLiteratureTypeId").val() == 0) {
+            //    layer.msg('论文类型不能为空!', {
+            //        icon: 3,
+            //        time: 1000
+            //    });
+            //}
+            else {
+
+            $("#btnOKUpd").attr("disabled", true);
+            $("#divLoading").show();
+
+                //判断文件格式；
+                IsHasFile();
+
+            //$("#btnOKUpd").html("正在提交");
+
+            }
+
+        }
+
+        //判断图片附件格式、以及文件附件格式
+        function IsHasFile() {
+            var pic1 = $("#txtUploadfileUrl").val();
+
+            if (pic1 != "") {
+                strs = pic1.split('.');
+                var suffix = strs[strs.length - 1];
+
+                if (suffix != 'jpg' && suffix != 'gif' && suffix != 'png') {
+                    alert("请选择图片格式！");
+                    $("#btnOKUpd").attr("disabled", false);
+                    $("#divLoading").hide();
+                    var obj = document.getElementById('txtUploadfileUrl');
+                    obj.outerHTML = obj.outerHTML; //这样清空，在IE8下也能执行成功
+                    return;
+                    //obj.select(); document.selection.clear();这种方法也可以清空 input file 的value值
+                }
+
+            }
+            //文件
+            var InputsWrapper = $("#InputsWrapper");
+            //var MaxInputs = 2;
+            var y = InputsWrapper.length;
+
+            //循环得到的个数
+            for (var i = 0; i < y; i++) {
+                if (i == 0) {
+                    var file1 = $("#txtUploadfile").val();
+
+                    if (file1 != "") {
+                        strs = file1.split('.');
+                        var suffix = strs[strs.length - 1];
+
+                        if (suffix != 'doc' && suffix != 'docx' && suffix != 'pdf') {
+                            alert("请选择pdf格式文件！");
+                            $("#btnOKUpd").attr("disabled", false);
+                            $("#divLoading").hide();
+                            var obj = document.getElementById('txtUploadfile');
+                            obj.outerHTML = obj.outerHTML; //这样清空，在IE8下也能执行成功
+                            return true;
+                            //obj.select(); document.selection.clear();这种方法也可以清空 input file 的value值
+                        }
+
+                    }
+                    else {
+                        return false;
+                    }
+                }
+                else if (i == 1) {
+                    var file2 = $("#txtUploadfile2").val();
+
+                    if (file2 != "") {
+                        strs = file2.split('.');
+                        var suffix = strs[strs.length - 1];
+
+                        if (suffix != 'doc' && suffix != 'docx' && suffix != 'pdf') {
+                            alert("请选择pdf格式文件！");
+                            $("#btnOKUpd").attr("disabled", false);
+                            $("#divLoading").hide();
+                            var obj = document.getElementById('txtUploadfile2');
+                            obj.outerHTML = obj.outerHTML; //这样清空，在IE8下也能执行成功
+                            return;
+                            //obj.select(); document.selection.clear();这种方法也可以清空 input file 的value值
+                        }
+
+                    }
+                }
+               else if (i == 2) {
+
+                    var file3 = $("#txtUploadfile3").val();
+
+                    if (file3 != "") {
+                        strs = file3.split('.');
+                        var suffix = strs[strs.length - 1];
+
+                        if (suffix != 'doc' && suffix != 'docx' && suffix != 'pdf') {
+                            alert("请选择pdf格式文件！");
+                            $("#btnOKUpd").attr("disabled", false);
+                            $("#divLoading").hide();
+                            var obj = document.getElementById('txtUploadfile3');
+                            obj.outerHTML = obj.outerHTML; //这样清空，在IE8下也能执行成功
+                            return;
+                            //obj.select(); document.selection.clear();这种方法也可以清空 input file 的value值
+                        }
+
+                    }
+
+                }
+            }
+            //上传
+            doUpload();
+
+
+        }
+
+
+
+            //上传方法
+          function doUpload() {
+              var formData = new FormData($("#uploadForm")[0]);
+                      const strUrl = "@Url.Action("UploadFile", "testUploadPic")";
+            console.log("strUrl:", strUrl);
+            $.ajax({
+                 url: "@Url.Action("UploadFile", "testUploadPic")",
+                type: 'post',
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (returndata) {
+                    //成功/为空
+                    if (returndata.status == 0 || returndata.status == -1) {
+
+                        //如果图片地址为空，那么是修改 则不用存放地址；
+                        if (returndata.fileNamePic != "") {
+                            $("#hdnpic").val(returndata.fileNamePic);
+                        }
+                        //如果文件地址为空，那么是修改 则不用存放地址；返回3个文件地址；
+                        if (returndata.fileNameOne != "") {
+                            $("#hdnFileOne").val(returndata.fileNameOne);
+                        }
+                        if (returndata.fileNameTwo != "") {
+                            $("#hdnFileTwo").val(returndata.fileNameTwo);
+                        }
+                        if (returndata.fileNameThree != "") {
+                            $("#hdnFileThree").val(returndata.fileNameThree);
+                        }
+
+                        var editors = textboxio.get('#txtPaperContent');
+                        var editor = editors[0];
+                        $("#txtPaperContent").val(editor.content.get());
+
+                        require(["../js/GraduateEduEx/Paper_QUDI.js"], function (Thesis) {
+                            var objPage = new Thesis.Paper_QUDI();
+                            objPage.btnOKUpd_Click();
+                        });
+                        // var aa = JSON.stringify(returndata);
+
+                        //alert(returndata.message);
+
+                    }
+                    else {
+
+                        alert('请选择正确文件!(in Paper_QUDI.doUpload)')
+                    }
+
+
+                },
+                error: function (returndata) {
+                    alert(returndata);
+                }
+            });
+        }
+
+
+        //关闭详情
+        function close_Click() {
+
+            HideDialogOne();
+        }
+
+        /*
+    显示对话框
+    (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_ShowDialog)
+    */
+        function ShowDialogOne() {
+            require(['jquery', 'bootstrap'], function ($) {
+                $('#divMajorDirectionList').modal('show');
+            });
+        }
+
+        /*
+    隐藏对话框
+    (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_HideDialog)
+    */
+        function HideDialogOne() {
+            require(['jquery', 'bootstrap'], function ($) {
+                $('#divMajorDirectionList').modal('hide');
+            });
+        }
+
+
+
+        /*
+     修改记录
+    (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_IndexPage)
+    */
+        function IndexPageOne(intPageIndex: number) {
+            console.log("跳转到" + intPageIndex + "页");
+            require(["../js/GraduateEduEx/Paper_QUDI.js"], function (xzmajordirection) {
+                var objPage = new xzmajordirection.Paper_QUDI();
+                objPage.IndexPageOne(intPageIndex);
+            });
+        }
+
+        /*
+         修改记录
+        (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_JumpToPage)
+        */
+        function JumpToPageOne() {
+            var intCurrPageIndex = $('#input_numberOne').val();
+            var intPageIndex = Number(intCurrPageIndex);
+            console.log("跳转到" + intPageIndex + "页");
+            require(["../js/GraduateEduEx/Paper_QUDI.js"], function (xzmajordirection) {
+                var objPage = new xzmajordirection.Paper_QUDI();
+                objPage.IndexPageOne(intPageIndex);
+            });
+        }
+        /*
+     修改记录
+    (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_PageNum)
+    */
+        function PageNumOne(intPageIndex: number) {
+            console.log("跳转到" + intPageIndex + "页");
+            require(["../js/GraduateEduEx/Paper_QUDI.js"], function (xzmajordirection) {
+                var objPage = new xzmajordirection.Paper_QUDI();
+                objPage.IndexPageOne(intPageIndex);
+            });
+        }
+
+        /*
+         修改记录
+        (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_PrevPage)
+        */
+        function PrevPageOne() {
+            var intCurrPageIndex = $('#hidCurrPageIndex').val();
+            var intPageIndex = Number(intCurrPageIndex) - 1;
+            console.log("跳转到" + intPageIndex + "页");
+            require(["../js/GraduateEduEx/Paper_QUDI.js"], function (xzmajordirection) {
+                var objPage = new xzmajordirection.Paper_QUDI();
+                objPage.IndexPageOne(intPageIndex);
+            });
+        }
+        /*
+      修改记录
+     (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_NextPage)
+     */
+        function NextPageOne() {
+            var intCurrPageIndex = $('#hidCurrPageIndex').val();
+            var intPageIndex = Number(intCurrPageIndex) + 1;
+            console.log("跳转到" + intPageIndex + "页");
+            require(["../js/GraduateEduEx/Paper_QUDI.js"], function (xzmajordirection) {
+                var objPage = new xzmajordirection.Paper_QUDI();
+                objPage.IndexPageOne(intPageIndex);
+            });
+        }
+
+
+        //论文提交
+        function btnSubmit_Click() {
+
+            require(["../js/GraduateEduEx/Paper_QUDI.js", "../js/TS/PubFun/clsCommFunc4Ctrl.js"], function (paper, commonfunc) {
+                var strKeyId = commonfunc.GetFirstCheckedKeyIdInDiv('divList');
+                if (strKeyId == "") {
+                    alert("请选择需要提交的记录！");
+                    return;
+                }
+                //ShowDialog('Update');
+                var objPage = new paper.Paper_QUDI();
+                objPage.btnIsSubmit_Click(strKeyId);
+
+            });
+
+        }
+
+        //论文下拉框改变事件
+
+        function ddlPaperTypeChange() {
+
+            require(["../js/GraduateEduEx/Paper_QUDI.js", "../js/TS/PubFun/clsCommonFunc4Web.js"], function (paper, commonfunc) {
+
+                //ShowDialog('Update');
+                var objPage = new paper.Paper_QUDI();
+                objPage.ddlPaperTypeChange();
+
+            });
+
+        }
+
+
+        //取消论文提交
+        function btnCancelSubmit_Click() {
+
+            require(["../js/GraduateEduEx/Paper_QUDI.js", "../js/TS/PubFun/clsCommFunc4Ctrl.js"], function (paper, commonfunc) {
+                var strKeyId = commonfunc.GetFirstCheckedKeyIdInDiv('divList');
+                if (strKeyId == "") {
+                    alert("请选择需要提交的记录！");
+                    return;
+                }
+                //ShowDialog('Update');
+                var objPage = new paper.Paper_QUDI();
+                objPage.btnCancelSubmit_Click(strKeyId);
+
+            });
+
+        }
+
+        /*
+         统计核算
+        (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_btnQuery_Click)
+        */
+        function btnSynPaperStatistics_Click() {
+            require(["../js/GraduateEduEx/Paper_QUDI.js"], function (paper) {
+                $("#Text1").val("进入函数：btnQuery_Click");
+                var objPage = new paper.Paper_QUDI();
+                objPage.btnSynPaperStatistics_Click();
+            });
+        }
+
+        //信息提示
+        function layui_Alert(iconKey, strMsg) {
+
+            layer.msg(strMsg, {
+                icon: iconKey,
+                time: 2000
+            });
+        }
+</script>
+
+<div id="divLoading" class="loading">
+    <img src="~/images/CirclePoint.gif" />
+</div>
+<div id="tabLayout" class="tab_layout">
+    @*-- 标题层 --*@
+    <div class="x-nav">
+        <span class="layui-breadcrumb">
+            <a href="">首页</a>
+            <a href="">论文管理</a>
+            <a>
+                <cite><Label id="lbltitle" name="lbltitle">论文维护</Label></cite>
+            </a>
+            <Label id="lblMsg_List" name="lblMsg_List"></Label>
+        </span>
+        <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+            <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+        </a>
+        @*<a id="QA_back" class="layui-btn layui-btn-danger" style="line-height:1.6em;margin-top:3px;float:right;margin-left:50px; margin-right:10px; color:#fff;" onclick="javascript:history.go(-1)" title="返回">
+            <i class="layui-icon layui-icon-return" style="line-height:32px"></i>
+            </a>*@
+    </div>
+    @*-- 查询层 --*@
+
+    <div id="divQuery" class="div_query">
+        <table id="tabQuery" name="tabQuery" style="width: 50%; " class="table table-bordered table-hover table td table-sm">
+            <tr>
+                <td>
+                    <input id="txtPaperTitle_q" name="txtPaperTitle_q" placeholder="论文标题" class="layui-input" style="width:250px;" />
+                </td>
+                <td>
+                    <input class="layui-input" placeholder="发表日期" name="txtUpdDate_q" id="txtUpdDate_q" style="width:120px;">
+                </td>
+                <td class="ValueTD">
+                    <select id="ddlLiteratureTypeId_q" name="ddlLiteratureTypeId_q" class="form-control" style="width:170px;" />
+                </td>
+                <td>
+                    <select id="ddlUserId_q" name="ddlUserId_q" class="form-control" style="width:170px;" />
+                </td>
+                <td class="ValueTD">
+                    <select id="ddlPaperTypeId_q" name="ddlPaperTypeId_q" class="form-control" style="width:200px;" />
+                </td>
+                <td>
+                    <button class="layui-btn" lay-submit="" lay-filter="sreach" onclick="btnQuery_Click()">
+                        <i class="layui-icon">&#xe615;</i>
+                    </button>
+                </td>
+            </tr>
+        </table>
+    </div>
+    @*-- 功能区 --*@
+    @*<button id="btnAddXzMajorRela" name="btnAddXzMajorRela" class="btn btn-outline-info text-nowrap" onclick="btnAddXzMajorRela_Click()">添加专业方向</button>
+        <button id="btnSelectMajorRela" name="btnAudit" class="btn btn-outline-info text-nowrap" onclick="btnSelectMajorRela_Click()">查看专业关系</button>*@
+
+    <div id="divFunction" class="layui-card-header">
+
+        <div class="btn-group btn-group-sm">
+            <button class="btn btn-success" id="btnAddNewRecord" name="btnAddNewRecord" onclick="btnAddNewRecord_Click()"><i class="layui-icon">&#xe654;</i>添加论文</button>
+            <button class="btn btn-info" id="btnUpdateRecord" name="btnUpdateRecord" title="已提交论文只能修改附件" onclick="btnUpdateRecord_Click()"><i class="layui-icon">&#xe642;</i>修改论文</button>
+            <button class="btn btn-danger" id="btnDelRecord" style="display:none;" name="btnDelRecord" onclick="btnDelRecord_Click()"><i class="layui-icon">&#xe640;</i>删除论文</button>
+        </div>
+        <div class="btn-group btn-group-sm ml-1">
+            <button class="btn btn-success" id="btnAddSection" name="btnAddSection" title="给论文添加节点以后可以再论文子观点内引用维护" onclick="btnAddSection_Click()"><i class="layui-icon">&#xe654;</i>添加论文节</button>
+            <button class="btn btn-primary" id="btnAudit" style="display:none;" name="btnAudit" onclick="btnAudit_Click()"><i class="layui-icon">&#xe63c;</i>论文审核</button>
+            <button class="btn btn-primary" id="btnSubmit" name="btnSubmit" title="论文提交以后才可以再其他页面引用到，不过提交以后不能再修改" onclick="btnSubmit_Click()"><i class="layui-icon">&#xe605;</i>提交论文</button>
+            <button class="btn btn-warning" id="btnCancelSubmit" style="display:none;" name="btnCancelSubmit" onclick="btnCancelSubmit_Click()"><i class="layui-icon">&#x1006;</i>取消提交</button>
+            <button class="btn btn-secondary" id="btnSynPaperStatistics" name="btnSynPaperStatistics" onclick="btnSynPaperStatistics_Click()" style="display:none"><i class="layui-icon">&#xe605;</i>统计核算</button>
+            <button id="ExportExcel" class="btn btn-secondary" onclick="exportExcel()" value="导出Excel"><i class="layui-icon">&#xe605;</i>Excel导出</button>
+        </div>
+        <div class="btn-group btn-group-sm ml-1">
+
+            <button class="btn btn-secondary " id="btnSetCurrEduCls" name="btnSetCurrEduCls" onclick="btn_Click('SetCurrEduCls')">设置当前教学班</button>
+            @*            <button class="btn btn-secondary ml-1" id="btnSetCurrMajor" name="btnSetCurrMajor" onclick="btn_Click('SetCurrMajor')" >设置当前专业</button>*@
+            <select id="ddlMajorDirectionId_SetFldValue" name="ddlMajorDirectionId_SetFldValue" class="form-control-sm ml-1" style="width:120px;"></select>
+            <button class="btn btn-secondary " id="btnSetCurrMajorDirection" name="btnSetCurrMajorDirection" onclick="btn_Click('SetCurrMajorDirection')">设置当前方向</button>
+        </div>
+
+    </div>
+    <div class="alert alert-info alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>本界面功能：</strong> 可以维护外网的引用论文方便在本系统学习，添加论文节是为了后续写观点可以有个索引，论文维护好以后可以提交，提交以后不能再修改了，如不小心提交可以联系教学班老师帮忙取消！
+    </div>
+    @*-- 列表层 --*@
+    <div id="divList" class="div_List">
+
+        <div style="height:100%;width:100%;background-color:#FFF;">
+
+            <ul id="myTab" class="nav nav-tabs " role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#AllPaper" data-toggle="tab" onclick=btn_Click('AllPaper')>
+                        全部论文
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#CurrEduClsPaper" data-toggle="tab" onclick=btn_Click('CurrEduCls')>
+                        本教学班论文
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#MyMajor" data-toggle="tab" onclick="btn_Click('Major')"><span id="spnMajorName" class="font-weight-bold"></span>专业论文</a>
+                </li>
+                <li class="nav-item">
+                            <a class="nav-link" id="aMajorDirectionName" href="#MyDirection" data-toggle="tab" onclick="btn_Click('MajorDirection')">本方向论文</a>
+                    @*        <select id="ddlMajorDirectionId_Tabs" name="ddlMajorDirectionId_Tabs" class="form-control-sm" style="border: none;
+    outline: none; width:10px;"></select>*@
+
+                @*    <div class="row justify-content-start">
+                        <div class="col-md-10 text-right">
+                            <a class="nav-link" id="aMajorDirectionName" href="#MyDirection" data-toggle="tab" onclick="btn_Click('MajorDirection')">本方向论文</a>
+                        </div>
+                        <div class="col-md-2  text-left">
+                            <select id="ddlMajorDirectionId_Tabs" name="ddlMajorDirectionId_Tabs" class="form-control-sm" style="border: none;
+    outline: none; width:10px;"></select>
+                        </div>
+                    </div>*@
+                </li>
+
+            </ul>
+            <div id="myTabContent" class="tab-content">
+                <div class="tab-pane active" id="AllPaper" style="padding:5px;">
+                    <p>
+                        <div id="divDataLst" class="div_List">
+                        </div>
+                        <div id="divPager" class="pager" value="1" style="display:none;">
+                        </div>
+                    </p>
+                </div>
+                <div class="tab-pane fade" id="CurrEduClsPaper" style="padding:5px;">
+                    <p>
+                        <div id="divCurrEduClsDataLst" class="div_List">
+                        </div>
+                        <div id="divPager_CurrEduCls" class="pager" value="1" style="display:none;">
+                        </div>
+                    </p>
+                </div>
+                <div class="tab-pane fade" id="MyMajor">
+                    <p>
+                        <div id="divDataLstMajor" class="div_List">
+                        </div>
+                        <div id="divPager_Major" class="pager" value="1">
+                        </div>
+                    </p>
+                </div>
+                <div class="tab-pane fade" id="MyDirection">
+                    <p>
+                        <div id="divDataLstDirection" class="div_List">
+                        </div>
+                        <div id="divPager_Direction" class="pager" value="1" style="display:none;">
+                        </div>
+                        @*<div id="divPager" class="pager" value="1">
+
+                            </div>*@
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    @*-- 编辑层 --*@
+
+
+    <div class="modal fade" id="divEditRegion" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+        <form id="uploadForm" method="post" enctype="multipart/form-data">
+            <div class="modal-dialog" style="margin-left:200px;">
+                <div class="modal-content" style="width: 1200px;">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalLabel">模态框（Modal）标题</h4>
+                        <div style="margin-left:800px;">
+                            <button id="btnCancel" type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                            <button id="btnOKUpd" type="button" class="btn btn-primary" onclick="mySubmit()">添加</button>
+                        </div>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    </div>
+                    <ul class="nav nav-pills" role="tablist">
+                        <li class="nav-item" li="liSimpleEdit">
+                            <a class="nav-link active" data-toggle="pill" href="#SimpleEdit">基本信息</a>
+                        </li>
+                        <li class="nav-item" id="liextendEdit">
+                            <a class="nav-link" data-toggle="pill" href="#extendEdit">扩展信息</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="SimpleEdit" class="tab-pane active">
+                            <div class="modal-body">
+                                <table id="tabwucPaper" name="tabwucPaper" style="width: 100%; padding: 1px; border:0px" class="table table-bordered table-hover">
+                                    <tr style="display:none;">
+                                        <td class="NameTD">
+                                            <Label id="lblPaperId" name="lblPaperId" class="col-form-label text-right" style="width:90px;">
+                                                论文Id
+                                            </Label>
+                                        </td>
+                                        <td class="ValueTD">
+                                            <input id="txtPaperId" name="txtPaperId" class="form-control" style="width:300px;" />
+                                        </td>
+
+
+                                    </tr>
+                                    <tr>
+                                        <td class="NameTD">
+                                            <Label id="lblPaperTitle" name="lblPaperTitle" class="col-form-label text-right" style="width:90px;">
+                                                论文标题
+                                            </Label>
+                                        </td>
+                                        <td class="ValueTD">
+                                            <input id="txtPaperTitle" name="txtPaperTitle" class="form-control" style="width:300px;" />
+                                        </td>
+
+                                        <td></td>
+
+                                        <td class="ValueTD">
+                                            <span class="form-control" style="width:200px;">
+                                                <input type="checkbox" id="chkIsQuotethesis" name="chkIsQuotethesis" Text="是否引用论文"><label for="chkIsQuotethesis">是否引用论文</label>
+                                            </span>
+                                        </td>
+
+
+                                    </tr>
+
+                                    <tr>
+                                        <td class="NameTD">
+                                            <Label id="lblPaperContent" name="lblPaperContent" class="col-form-label text-right" style="width:90px;">
+                                                论文摘要
+                                            </Label>
+                                        </td>
+                                        <td class="ValueTD" colspan="3">
+                                            <textarea id="txtPaperContent" name="txtPaperContent" class="form-control" style="width: 100%; height: 260px;"></textarea>
+                                            @*<input id="txtPaperContent" name="txtPaperContent" class="form-control" style="width:200px;" />*@
+                                        </td>
+
+                                    </tr>
+                                    <tr style="display:none;">
+                                        <td class="NameTD">
+                                            <Label id="lblPaperTypeId" name="lblPaperTypeId" class="col-form-label text-right" style="width:90px;">
+                                                论文类型
+                                            </Label>
+                                        </td>
+                                        <td class="ValueTD">
+                                            <select id="ddlPaperTypeId" name="ddlPaperTypeId" class="form-control" style="width:200px;" onchange="ddlPaperTypeChange()" />
+                                        </td>
+                                        <td class="NameTD">
+                                            <Label id="lblPaperStatusId" name="lblPaperStatusId" class="col-form-label text-right" style="width:90px;">
+                                                论文状态
+                                            </Label>
+                                        </td>
+                                        <td class="ValueTD">
+                                            <select id="ddlPaperStatusId" name="ddlPaperStatusId" class="form-control" style="width:200px;" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="NameTD">
+                                            <Label id="lblPeriodical" name="lblPeriodical" class="col-form-label text-right" style="width:90px;">
+                                                期刊
+                                            </Label>
+                                        </td>
+                                        <td class="ValueTD">
+                                            <input id="txtPeriodical" name="txtPeriodical" class="form-control" style="width:180px;" />
+                                        </td>
+                                        <td class="NameTD">
+                                            <Label id="lblAuthor" name="lblAuthor" class="col-form-label text-right" style="width:90px;">
+                                                作者
+                                            </Label>
+                                        </td>
+                                        <td class="ValueTD">
+                                            <input id="txtAuthor" name="txtAuthor" class="form-control" style="width:180px;" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="NameTD">
+                                            <Label id="lblUploadfileUrl" name="lblUploadfileUrl" class="col-form-label text-right" style="width:90px;">
+                                                上传附件
+                                            </Label>
+                                        </td>
+                                        <td class="ValueTD" id="InputsWrapper" colspan="3">
+                                            <input type="file" id="txtUploadfile" name="txtUploadfile">
+                                            <button id="AddMoreFileBox" type="button" class="btn btn-default" data-dismiss="modal">添加更多附件</button>
+
+                                        </td>
+                                    </tr>
+                                    <tr style="display:none;">
+                                        <td class="NameTD"></td>
+                                        <td class="ValueTD">
+                                            <span class="form-control" style="width:200px;">
+                                                <input type="checkbox" id="chkIsChecked" name="chkIsChecked" Text="是否检查"><label for="chkIsChecked">是否检查</label>
+                                            </span>
+                                        </td>
+
+                                    </tr>
+                                    <tr style="display:none;">
+                                        <td class="NameTD">
+                                            <Label id="lblChecker" name="lblChecker" class="col-form-label text-right" style="width:90px;">
+                                                审核人
+                                            </Label>
+                                        </td>
+                                        <td class="ValueTD">
+                                            <input id="txtChecker" name="txtChecker" class="form-control" style="width:200px;" />
+                                        </td>
+
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div id="extendEdit" class="tab-pane fade">
+                            <div class="modal-body">
+                                <table id="tabwucPaper" name="tabwucPaper" style="width: 100%; padding: 1px; border:0px" class="table table-bordered table-hover">
+                                    <tr style="display:none;">
+                                        <td class="NameTD">
+                                            <Label id="lblPaperId" name="lblPaperId" class="col-form-label text-right" style="width:90px;">
+                                                论文Id
+                                            </Label>
+                                        </td>
+                                        <td class="ValueTD">
+                                            <input id="txtPaperId" name="txtPaperId" class="form-control" style="width:300px;" />
+                                        </td>
+
+
+                                    </tr>
+                                    <tr>
+                                        <td class="NameTD">
+                                            <Label id="lblResearchQuestion" name="lblResearchQuestion" class="col-form-label text-right" style="width:90px;">
+                                                研究问题
+                                            </Label>
+                                        </td>
+                                        <td class="ValueTD">
+                                            <input id="txtResearchQuestion" name="txtResearchQuestion" class="form-control" style="width:300px;" />
+                                        </td>
+                                        <td class="NameTD">
+                                            <Label id="lblKeyword" name="lblKeyword" class="col-form-label text-right" style="width:90px;">
+                                                关键字
+                                            </Label>
+                                        </td>
+                                        <td class="ValueTD">
+                                            <input id="txtKeyword" name="txtKeyword" class="form-control" style="width:300px;" />
+                                        </td>
+                                    </tr>
+
+
+                                    <tr>
+                                        <td class="NameTD">
+                                            <Label id="lblLiteratureTypeId" name="lblLiteratureTypeId" class="col-form-label text-right" style="width:90px;">
+                                                文献类型
+                                            </Label>
+                                        </td>
+                                        <td class="ValueTD">
+                                            <select id="ddlLiteratureTypeId" name="ddlLiteratureTypeId" class="form-control" style="width:200px;" />
+                                        </td>
+                                        <td class="NameTD">
+                                            <Label id="lblLiteratureSources" name="lblLiteratureSources" class="col-form-label text-right" style="width:90px;">
+                                                文献来源
+                                            </Label>
+                                        </td>
+                                        <td class="ValueTD">
+                                            <input id="txtLiteratureSources" name="txtLiteratureSources" class="form-control" style="width:400px;" />
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="NameTD">
+                                            <Label id="lblLiteratureLink" name="lblLiteratureLink" class="col-form-label text-right" style="width:90px;">
+                                                文献链接
+                                            </Label>
+                                        </td>
+                                        <td class="ValueTD">
+                                            <input id="txtLiteratureLink" name="txtLiteratureLink" class="form-control" style="width:400px;" />
+                                        </td>
+                                        <td class="NameTD">
+                                            <Label id="lblPaperTitle" name="lblPaperTitle" class="col-form-label text-right" style="width:90px;">
+                                                论文标题
+                                            </Label>
+                                        </td>
+                                        <td class="ValueTD">
+                                            <input id="txtPaperTitle" name="txtPaperTitle" class="form-control" style="width:300px;" />
+                                        </td>
+
+                                    </tr>
+                                    <tr>
+                                        <td class="NameTD">
+                                            <Label id="lblShareId" name="lblShareId" class="col-form-label text-right" style="width:90px;">
+                                                分享权限
+                                            </Label>
+                                        </td>
+                                        <td class="ValueTD" colspan="3">
+                                            <select id="ddlShareId" name="ddlShareId" class="form-control" style="width:200px;" />
+
+                                        </td>
+
+                                    </tr>
+                                    <tr>
+                                        <td class="NameTD">
+                                            <Label id="lblUploadfileUrl" name="lblUploadfileUrl" class="col-form-label text-right" style="width:90px;">
+                                                上传图片
+                                            </Label>
+                                        </td>
+                                        <td class="ValueTD" colspan="3">
+                                            <input type="file" id="txtUploadfileUrl" name="txtUploadfileUrl">
+                                            @*<input id="txtUploadfileUrl" name="txtUploadfileUrl" class="form-control" style="width:200px;" />*@
+                                        </td>
+
+                                    </tr>
+
+                                    <tr style="display:none;">
+                                        <td class="NameTD"></td>
+                                        <td class="ValueTD">
+                                            <span class="form-control" style="width:200px;">
+                                                <input type="checkbox" id="chkIsChecked" name="chkIsChecked" Text="是否检查"><label for="chkIsChecked">是否检查</label>
+                                            </span>
+                                        </td>
+
+                                    </tr>
+                                    <tr style="display:none;">
+                                        <td class="NameTD">
+                                            <Label id="lblChecker" name="lblChecker" class="col-form-label text-right" style="width:90px;">
+                                                审核人
+                                            </Label>
+                                        </td>
+                                        <td class="ValueTD">
+                                            <input id="txtChecker" name="txtChecker" class="form-control" style="width:200px;" />
+                                        </td>
+
+                                    </tr>
+                                    <tr>
+                                        <td class="NameTD">
+                                            <Label id="lblMemo" name="lblMemo" class="col-form-label text-right" style="width:90px;">
+                                                备注
+                                            </Label>
+                                        </td>
+                                        <td class="ValueTD" colspan="3">
+                                            <input id="txtMemo" name="txtMemo" class="form-control" style="width:400px;height:55px;" />
+                                        </td>
+
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal -->
+        </form>
+    </div>
+
+
+    <div class="modal fade" style="z-index:1060;" id="divMajorDirectionList" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+        <div class="modal-dialog" style="margin-left:200px;">
+            <div class="modal-content" style="width: 1000px;">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">专业方向</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                @*-- 查询层 --*@
+
+                <div id="divQuerys" class="div_query">
+                    <table id="tabQuerys" name="tabQuery" style="width: 70%; " class="table table-bordered table-hover table td table-sm">
+                        <tr>
+                            <td>
+                                <Label id="lblid_XzMajor_q" name="lblid_XzMajor_q" class="col-form-label text-right" style="width:80px;width:90px;">
+                                    专业
+                                </Label>
+                            </td>
+                            <td>
+                                <select id="ddlid_XzMajor_q" name="ddlid_XzMajor_q" class="form-control" style="width:200px;" />
+                            </td>
+                            <td>
+                                <Label id="lblMajorDirectionName_q" name="lblMajorDirectionName_q" class="col-form-label text-right" style="width:80px;width:90px;">
+                                    研究方向名
+                                </Label>
+                            </td>
+                            <td>
+                                <input id="txtMajorDirectionName_q" name="txtMajorDirectionName_q" class="form-control" style="width:200px;" />
+                            </td>
+                            <td>
+                                <button type="submit" id="btnQuery" name="btnQuery" class="btn btn-outline-warning text-nowrap" onclick="btnQueryMajorDirection_Click()">查询</button>
+                            </td>
+                        </tr>
+
+                    </table>
+                </div>
+                <div class="modal-body">
+                    <div id="divList" class="div_List">
+                        <div id="divMajorDirectionDataLst" class="div_List">
+                        </div>
+                        <div id="divPagerMajorDirection" class="pager" value="1">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnCancel" type="button" class="btn btn-default" data-dismiss="modal" onclick="close_Click()">关闭</button>
+                    @*<button id="btnOKUpd" type="button" class="btn btn-primary" onclick="mySubmit2()">添加</button>*@
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+
+    </div>
+
+</div>
+<input id="hidOpType" type="hidden" />
+<input id="hidKeyId" type="hidden" />
+
+<input id="hidCurrPageIndex" type="hidden" value="1" />
+<input id="hidSortvPaperBy" type="hidden" value="" />
+
+<input id="hidUserId" type="hidden" />
+
+<input id="hdnpic" type="hidden" />
+<input id="hidPaperTypeId" type="hidden" />
+<input id="hidPaperId" type="hidden" />
+
+<input id="hdnFileOne" type="hidden" />
+<input id="hdnFileTwo" type="hidden" />
+<input id="hdnFileThree" type="hidden" />
+
+
+<input id="hidSortvXzMajorDirectionBy" type="hidden" value="" />
+
+<input id="hidMajorDirectionId" type="hidden" />
+

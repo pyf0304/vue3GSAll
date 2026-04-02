@@ -1,0 +1,1841 @@
+﻿@page
+@{
+    Layout = "~/Pages/Shared/_Layout_PC.cshtml";
+    ViewData["Title"] = "总数据周期统计";
+}
+@section Styles{
+    <!-- 导出wordjs jquery需要放置在最前端-->
+    @*<script src="../lib/jquery.min.js"></script>*@
+    <script src="../lib/jquery/dist/jquery.js"></script>
+    @*<script src="~/lib/jquery/dist/jquery.min.js"></script>*@
+    @*<link rel="stylesheet" href="../css/Bootstrap-3.0.3.css" />*@
+    <link rel="stylesheet" href="../lib/bootstrap/dist/css/bootstrap.css" />
+    @*<link rel="stylesheet" href="../css/site.css" />*@
+
+
+    <link rel="stylesheet" href="~/lib/Xadmin/css/font.css">
+    <link rel="stylesheet" href="~/lib/Xadmin/css/xadmin.css">
+    <!-- <link rel="stylesheet" href="./css/theme5.css"> -->
+    <link rel="stylesheet" href="~/css/public.css" />
+    <link href="~/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <style>
+        canvas {
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+        }
+
+        #chartjs-tooltip {
+            opacity: 1;
+            position: absolute;
+            background: rgba(0, 0, 0, .7);
+            color: white;
+            border-radius: 3px;
+            -webkit-transition: all .1s ease;
+            transition: all .1s ease;
+            pointer-events: none;
+            -webkit-transform: translate(-50%, 0);
+            transform: translate(-50%, 0);
+        }
+
+        .chartjs-tooltip-key {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            margin-right: 10px;
+        }
+
+        #chartjs-tooltip6 {
+            opacity: 1;
+            position: absolute;
+            background: rgba(0, 0, 0, .7);
+            color: white;
+            border-radius: 3px;
+            -webkit-transition: all .1s ease;
+            transition: all .1s ease;
+            pointer-events: none;
+            -webkit-transform: translate(-50%, 0);
+            transform: translate(-50%, 0);
+        }
+
+        .chartjs-tooltip-key6 {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            margin-right: 10px;
+        }
+    </style>
+    <style>
+        .panel-default {
+            border: none;
+            border-radius: 0px;
+            margin-bottom: 0px;
+            box-shadow: none;
+            -webkit-box-shadow: none;
+        }
+
+            .panel-default > .panel-heading {
+                color: #777;
+                background-color: #fff;
+                border-color: #e6e6e6;
+                padding: 10px 10px;
+            }
+
+            .panel-default > .panel-body {
+                padding: 10px;
+                padding-bottom: 0px;
+            }
+
+                .panel-default > .panel-body ul {
+                    overflow: hidden;
+                    padding: 0;
+                    margin: 0px;
+                    margin-top: -5px;
+                }
+
+                    .panel-default > .panel-body ul li {
+                        line-height: 27px;
+                        list-style-type: none;
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
+                    }
+
+                        .panel-default > .panel-body ul li .time {
+                            color: #a1a1a1;
+                            float: right;
+                            padding-right: 5px;
+                        }
+    </style>
+
+}
+@section Scripts{
+    <script src="~/lib/Xadmin/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="~/lib/Xadmin/js/xadmin.js"></script>
+
+    @*<script src="../lib/jquery/dist/jquery.js"></script>*@
+    <script src="../lib/bootstrap/dist/js/bootstrap.js"></script>
+
+
+    <script src="~/lib/bootstrap.min.js"></script>
+
+    @*<script type="text/javascript" src="~/lib/Chart.js"></script>*@
+    <script type="text/javascript" src="~/lib/charts/Chart.min.js"></script>
+    <script type="text/javascript" src="~/lib/charts/utils.js"></script>
+    <!-- 导出wordjs-->
+    <script src="~/lib/FileSaver.js"></script>
+    <script src="~/lib/jquery.wordexport.js"></script>
+    <!--文件上传-->
+    <script src="../lib/jquery-form.js"></script>
+
+    <script>
+        layui.use(['laydate', 'form'],
+            function () {
+                var laydate = layui.laydate;
+
+                //日期
+                laydate.render({
+                    elem: '#txtStartDate_q' //指定元素
+                });
+
+                //日期
+                laydate.render({
+                    elem: '#txtEndDate_q' //指定元素
+                });
+
+                ////时间选择器
+                //laydate.render({
+                //    elem: '#txtTime_q'
+                //    , type: 'time'
+                //});
+            });
+    </script>
+    <script src="../lib/require/require.js" data-main="../js/src/config"></script>
+}
+    <script>
+
+
+
+    /*
+ 按钮单击,用于调用Js函数中btn_Click
+(AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_btn_Click)
+*/
+    function btn_Click() {
+        var strKeyId = $("#hidgs_DateId").val();
+        if (strKeyId == "") {
+            require(["../js/GraduateEduTools/gs_TeachingDateCRUDEx.js"], function (gs_teachingdate) {
+                gs_teachingdate.gs_TeachingDateCRUDEx.btn_Click("Create", strKeyId);
+            });
+        }
+        else {
+
+            require(["../js/GraduateEduTools/gs_TeachingDateCRUDEx.js"], function (gs_teachingdate) {
+                gs_teachingdate.gs_TeachingDateCRUDEx.btn_Click("UpdateRecordInTab", strKeyId);
+            });
+
+        }
+
+
+    }
+    //设置教学班时间
+    function btnSetUpDateRecord_Click() {
+        require(["../js/GraduateEduTools/TotalDataStatisticsEx.js"], function (Statistics) {
+            var objPage = new Statistics.TotalDataStatisticsEx();
+            objPage.btnSetUpDateRecord_Click();
+        });
+    }
+
+
+    function tbody() {
+        $("tbody.x-cate tr[fid!='0']").hide();
+        // 栏目多级显示效果
+        $('.x-show').click(function () {
+            if ($(this).attr('status') == 'true') {
+                $(this).html('&#xe625;');
+                $(this).attr('status', 'false');
+                cateId = $(this).parents('tr').attr('cate-id');
+                $("tbody tr[fid=" + cateId + "]").show();
+            } else {
+                cateIds = [];
+                $(this).html('&#xe623;');
+                $(this).attr('status', 'true');
+                cateId = $(this).parents('tr').attr('cate-id');
+                getCateId(cateId);
+                for (var i in cateIds) {
+                    $("tbody tr[cate-id=" + cateIds[i] + "]").hide().find('.x-show').html('&#xe623;').attr('status', 'true');
+                }
+            }
+        })
+    }
+
+    var cateIds = [];
+    function getCateId(cateId) {
+        $("tbody tr[fid=" + cateId + "]").each(function (index, el) {
+            id = $(el).attr('cate-id');
+            cateIds.push(id);
+            getCateId(id);
+        });
+    }
+
+
+    window.onload = function () {
+
+        require(["../js/GraduateEduTools/TotalDataStatisticsEx.js"], function (Statistics) {
+            var objPage = new Statistics.TotalDataStatisticsEx();
+            $("#hidQueryStata").val("2");
+            objPage.Page_Load();
+        });
+    }
+
+
+
+
+    /*
+     查询记录
+    (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+    */
+    function btnQuery_Click() {
+        require(["../js/GraduateEduTools/TotalDataStatisticsEx.js"], function (Statistics) {
+
+            var objPage = new Statistics.TotalDataStatisticsEx();
+            objPage.Bind_AllData();
+        });
+    }
+    /*
+    li1
+   (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+   */
+    function liUserNum_Click() {
+        $("#hidQueryStata").val("1");
+
+        $("#TotalDataNum").hide();
+        $("#UserNum").show();
+        $("#TeaClassNum").hide();
+        $("#TeaClassAverage").hide();
+        $("#TeaClassComment").hide();
+        $("#UserCommentNum").hide();
+        $("#UserDiscussNum").hide();
+
+        $("#td_UserId").show();
+        $("#td_TotalDataTypeId").show();
+        $("#td_IsRecommend").hide();
+        $("#td_TopicId").hide();
+        //require(["../js/GraduateEduTools/TotalDataStatisticsEx.js"], function (Statistics) {
+        //    var objPage = new Statistics.TotalDataStatisticsEx();
+        //    //objPage.liUserNum_Click();
+        //    objPage.btnQuery_Click();
+        //});
+        this.btnQuery_Click();
+    }
+    /*
+    li2
+   (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+   */
+    function liTeaClassNum_Click() {
+        $("#hidQueryStata").val("2");
+
+        $("#TotalDataNum").hide();
+        $("#UserNum").hide();
+        $("#TeaClassNum").show();
+        $("#TeaClassAverage").hide();
+        $("#TeaClassComment").hide();
+        $("#UserCommentNum").hide();
+        $("#UserDiscussNum").hide();
+
+        $("#td_UserId").hide();
+        $("#ddlUserId_q").val("0");
+        $("#td_TotalDataTypeId").show();
+        $("#td_IsRecommend").hide();
+        $("#td_TopicId").hide();
+        //require(["../js/GraduateEduTools/TotalDataStatisticsEx.js"], function (Statistics) {
+        //    var objPage = new Statistics.TotalDataStatisticsEx();
+        //    //objPage.liTeaClassNum_Click();
+        //    objPage.btnQuery_Click();
+        //});
+        this.btnQuery_Click();
+    }
+
+
+
+
+    /*
+     li3
+    (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+    */
+    function liTotalDataNum_Click() {
+        $("#hidQueryStata").val("3");
+
+        $("#TotalDataNum").show();
+        $("#UserNum").hide();
+        $("#TeaClassNum").hide();
+        $("#TeaClassAverage").hide();
+        $("#TeaClassComment").hide();
+        $("#UserCommentNum").hide();
+        $("#UserDiscussNum").hide();
+
+        $("#td_UserId").show();
+        $("#td_IsRecommend").hide();
+        $("#td_TotalDataTypeId").show();
+        $("#td_TopicId").hide();
+        //require(["../js/GraduateEduTools/TotalDataStatisticsEx.js"], function (Statistics) {
+
+        //    var objPage = new Statistics.TotalDataStatisticsEx();
+        //    //objPage.liTotalDataNum_Click();
+        //    objPage.btnQuery_Click();
+        //});
+        this.btnQuery_Click();
+
+    }
+
+    //li4教学班平均分
+    function liTeaClassAverage_Click() {
+        $("#hidQueryStata").val("4");
+
+        $("#TotalDataNum").hide();
+        $("#UserNum").hide();
+        $("#TeaClassNum").hide();
+        $("#TeaClassAverage").show();
+        $("#TeaClassComment").hide();
+        $("#UserCommentNum").hide();
+        $("#UserDiscussNum").hide();
+
+        $("#td_UserId").hide();
+        $("#ddlUserId_q").val("0");
+        $("#td_TotalDataTypeId").show();
+        $("#td_IsRecommend").hide();
+        $("#td_TopicId").hide();
+        //require(["../js/GraduateEduTools/TotalDataStatisticsEx.js"], function (Statistics) {
+
+        //    //var objPage = new Statistics.TotalDataStatisticsEx();
+        //    //objPage.TeaClassAverage_Click();
+        //    objPage.btnQuery_Click();
+        //});
+        this.btnQuery_Click();
+    }
+
+
+    //li5教学班平均分
+    function liTeaClassComment_Click() {
+        $("#hidQueryStata").val("5");
+
+        $("#TotalDataNum").hide();
+        $("#UserNum").hide();
+        $("#TeaClassNum").hide();
+        $("#TeaClassAverage").hide();
+        $("#TeaClassComment").show();
+        $("#UserCommentNum").hide();
+        $("#UserDiscussNum").hide();
+
+        $("#td_UserId").hide();
+        $("#ddlUserId_q").val("0");
+        $("#td_TotalDataTypeId").hide();
+        $("#ddlTotalDataTypeId_q").val("0");
+        $("#td_IsRecommend").hide();
+        $("#td_TopicId").hide();
+        this.btnQuery_Click();
+    }
+
+
+    //li6教学班平均分
+    function liUserCommentNum_Click() {
+        $("#hidQueryStata").val("6");
+
+        $("#TotalDataNum").hide();
+        $("#UserNum").hide();
+        $("#TeaClassNum").hide();
+        $("#TeaClassAverage").hide();
+        $("#TeaClassComment").hide();
+        $("#UserCommentNum").show();
+        $("#UserDiscussNum").hide();
+
+        $("#td_UserId").show();
+        $("#td_TotalDataTypeId").hide();
+        $("#ddlTotalDataTypeId_q").val("0");
+        $("#td_IsRecommend").hide();
+        $("#td_TopicId").hide();
+        this.btnQuery_Click();
+    }
+
+
+    //li7用户讨论回答统计
+    function liUserDiscussNum_Click() {
+        $("#hidQueryStata").val("7");
+
+        $("#TotalDataNum").hide();
+        $("#UserNum").hide();
+        $("#TeaClassNum").hide();
+        $("#TeaClassAverage").hide();
+        $("#TeaClassComment").hide();
+        $("#UserCommentNum").hide();
+
+        $("#UserDiscussNum").show();
+
+
+        $("#td_UserId").show();
+        $("#td_TotalDataTypeId").hide();
+        $("#ddlTotalDataTypeId_q").val("0");
+        $("#td_IsRecommend").show();
+        $("#td_TopicId").show();
+
+        this.btnQuery_Click();
+    }
+
+    //同步总数据记录
+    function btnSynTotalDataStatistics_Click() {
+        require(["../js/GraduateEduTools/TotalDataStatisticsEx.js"], function (Statistics) {
+            var objPage = new Statistics.TotalDataStatisticsEx();
+            objPage.btnSynTotalDataStatistics_Click();
+        });
+    }
+
+    //同步回答统计记录
+    function btnSynAnswerCount_Click() {
+        require(["../js/GraduateEduTools/TotalDataStatisticsEx.js"], function (Statistics) {
+            var objPage = new Statistics.TotalDataStatisticsEx();
+            objPage.btnSynAnswerCount_Click();
+        });
+    }
+
+
+    //function base64ToBlob(urlData) {
+    //    var arr = urlData.split(',');
+    //    var mime = arr[0].match(/:(.*?);/)[1] || 'image/png';
+    //    // 去掉url的头，并转化为byte
+    //    var bytes = window.atob(arr[1]);
+    //    // 处理异常,将ascii码小于0的转换为大于0
+    //    var ab = new ArrayBuffer(bytes.length);
+    //    // 生成视图（直接针对内存）：8位无符号整数，长度1个字节
+    //    var ia = new Uint8Array(ab);
+
+    //    for (var i = 0; i < bytes.length; i++) {
+    //        ia[i] = bytes.charCodeAt(i);
+    //    }
+
+    //    return new Blob([ab], {
+    //        type: mime
+    //    });
+    //}
+
+    //// 使用方式
+    //upload({
+    //    url: 'xxx',
+    //    files: [{
+    //        name: 'name1',
+    //        // 值可以用base64转好的blob，也可以直接用fileinput中获取的文件对象，效果一样
+    //        file: b64ToBlob(imgData),
+    //    }],
+    //    ...
+    //});
+
+    //注意，上述upload可以是你自己的上传方法（库很多，譬如webupload，当然自己封装一个也很简单），原理如下：
+
+    //var formdata = new FormData();
+
+    //var files = settings.files;
+
+    //if (files) {
+    //    if (Array.isArray(files)) {
+    //        for (var i = 0,
+    //        len = files.length; i < len; i++) {
+    //            formdata.append(files[i].name, files[i].file);
+    //        }
+    //    } else {
+    //        formdata.append(files.name, files.file);
+    //    }
+    //}
+    //...
+
+
+
+
+
+    //function changeImgToDataurl() {
+    //    var charImg = document.all("exportdom").getElementsByTagName("img");
+    //    var imgURLs = "";
+    //    for (var i = 0; i < charImg.length; i++) {
+    //        var imgURL = charImg[i].currentSrc;
+    //        getBase64(imgURL, charImg[i]);
+    //    }
+    //}
+    //function getBase64(url, charImg) {
+    //    var Img = new Image();
+    //    Img.crossOrigin = "Anonymous";//跨域必须使用，且后台也得设置允许跨域
+    //    dataURL = '';
+    //    Img.src = url;
+    //    Img.onload = function () { //要先确保图片完整获取到，这是个异步事件
+    //        var canvas = document.createElement("canvas"), //创建canvas元素
+    //        width = Img.width, //确保canvas的尺寸和图片一样
+    //        height = Img.height;
+    //        canvas.width = width;
+    //        canvas.height = height;
+    //        canvas.getContext("2d").drawImage(Img, 0, 0, width, height); //将图片绘制到canvas中
+    //        dataURL = canvas.toDataURL('image/jpg'); //转换图片为dataURL
+    //        condataurl ? condataurl(dataURL, charImg) : null; //调用回调函数
+    //    };
+    //}
+    //function condataurl(dataURL, charImg) {
+    //    charImg.src = dataURL;
+    //    //console.log(charImg);
+    //}
+
+
+
+    //转码为文件
+    function dataURLtoBlob(dataurl) {
+        var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new Blob([u8arr], { type: mime });
+    }
+    //function downloadFileByBase64(base64, name) {
+    //    var myBlob = dataURLtoBlob(base64)
+    //    var myUrl = URL.createObjectURL(myBlob)
+    //    downloadFile(myUrl, name)
+    //}
+
+
+
+
+
+    //测试导出Canvas图片到word；
+    function btnExportWord_Click() {
+        //var oCanvas = document.getElementById("Canvas3");
+        //document.getElementById("ExportDetail").appendChild(convertCanvasToImage(oCanvas));
+        var oCanvas = document.getElementById("Canvas3");
+        if (oCanvas != null) {
+            //得到图片64位字符串
+            var Base64Data = oCanvas.toDataURL("image/png").toString();
+            //转码为文件；
+
+            var myBlob = dataURLtoBlob(Base64Data);
+
+            //执行文件上传到指定文件夹；
+            var strPicPath = uploadFile(myBlob);
+            //if (strPicPath != "")
+            //{
+            //var image = new Image();
+            //image.src = "http://localhost:49590/GraduateStudyWebApp/" + strPicPath;
+            //document.getElementById("ExportDetail").appendChild(image);
+        }
+    }
+    function convertCanvasToImage(canvas) {
+        var image = new Image();
+        image.src = canvas.toDataURL("image/png");
+        return image;
+    }
+    jQuery(document).ready(function ($) {
+
+        // var btn = document.getElementById('btn')
+
+
+        var Preview = $("#ExportDetail").attr("id")
+        if (!!window.ActiveXObject || "ActiveXObject" in window) {
+
+            $("#btnExportWord").onclick = function () {
+
+                var oCanvas = document.getElementById("Canvas3");
+                if (oCanvas != null) {
+                    document.getElementById("ExportDetail").appendChild(convertCanvasToImage(oCanvas));
+                }
+
+
+                var Preview = $("#ExportDetail").attr("id")
+                //AllAreaWordTwo(document.getElementById('test'), '^')
+                AllAreaWordTwo(Preview, '^')
+            }
+        } else {
+            $("#btnExportWord").click(function () {
+
+                //var oCanvas = document.getElementById("Canvas3");
+                //if (oCanvas != null) {
+                //    //得到图片64位字符串
+                //    var Base64Data = oCanvas.toDataURL("image/png").toString();
+                //    //转码为文件；
+
+                //    var myBlob = dataURLtoBlob(Base64Data);
+
+                //    //执行文件上传到指定文件夹；
+                //    var strPicPath = uploadFile(myBlob);
+                //    //if (strPicPath != "")
+                //    //{
+                //        var image = new Image();
+                //        image.src = "http://localhost:49590/GraduateStudyWebApp/" + strPicPath;
+                //        document.getElementById("ExportDetail").appendChild(image);
+
+                       // setTimeout($("#ExportDetail").wordExport("测试导出Canvas图片"), 1000);
+                        //把图片导出到word
+                          $("#ExportDetail").wordExport("测试导出Canvas图片");
+                   // }
+                  // var myUrl = URL.createObjectURL(myBlob);
+
+                  
+
+                    //document.getElementById("ExportDetail").appendChild(convertCanvasToImage(oCanvas));
+              //  }
+
+                //$("#ExportDetail").wordExport("测试导出Canvas图片");
+              
+
+
+            });
+
+
+        }
+    });
+
+
+    function CallBackExportWord() {
+        var strfileNamePic = $("#hidfileNamePic").val();
+       
+        
+        if (strfileNamePic != "")
+        {
+            var image = new Image();
+            image.src = "http://localhost:49590/GraduateStudyWebApp/" + strfileNamePic;
+            document.getElementById("ExportDetail").appendChild(image);
+
+          
+        }
+        
+    }
+
+    function uploadFile(blob) {
+        var strPicPath = "";//声明一个接受的返回参数；
+        //将blob存储在FormData中
+        var formData = new FormData();
+        formData.append("filename", blob);//形成键值对应，伪装成表单的数据
+        formData.append('fileType', "0310276");
+        //发起ajax请求
+        $.ajax({
+            url: "@Url.Action("UpLoadUserCanvasPic", "testUploadPic")",//服务器地址
+            type: "post", //请求方法
+        //url: "/imgUpload",//服务器地址
+          
+        //data: { "imgStr": imgStr},
+        data: formData,//向服务器传输的数据
+        contentType: false,//避免ajax操作请求头部从而丢分界符，造成服务器无法正确识别请求的数据类型
+        processData: false,//告诉ajax不要把将传输的数据给序列化了。
+        cache: false,//不从浏览器缓存中加载请求头部信息
+        success: function (returndata) {
+            //成功/为空
+            if (returndata.status == 0 || returndata.status == -1) {
+
+
+                //如果文件地址为空，那么是修改 则不用存放地址；返回3个文件地址；
+                if (returndata.fileNamePic != "") {
+                    $("#hidfileNamePic").val(returndata.fileNamePic);
+                    strPicPath = returndata.fileNamePic;
+                   
+                    CallBackExportWord();
+                    return strPicPath;
+                }
+
+
+             
+            }
+            else {
+
+                alert('请选择正确图片格式(in TotalDataStatistics)')
+            }
+
+
+        },
+        error: (error) => {
+            alert("出现错误啦。");
+        }
+        });
+        
+    }
+           
+
+
+    //  {Object} cont  要导出的html元素内容的id,注意不要加双引号@param {Object} key   分页关键字
+    function AllAreaWordTwo(cont, key) {
+
+
+
+        var oWD = new ActiveXObject("Word.Application");
+        //默认为页面视图
+        var oDC = oWD.Documents.Add("", 0, 0);
+        var oRange = oDC.Range(0, 1);
+        //var oRange1 = oDC.Range(0,2);
+        var sel = document.body.createTextRange();
+        //参数为html元素id
+        sel.moveToElementText(cont);
+        sel.select();
+        sel.execCommand("Copy");
+        oRange.Paste();
+        oWD.Application.Visible = true;
+        //得到打开后word的selection对象
+        var selection = oWD.Selection;
+        //设置字体大小
+        selection.Font.Size = 10;
+        //ctrl+A 全选操作
+        selection.WholeStory();
+        //清除格式
+        selection.Find.ClearFormatting();
+        //指定查找关键字
+        selection.Find.Text = key;
+        //^m为手动分页符标记
+        //向下查找
+        selection.Find.Forward = true;
+        selection.Find.Wrap = 1;
+        //不区分大小写
+        selection.Find.MatchCase = false;
+        //不匹配整个单词
+        selection.Find.MatchWholeWord = false;
+        //如果找到指定字符串返回真,否则返回false
+        while (selection.Find.Execute()) {
+            //插入分页符,分页符常量为7,具体可查word api
+            selection.InsertBreak(7);
+        }
+    }
+
+
+
+    //各观点学生统计
+    function Canvas1(strLabelsJson, strDatasetsJson) {
+        var config = {
+            "type": "bar",
+            "data":
+            {
+                "labels": strLabelsJson,
+                "datasets": [{
+                    "label": "每周记录",
+                    "data": strDatasetsJson,
+                    "fill": false,
+                    "backgroundColor": "#2e9dbd",
+                    "borderWidth": 1
+                }]
+            },
+            "options":
+            {
+                "scales":
+                {
+                    "yAxes":
+                        [{
+                            "ticks":
+                                { "beginAtZero": true }
+                        }]
+                }
+            }
+        };
+        $('#div_Canvas1').html('<canvas id="Canvas1" style="height: 320px; width: 100%;"></canvas>');
+
+        var ctx = document.getElementById("Canvas1").getContext("2d");
+        //window.myLine = new Chart(ctx).Bar(lineChartData, {
+        //    bezierCurve: false,
+
+        //});
+        window.myLine = new Chart(ctx, config);
+    }
+
+    //各观点教学班统计
+    function Canvas2(strlabelsJson, strdatasetsJson, strColorJson) {
+        //var lineChartData = {
+        //    labels: strlabelsJson,
+        //    datasets: [
+        //        {
+        //            fillColor: "#2e9dbd",
+        //            data: strdatasetsJson
+
+        //        }
+        //    ]
+        //}
+        var config = {
+            "type": "bar",
+            "data":
+            {
+                "labels": strlabelsJson,
+                "datasets": [{
+                    "label": "周记录",
+                    "data": strdatasetsJson,
+                    "fill": false,
+                    "borderWidth": 1,
+                    "backgroundColor": strColorJson
+
+                    //"backgroundColor":
+                    //    ["rgba(255, 99, 132, 0.2)",
+                    //    "rgba(255, 159, 64, 0.2)",
+                    //    "rgba(255, 205, 86, 0.2)",
+                    //    "rgba(75, 192, 192, 0.2)",
+                    //    "rgba(54, 162, 235, 0.2)",
+                    //    "rgba(153, 102, 255, 0.2)",
+                    //    "rgba(201, 203, 207, 0.2)"],
+                    //"borderColor":
+                    //    ["rgb(255, 99, 132)",
+                    //    "rgb(255, 159, 64)",
+                    //    "rgb(255, 205, 86)",
+                    //    "rgb(75, 192, 192)",
+                    //    "rgb(54, 162, 235)",
+                    //    "rgb(153, 102, 255)",
+                    //        "rgb(201, 203, 207)"],
+                }]
+            },
+            "options":
+            {
+                "scales":
+                {
+                    "yAxes":
+                        [{
+                            "ticks":
+                                { "beginAtZero": true }
+                        }]
+                }
+            }
+        };
+        $('#div_Canvas2').html('<canvas id="Canvas2" style="height: 320px; width: 100%;"></canvas>');
+        var ctx = document.getElementById("Canvas2");
+        ctx.getContext("2d");
+        //window.myLine = new Chart(ctx).Bar(lineChartData, {
+        //    bezierCurve: false,
+
+        //});
+        ctx.style.height = "320px";
+        window.myLine = new Chart(ctx, config);
+
+
+        //ctx.height = "320px";
+    }
+
+
+    //教学班周教师打分平均分
+    function Canvas4(strlabelsJson, strdatasetsJson, strColorJson) {
+
+        var config = {
+            "type": "line",
+            "data":
+            {
+                "labels": strlabelsJson,
+                "datasets": [{
+                    "label": "周均分",
+                    "data": strdatasetsJson,
+                    "fill": false,
+                    "borderWidth": 1,
+                    "backgroundColor": strColorJson
+                }]
+            }
+            ,
+            options: {
+                responsive: true,
+                title: {
+                    display: true,
+                    text: ''
+                    //text: '当前教学班所有用户周期统计'
+                },
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Week'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Value'
+                        }
+                    }]
+                }
+            }
+            //,
+            //"options":
+            //{
+            //    "scales":
+            //    {
+            //        "yAxes":
+            //            [{
+            //                "ticks":
+            //                    { "beginAtZero": true }
+            //            }]
+            //    }
+            //}
+
+        };
+        $('#div_Canvas4').html('<canvas id="Canvas4" height="350" style="height: 350px; width: 100%;"></canvas>');
+        var ctx = document.getElementById("Canvas4");
+        ctx.getContext("2d");
+        //ctx.scrollHeight = 350;
+        window.myLine = new Chart(ctx, config);
+        //ctx.height(400);
+    }
+
+
+    //教学班用户观点数排序统计
+    var clsTooltips = function () {
+        this.colors = [];
+        this.Text = "";
+        this.value = 0.0;
+        this.body = [];
+    }
+    //Chart.defaults.global.pointHitDetectionRadius = 1;
+
+    var customTooltips = function (tooltip) {
+        // Tooltip Element
+        var tooltipEl = document.getElementById('chartjs-tooltip');
+
+        if (!tooltipEl) {
+            tooltipEl = document.createElement('div');
+            tooltipEl.id = 'chartjs-tooltip';
+            tooltipEl.innerHTML = '<table></table>';
+            this._chart.canvas.parentNode.appendChild(tooltipEl);
+        }
+
+        // Hide if no tooltip
+        if (tooltip.opacity === 0) {
+            tooltipEl.style.opacity = 0;
+            return;
+        }
+
+        // Set caret Position
+        tooltipEl.classList.remove('above', 'below', 'no-transform');
+        if (tooltip.yAlign) {
+            tooltipEl.classList.add(tooltip.yAlign);
+        } else {
+            tooltipEl.classList.add('no-transform');
+        }
+
+        function getBody(bodyItem) {
+            return bodyItem.lines;
+        }
+
+        // Set Text
+        if (tooltip.body) {
+            var titleLines = tooltip.title || [];
+            var bodyLines = tooltip.body.map(getBody);
+            var arrBodyLines = new Array();
+            bodyLines.forEach(function (body, i) {
+                var objTooltips = new clsTooltips();
+                objTooltips.colors = tooltip.labelColors[i];
+                objTooltips.body = body;
+                var arr = body[0].split(':');
+                if (arr.length == 2) {
+                    objTooltips.Text = arr[0];
+                    objTooltips.value = Number(arr[1]);
+                }
+                arrBodyLines.push(objTooltips);
+            });
+            arrBodyLines = arrBodyLines.sort(function (x, y) { return y.value - x.value; });
+            var innerHtml = '<thead>';
+
+            titleLines.forEach(function (title) {
+                innerHtml += '<tr><th>' + title + '</th></tr>';
+            });
+            innerHtml += '</thead><tbody>';
+            console.log('bodyLines', bodyLines);
+            //bodyLines.forEach(function (body, i) {
+            //    console.log('body', body);
+            //    var colors = tooltip.labelColors[i];
+            //    var style = 'background:' + colors.backgroundColor;
+            //    style += '; border-color:' + colors.borderColor;
+            //    style += '; border-width: 2px';
+            //    var span = '<span class="chartjs-tooltip-key" style="' + style + '"></span>';
+            //    innerHtml += '<tr><td>' + span + body + '</td></tr>';
+            //});
+            arrBodyLines.forEach(function (objInFor, i) {
+                console.log('objInFor', objInFor);
+                //var colors = tooltip.labelColors[i];
+                var style = 'background:' + objInFor.colors.backgroundColor;
+                style += '; border-color:' + objInFor.colors.borderColor;
+                style += '; border-width: 2px';
+                var span = '<span class="chartjs-tooltip-key" style="' + style + '"></span>';
+                innerHtml += '<tr><td>' + span + objInFor.body + '</td></tr>';
+            });
+
+
+            innerHtml += '</tbody>';
+
+            var tableRoot = tooltipEl.querySelector('table');
+            tableRoot.innerHTML = innerHtml;
+        }
+
+        var positionY = this._chart.canvas.offsetTop;
+        var positionX = this._chart.canvas.offsetLeft;
+
+        // Display, position, and set styles for font
+        tooltipEl.style.opacity = 1;
+        tooltipEl.style.left = positionX + tooltip.caretX + 'px';
+        tooltipEl.style.top = positionY + tooltip.caretY + 'px';
+        tooltipEl.style.fontFamily = tooltip._bodyFontFamily;
+        tooltipEl.style.fontSize = tooltip.bodyFontSize + 'px';
+        tooltipEl.style.fontStyle = tooltip._bodyFontStyle;
+        tooltipEl.style.padding = tooltip.yPadding + 'px ' + tooltip.xPadding + 'px';
+    };
+
+
+    //所有学生各观点统计
+    function Canvas3(strlabelsJson, strdatasetsJson) {
+        var config = {
+            type: 'line',
+            data: {
+                labels: strlabelsJson,
+                datasets: strdatasetsJson
+            },
+            options: {
+                responsive: true,
+                title: {
+                    display: true,
+                    text: ''
+                    //text: '当前教学班所有用户周期统计'
+                },
+                //tooltips: {
+                //    mode: 'index',
+                //    intersect: false,
+                //},
+                tooltips: {
+                    enabled: false,
+                    mode: 'index',
+                    position: 'nearest',
+                    custom: customTooltips
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Week'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Value'
+                        }
+                    }]
+                }
+            }
+        };
+
+        //$('#Canvas3').remove();
+        $('#div_Canvas3').html('<canvas id="Canvas3" style="height: 550px; width: 100%; padding-right: 10px;"></canvas>');
+        var ctx = document.getElementById("Canvas3").getContext("2d");
+
+        //window.myLine = new Chart(ctx).Line(config, {
+        //    responsive: false,
+        //    bezierCurve: false
+        //}
+        //);
+        window.myLine = new Chart(ctx, config);
+    }
+
+
+
+    //教学班评论统计
+    function Canvas5(strlabelsJson, strdatasetsJson, strColorJson) {
+        var config = {
+            "type": "bar",
+            "data":
+            {
+                "labels": strlabelsJson,
+                "datasets": [{
+                    "label": "周评论",
+                    "data": strdatasetsJson,
+                    "fill": false,
+                    "borderWidth": 1,
+                    "backgroundColor": strColorJson
+
+                    //"backgroundColor":
+                    //    ["rgba(255, 99, 132, 0.2)",
+                    //    "rgba(255, 159, 64, 0.2)",
+                    //    "rgba(255, 205, 86, 0.2)",
+                    //    "rgba(75, 192, 192, 0.2)",
+                    //    "rgba(54, 162, 235, 0.2)",
+                    //    "rgba(153, 102, 255, 0.2)",
+                    //    "rgba(201, 203, 207, 0.2)"],
+                    //"borderColor":
+                    //    ["rgb(255, 99, 132)",
+                    //    "rgb(255, 159, 64)",
+                    //    "rgb(255, 205, 86)",
+                    //    "rgb(75, 192, 192)",
+                    //    "rgb(54, 162, 235)",
+                    //    "rgb(153, 102, 255)",
+                    //        "rgb(201, 203, 207)"],
+                }]
+            },
+            "options":
+            {
+                "scales":
+                {
+                    "yAxes":
+                        [{
+                            "ticks":
+                                { "beginAtZero": true }
+                        }]
+                }
+            }
+        };
+        $('#div_Canvas5').html('<canvas id="Canvas5" style="height: 320px; width: 100%;"></canvas>');
+        var ctx = document.getElementById("Canvas5");
+        ctx.getContext("2d");
+        //window.myLine = new Chart(ctx).Bar(lineChartData, {
+        //    bezierCurve: false,
+
+        //});
+        ctx.style.height = "320px";
+        window.myLine = new Chart(ctx, config);
+
+
+        //ctx.height = "320px";
+    }
+
+
+    //教学班用户排序统计
+    var clsTooltips6 = function () {
+        this.colors = [];
+        this.Text = "";
+        this.value = 0.0;
+        this.body = [];
+    }
+    //Chart.defaults.global.pointHitDetectionRadius = 1;
+
+    var customTooltips6 = function (tooltip) {
+        // Tooltip Element
+        var tooltipEl = document.getElementById('chartjs-tooltip6');
+
+        if (!tooltipEl) {
+            tooltipEl = document.createElement('div');
+            tooltipEl.id = 'chartjs-tooltip6';
+            tooltipEl.innerHTML = '<table></table>';
+            this._chart.canvas.parentNode.appendChild(tooltipEl);
+        }
+
+        // Hide if no tooltip
+        if (tooltip.opacity === 0) {
+            tooltipEl.style.opacity = 0;
+            return;
+        }
+
+        // Set caret Position
+        tooltipEl.classList.remove('above', 'below', 'no-transform');
+        if (tooltip.yAlign) {
+            tooltipEl.classList.add(tooltip.yAlign);
+        } else {
+            tooltipEl.classList.add('no-transform');
+        }
+
+        function getBody(bodyItem) {
+            return bodyItem.lines;
+        }
+
+        // Set Text
+        if (tooltip.body) {
+            var titleLines = tooltip.title || [];
+            var bodyLines = tooltip.body.map(getBody);
+            var arrBodyLines = new Array();
+            bodyLines.forEach(function (body, i) {
+                var objTooltips = new clsTooltips6();
+                objTooltips.colors = tooltip.labelColors[i];
+                objTooltips.body = body;
+                var arr = body[0].split(':');
+                if (arr.length == 2) {
+                    objTooltips.Text = arr[0];
+                    objTooltips.value = Number(arr[1]);
+                }
+                arrBodyLines.push(objTooltips);
+            });
+            arrBodyLines = arrBodyLines.sort(function (x, y) { return y.value - x.value; });
+            var innerHtml = '<thead>';
+
+            titleLines.forEach(function (title) {
+                innerHtml += '<tr><th>' + title + '</th></tr>';
+            });
+            innerHtml += '</thead><tbody>';
+            console.log('bodyLines', bodyLines);
+            //bodyLines.forEach(function (body, i) {
+            //    console.log('body', body);
+            //    var colors = tooltip.labelColors[i];
+            //    var style = 'background:' + colors.backgroundColor;
+            //    style += '; border-color:' + colors.borderColor;
+            //    style += '; border-width: 2px';
+            //    var span = '<span class="chartjs-tooltip-key" style="' + style + '"></span>';
+            //    innerHtml += '<tr><td>' + span + body + '</td></tr>';
+            //});
+            arrBodyLines.forEach(function (objInFor, i) {
+                console.log('objInFor', objInFor);
+                //var colors = tooltip.labelColors[i];
+                var style = 'background:' + objInFor.colors.backgroundColor;
+                style += '; border-color:' + objInFor.colors.borderColor;
+                style += '; border-width: 2px';
+                var span = '<span class="chartjs-tooltip-key6" style="' + style + '"></span>';
+                innerHtml += '<tr><td>' + span + objInFor.body + '</td></tr>';
+            });
+
+
+            innerHtml += '</tbody>';
+
+            var tableRoot = tooltipEl.querySelector('table');
+            tableRoot.innerHTML = innerHtml;
+        }
+
+        var positionY = this._chart.canvas.offsetTop;
+        var positionX = this._chart.canvas.offsetLeft;
+
+        // Display, position, and set styles for font
+        tooltipEl.style.opacity = 1;
+        tooltipEl.style.left = positionX + tooltip.caretX + 'px';
+        tooltipEl.style.top = positionY + tooltip.caretY + 'px';
+        tooltipEl.style.fontFamily = tooltip._bodyFontFamily;
+        tooltipEl.style.fontSize = tooltip.bodyFontSize + 'px';
+        tooltipEl.style.fontStyle = tooltip._bodyFontStyle;
+        tooltipEl.style.padding = tooltip.yPadding + 'px ' + tooltip.xPadding + 'px';
+    };
+
+
+    //所有学生各观点统计
+    function Canvas6(strlabelsJson, strdatasetsJson) {
+        var config = {
+            type: 'line',
+            data: {
+                labels: strlabelsJson,
+                datasets: strdatasetsJson
+            },
+            options: {
+                responsive: true,
+                title: {
+                    display: true,
+                    text: ''
+                    //text: '当前教学班所有用户周期统计'
+                },
+                //tooltips: {
+                //    mode: 'index',
+                //    intersect: false,
+                //},
+                tooltips: {
+                    enabled: false,
+                    mode: 'index',
+                    position: 'nearest',
+                    custom: customTooltips6
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Week'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Value'
+                        }
+                    }]
+                }
+            }
+        };
+
+        //$('#Canvas3').remove();
+        $('#div_Canvas6').html('<canvas id="Canvas6" style="height: 550px; width: 100%; padding-right: 10px;"></canvas>');
+        var ctx = document.getElementById("Canvas6").getContext("2d");
+
+        //window.myLine = new Chart(ctx).Line(config, {
+        //    responsive: false,
+        //    bezierCurve: false
+        //}
+        //);
+        window.myLine = new Chart(ctx, config);
+    }
+
+    //所有学生各观点统计
+    function Canvas7(strlabelsJson, strdatasetsJson) {
+        var config = {
+            type: 'line',
+            data: {
+                labels: strlabelsJson,
+                datasets: strdatasetsJson
+            },
+            options: {
+                responsive: true,
+                title: {
+                    display: true,
+                    text: ''
+                    //text: '当前教学班所有用户周期统计'
+                },
+                //tooltips: {
+                //    mode: 'index',
+                //    intersect: false,
+                //},
+                tooltips: {
+                    enabled: false,
+                    mode: 'index',
+                    position: 'nearest',
+                    custom: customTooltips6
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Week'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Value'
+                        }
+                    }]
+                }
+            }
+        };
+
+        //$('#Canvas3').remove();
+        $('#div_Canvas7').html('<canvas id="Canvas7" style="height: 500px; width: 100%; padding-right: 10px;"></canvas>');
+        var ctx = document.getElementById("Canvas7").getContext("2d");
+
+        //window.myLine = new Chart(ctx).Line(config, {
+        //    responsive: false,
+        //    bezierCurve: false
+        //}
+        //);
+        window.myLine = new Chart(ctx, config);
+    }
+
+
+    function Alert1(strMsg) {
+
+        layer.msg(strMsg, {
+            icon: 1,
+            time: 2000
+        });
+    }
+
+    function Alert2(strMsg) {
+
+        layer.msg(strMsg, {
+            icon: 2,
+            time: 2000
+        });
+    }
+
+    function Alert3(strMsg) {
+
+        layer.msg(strMsg, {
+            icon: 3,
+            time: 2000
+        });
+    }
+    function Alert4(strMsg) {
+
+        layer.msg(strMsg, {
+            icon: 4,
+            time: 2000
+        });
+    }
+
+
+    </script>
+
+
+<div id="divLoading" class="loading">
+    <img src="~/images/CirclePoint.gif" />
+</div>
+
+<div id="tabLayout">
+    @*-- 标题层 --*@
+    <div class="x-nav">
+        <span class="layui-breadcrumb">
+            <a href="">首页</a>
+            <a href="">个人中心</a>
+            <a>
+                <cite>数据统计</cite>
+            </a>
+            <Label id="lblMsg_List" name="lblMsg_List"></Label>
+        </span>
+        <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+            <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+        </a>
+
+    </div>
+
+
+
+    <div id="divQuery" class="div_query">
+
+        <table id="tabQuery" name="tabQuery" style="width: 50%; " class="table table-bordered table-hover table td table-sm">
+            <tr>
+                <td id="td_UserId" style="display:none;">
+                    <select id="ddlUserId_q" name="ddlUserId_q" class="form-control" style="width:170px;" />
+                </td>
+                <td id="td_TotalDataTypeId">
+                    <select id="ddlTotalDataTypeId_q" name="ddlTotalDataTypeId_q" class="form-control" style="width:200px;" />
+                </td>
+                <td>
+                    <input class="layui-input" placeholder="起始日期" name="txtStartDate_q" id="txtStartDate_q" style="width:150px;">
+                </td>
+                <td>
+                    <input class="layui-input" placeholder="结束日期" name="txtEndDate_q" id="txtEndDate_q" style="width:150px;">
+                </td>
+                <td id="td_TopicId">
+                    <select id="ddlTopicId_q" name="ddlTopicId_q" class="form-control" style="width:200px;" />
+                </td>
+
+                <td id="td_IsRecommend">
+                    <span class="form-control" style="width:120px;">
+                        <input type="checkbox" id="chkIsRecommend" name="chkIsRecommend" Text="是否推荐"><label for="chkIsRecommend">是否推荐</label>
+                    </span>
+                </td>
+                <td>
+                    <button class="layui-btn" lay-submit="" lay-filter="sreach" onclick="btnQuery_Click()">
+                        <i class="layui-icon">&#xe615;</i>
+                    </button>
+                </td>
+
+                <td>
+                    <button class="btn btn-primary" style="width:120px;" id="btnSynTotalDataStatistics" name="btnDelRecord" onclick="btnSynTotalDataStatistics_Click()"><i class="layui-icon">&#xe605;</i>同步刷新</button>
+                </td>
+                <td>
+                    <button id="btnAddNewRecord" name="btnAddNewRecord" class="btn btn-outline-info text-nowrap" onclick="btnSetUpDateRecord_Click()">设置教学班日期</button>
+                </td>
+                <td>
+                    <button class="btn btn-primary" style="width:170px;" id="btnSynAnswerCount" name="btnDelRecord" onclick="btnSynAnswerCount_Click()"><i class="layui-icon">&#xe605;</i>同步讨论回答统计</button>
+                </td>
+                <td>
+                    <button class="btn btn-primary" style="width:170px;display:none;" id="btnExport" name="btnExport" onclick="btnExportWord_Click()"><i class="layui-icon">&#xe605;</i>转化Canvas图片</button>
+                    <button class="btn btn-primary" style="width:170px;display:none;" id="btnExportWord" name="btnExportWord"><i class="layui-icon">&#xe605;</i>导出Canvas图片</button>
+
+               
+                </td>
+            </tr>
+
+        </table>
+    </div>
+
+    @*<div id="divList">
+
+        </div>*@
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    @*<div class="layui-card-header">
+                        </div>*@
+
+                    @*<ul id="myTab" class="nav nav-tabs" role="tablist">
+
+
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#TotalDataNum" data-toggle="tab" onclick="liTotalDataNum_Click()">用户周观点数统计图</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#UserNum" data-toggle="tab" onclick="liUserNum_Click()">单个用户周观点统计图</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#TeaClassNum" data-toggle="tab" onclick="liTeaClassNum_Click()">教学班周观点数统计图</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#TeaClassAverage" data-toggle="tab" onclick="TeaClassAverage_Click()">教学班周均分趋势图</a>
+                            </li>
+
+                        </ul>
+                        <div id="myTabContent" class="tab-content">
+                            <div class="tab-pane active" id="TotalDataNum">
+                                <div style="width:99%; padding:15px;">
+                                    <div style="height: 650px; border: 1px solid #e6e6e6; background-color: #fff;">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                    <i class="fa fa-area-chart fa-lg" style="padding-right: 5px;"></i>当前教学班所有用户周期统计
+                                                </div>
+                                            <div id="div_Canvas3" class="panel-body" style="padding-bottom: 0px;">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="layui-card-body ">
+                                    <table class="layui-table layui-form">
+                                        <thead>
+                                            <tr>
+                                                <th width="150">周</th>
+                                                <th width="150">周日期范围(开始---结束)</th>
+                                                <th width="100">用户</th>
+                                                <th width="50">观点数</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tbListTotalDataNum" class="x-cate"></tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                            <div class="tab-pane fade" id="UserNum" style="padding:5px;">
+
+
+                                <div style="width: 99%; padding:15px;">
+                                    <div style="height: 380px; border: 1px solid #e6e6e6; background-color: #fff;">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                    <i class="fa fa-bar-chart fa-lg" style="padding-right: 5px;"></i>学生数据统计
+                                                </div>
+                                            <div id="div_Canvas1" class="panel-body">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="layui-card-body ">
+                                    <table class="layui-table layui-form">
+                                        <thead>
+                                            <tr>
+
+                                                <th width="150">周</th>
+                                                <th width="150">周日期范围(开始---结束)</th>
+                                                <th width="50">观点数</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tbListUserNum" class="x-cate"></tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                            <div class="tab-pane fade" id="TeaClassNum">
+                                <div style="width: 99%; padding:15px;">
+                                    <div style="height: 380px; border: 1px solid #e6e6e6; background-color: #fff;">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                    <i class="fa fa-bar-chart fa-lg" style="padding-right: 5px;"></i>教学班周观点数统计图
+                                                </div>
+                                            <div id="div_Canvas2" class="panel-body">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="layui-card-body ">
+                                    <table class="layui-table layui-form">
+                                        <thead>
+                                            <tr>
+                                                <th width="150">周</th>
+                                                <th width="150">周日期范围(开始---结束)</th>
+                                                <th width="50">观点数</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tbListTeaClassNum" class="x-cate"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="TeaClassAverage">
+                                <div style="width: 99%; padding:15px;">
+                                    <div style="height: 380px; border: 1px solid #e6e6e6; background-color: #fff;">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">
+                                                    <i class="fa fa-bar-chart fa-lg" style="padding-right: 5px;"></i>教学班周均分趋势图
+                                                </div>
+                                            <div id="div_Canvas4" class="panel-body">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="layui-card-body ">
+                                    <table class="layui-table layui-form">
+                                        <thead>
+                                            <tr>
+                                                <th width="150">周</th>
+                                                <th width="150">周日期范围(开始---结束)</th>
+                                                <th width="50">平均分(已打分数/观点数)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tbListClassAverage" class="x-cate"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+
+                        </div>*@
+
+                    <div>
+                        <div class="btn-group">
+                            @*<a class="nav-link active" href="#TotalDataNum" data-toggle="tab" onclick="liTotalDataNum_Click()">用户周观点数统计图</a>*@
+
+                            <button class="btn btn-info" id="btnTeaClassNum" name="btnDelRecord" onclick="liTeaClassNum_Click()"><i class="layui-icon">&#xe66c;</i>教学班周观点数统计图</button>
+                            <button class="btn btn-primary" id="btnTotalDataNum" name="btnDelRecord" onclick="liTotalDataNum_Click()"><i class="layui-icon">&#xe613;</i>用户周观点数统计图</button>
+                            <button class="btn btn-secondary" id="btnTeaClassAverage" name="btnDelRecord" onclick="liTeaClassAverage_Click()"><i class="layui-icon">&#xe67a;</i>教学班周均分趋势图</button>
+
+                            <button class="btn btn-success" id="btnTeaClassComment" name="btnDelRecord" onclick="liTeaClassComment_Click()"><i class="layui-icon">&#xe66c;</i>教学班周评论数统计图</button>
+                            <button class="btn btn-danger" id="btnUserCommentNum" name="btnDelRecord" onclick="liUserCommentNum_Click()"><i class="layui-icon">&#xe613;</i>用户周评论数统计图</button>
+                            <button class="btn btn-warning" id="btnUserDiscussNum" name="btnDelRecord" onclick="liUserDiscussNum_Click()"><i class="layui-icon">&#xe613;</i>用户周讨论回答统计图</button>
+
+                            @*<a class="nav-link" href="#UserNum" data-toggle="tab" onclick="liUserNum_Click()">单个用户周观点统计图</a>*@
+                            @*<button class="btn btn-success" id="btnUserNum" name="btnDelRecord" onclick="liUserNum_Click()"><i class="layui-icon">&#xe613;</i>单个用户周观点统计图</button>*@
+
+                            @*<a class="nav-link" href="#TeaClassNum" data-toggle="tab" onclick="liTeaClassNum_Click()">教学班周观点数统计图</a>*@
+
+
+                            @*<a class="nav-link" href="#TeaClassAverage" data-toggle="tab" onclick="TeaClassAverage_Click()">教学班周均分趋势图</a>*@
+
+                        </div>
+                    </div>
+                    <div>
+                        <div id="TeaClassNum" style="padding:5px;">
+                            <div style="width: 99%; padding:15px;">
+                                <div style="height: 380px; border: 1px solid #e6e6e6; background-color: #fff;">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <i class="fa fa-bar-chart fa-lg" style="padding-right: 5px;"></i>教学班周观点数统计图
+                                        </div>
+                                        <div id="div_Canvas2" class="panel-body">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="layui-card-body ">
+                                <table class="layui-table layui-form">
+                                    <thead>
+                                        <tr>
+                                            <th width="150">周</th>
+                                            <th width="150">周日期范围(开始---结束)</th>
+                                            <th width="50">观点数</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbListTeaClassNum" class="x-cate"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div id="TotalDataNum" style="padding:5px; display:none;">
+                            <div style="width:99%; padding:15px;">
+                                <div style="height: 650px; border: 1px solid #e6e6e6; background-color: #fff;">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <i class="fa fa-area-chart fa-lg" style="padding-right: 5px;"></i>用户周观点数统计图
+                                        </div>
+                                        <div id="div_Canvas3" class="panel-body" style="padding-bottom: 0px;">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="layui-card-body ">
+                                <table class="layui-table layui-form">
+                                    <thead>
+                                        <tr>
+                                            <th width="150">周</th>
+                                            <th width="150">周日期范围(开始---结束)</th>
+                                            <th width="100">用户</th>
+                                            <th width="50">观点数</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbListTotalDataNum" class="x-cate"></tbody>
+                                </table>
+                            </div>
+
+                        </div>
+
+                        <div id="UserNum" style="padding:5px; display:none;">
+                            <div style="width: 99%; padding:15px;">
+                                <div style="height: 380px; border: 1px solid #e6e6e6; background-color: #fff;">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <i class="fa fa-bar-chart fa-lg" style="padding-right: 5px;"></i>学生数据统计
+                                        </div>
+                                        <div id="div_Canvas1" class="panel-body">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="layui-card-body ">
+                                <table class="layui-table layui-form">
+                                    <thead>
+                                        <tr>
+
+                                            <th width="150">周</th>
+                                            <th width="150">周日期范围(开始---结束)</th>
+                                            <th width="50">观点数</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbListUserNum" class="x-cate"></tbody>
+                                </table>
+                            </div>
+
+                        </div>
+
+                        <div id="TeaClassAverage" style="padding:5px; display:none;">
+                            <div style="width: 99%; padding:15px;">
+                                <div style="height: 380px; border: 1px solid #e6e6e6; background-color: #fff;">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <i class="fa fa-bar-chart fa-lg" style="padding-right: 5px;"></i>教学班周均分趋势图
+                                        </div>
+                                        <div id="div_Canvas4" class="panel-body">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="layui-card-body ">
+                                <table class="layui-table layui-form">
+                                    <thead>
+                                        <tr>
+                                            <th width="150">周</th>
+                                            <th width="150">周日期范围(开始---结束)</th>
+                                            <th width="50">平均分(已打分数/观点数)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbListClassAverage" class="x-cate"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div id="TeaClassComment" style="padding:5px; display:none;">
+                            <div style="width: 99%; padding:15px;">
+                                <div style="height: 380px; border: 1px solid #e6e6e6; background-color: #fff;">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <i class="fa fa-bar-chart fa-lg" style="padding-right: 5px;"></i>教学班周评论数统计图
+                                        </div>
+                                        <div id="div_Canvas5" class="panel-body">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="UserCommentNum" style="padding:5px; display:none;">
+                            <div style="width: 99%; padding:15px;">
+                                <div style="height: 650px; border: 1px solid #e6e6e6; background-color: #fff;">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <i class="fa fa-bar-chart fa-lg" style="padding-right: 5px;"></i>用户周评论数统计图
+                                        </div>
+                                        <div id="div_Canvas6" class="panel-body">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="UserDiscussNum" style="padding:5px; display:none;">
+                            <div style="width: 99%; padding:15px;">
+                                <div style="height: 650px; border: 1px solid #e6e6e6; background-color: #fff;">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <i class="fa fa-bar-chart fa-lg" style="padding-right: 5px;"></i>用户周讨论回答统计图
+                                        </div>
+                                        <div id="div_Canvas7" class="panel-body">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="layui-card-body ">
+                                <table class="layui-table layui-form">
+                                    <thead>
+                                        <tr>
+                                            <th width="150">周</th>
+                                            <th width="150">周日期范围(开始---结束)</th>
+                                            <th width="50">回答讨论数</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbListUserDiscussNum" class="x-cate"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form id="uploadForm" method="post" enctype="multipart/form-data">
+        <div id="ExportDetail">
+            @*<img src="http://localhost:49590/GraduateStudyWebApp/UploadFiles/UserCanvasPic/new.png">*@
+        </div>
+    </form>
+
+    <div id="divEdit"></div>
+
+</div>
+<input id="hidQueryStata" type="hidden" />
+
+@*<input id="hidtab1" type="hidden" />
+    <input id="hidtab2" type="hidden" />
+    <input id="hidtab3" type="hidden" />*@
+
+
+@* 当前教学班Id *@
+<input id="hidId_CurrEduCls" type="hidden" />
+@* 当前教学班日期范围Id *@
+<input id="hidgs_DateId" type="hidden" />
+<input id="hidStartDate" type="hidden" />
+<input id="hiEndDate" type="hidden" />
+@*//存放临时生成图片*@
+<input id="hidfileNamePic" type="hidden" />

@@ -1,0 +1,163 @@
+﻿.question-list {
+  padding-top: 10px;
+  text-indent: 10px;
+  font-size: 15px;
+  font-weight: normal;
+  color: #6fb22e;
+  text-decoration: none;
+}
+
+.question-list-selected {
+  padding-top: 10px;
+  text-indent: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #6fb22e;
+  background-color: #b7e9f7;
+  text-decoration: none;
+}
+
+.text-center {
+  text-align: left !important;
+}
+
+/***页面加载效果***/
+
+.loading {
+  width: 100%;
+  height: 100px;
+  position: fixed;
+  z-index: 1080;
+  text-align: center;
+  margin-top: 300px;
+}
+
+.loading img {
+  width: 80px;
+  height: 80px;
+}
+
+/*返回顶部*/
+
+.icon-backtop {
+  background: url('@/assets/images/icon-sprite.png') no-repeat;
+}
+
+.back-top {
+  display: none;
+  position: fixed;
+  right: 10px;
+  bottom: 5%;
+  z-index: 999;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background-color: #2371ef;
+}
+
+.back-top i {
+  display: block;
+  width: 22px;
+  height: 12px;
+  margin: 12px auto 0;
+  background-position: -50px -47px;
+}
+
+.back-top:hover i {
+  background-position: -72px -47px;
+}
+
+/*浅蓝*/
+.btn-1 a {
+  color: #30b7d7;
+  text-decoration: none;
+}
+/*橙*/
+.btn-2 a {
+  color: #f98c51;
+  text-decoration: none;
+}
+/*蓝*/
+.btn-3 a {
+  color: #3594ff;
+  text-decoration: none;
+}
+/*绿*/
+.btn-4 a {
+  color: #6fb22e;
+  text-decoration: none;
+}
+/*紫红*/
+.btn-5 a {
+  color: #994c61;
+  text-decoration: none;
+}
+
+.btn-1 a:hover {
+  color: #2e9dbd;
+  text-decoration: none;
+}
+
+.btn-2 a:hover {
+  color: #e57f4c;
+  text-decoration: none;
+}
+
+.btn-3 a:hover {
+  color: #3474d9;
+  text-decoration: none;
+}
+
+.btn-4 a:hover {
+  color: #5d9e2b;
+  text-decoration: none;
+}
+
+.btn-5 a:hover {
+  color: #994c61;
+  text-decoration: none;
+}
+
+/*浅蓝*/
+.color1 {
+  color: #2e9dbd;
+}
+/*橙*/
+.color2 {
+  color: #e57f4c;
+}
+/*蓝*/
+.color3 {
+  color: #3474d9;
+}
+/*绿*/
+.color4 {
+  color: #5d9e2b;
+}
+/*紫*/
+.color5 {
+  color: #506697;
+}
+/*紫红*/
+.color6 {
+  color: #994c61;
+}
+
+/*紫红*/
+.colorRed {
+  color: red;
+}
+
+.paperviewpoint ul {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  padding-left: 0;
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+  list-style: none;
+  margin-left: 0px;
+  width: 100%;
+  margin: auto;
+}

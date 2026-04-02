@@ -1,0 +1,612 @@
+﻿@page
+@model GraduateStudyWebApp.Pages.GraduateEduEx.PaperDetailModel
+@{
+    Layout = "~/Pages/Shared/_Layout_PC.cshtml";
+    ViewData["Title"] = "论文详情";
+    //操作Session样例，方法1：
+    //Model.seUserId = "TestUserId";
+    var strUserId_Value = Model.seUserId;
+    //操作Session样例，方法2：
+    Model.SetSession("UserId1", "TestUserId1");
+    var strUserId1_Value = Model.GetSession("UserId1");
+    //请参见页尾的隐形控件hidUserid和hidUserId1的使用。
+}
+@section Styles{
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+
+    <link rel="stylesheet" href="~/lib/Xadmin/css/font.css">
+    <link rel="stylesheet" href="~/lib/Xadmin/css/xadmin.css">
+
+    <link rel="stylesheet" href="~/css/comment.css">
+    <!-- 评论评分 -->
+    <link rel="stylesheet" type="text/css" href="../lib/startnum-1.0/css/startnum.css" />
+
+    <!-- <link rel="stylesheet" href="./css/theme5.css"> -->
+
+
+    <link rel="stylesheet" href="~/css/public.css" />
+}
+@section Scripts{
+    <script charset="utf-8" src="~/lib/Xadmin/lib/layui/layui.js"></script>
+    <script type="text/javascript" src="~/lib/Xadmin/js/xadmin.js"></script>
+    <script src="../lib/jquery/dist/jquery.js"></script>
+    <script src="../lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="../js/site.js" asp-append-version="true"></script>
+    <script src="../lib/bootstrap/dist/js/popper.js"></script>
+    <script src="../lib/jquery.min.js"></script>
+
+    <!-- 评论评分 -->
+    <script src="../lib/startnum-1.0/starnum.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../lib/require/require.js" data-main="../js/src/config"></script>
+
+}
+<script>
+
+    @*var strUrl_Session_SetString = "@Model.Url_Session_SetString";
+    var strUrl_Session_GetString = "@Model.Url_Session_GetString";*@
+
+    var strCurrPrjId = "@Model.CurrPrjId";
+    var strWebRoot = "@Model.WebRoot";
+     var strAddressAndPort = "@Model.AddressAndPort";
+
+    function GetRequest() {
+        var url = location.search; //获取url中"?"符后的字串
+        var theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1);
+            strs = str.split("&");
+            for (var i = 0; i < strs.length; i++) {
+                theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+            }
+        }
+        return theRequest;
+    }
+
+    function GetPaperID() {
+        var Request = new Object();
+        Request = GetRequest();
+        var str1;
+        str1 = Request['PaperId'];
+
+        if (str1 != null) {
+            $('#hidPaperId').val(str1);
+
+            require(["../js/GraduateEduEx/PaperDetail.js"], function (PaperDetail) {
+
+                var objpage = new PaperDetail.PaperDetail();
+                objpage.btnDetailRecord_Click();
+                //var objPage = new taskinfo.Task_TSEx();
+                //objPage.Page_Load();
+            });
+
+        }
+        else {
+            require(["../js/GraduateEduEx/PaperDetail.js"], function (PaperDetail) {
+
+                var objpage = new PaperDetail.PaperDetail();
+                objpage.btnDetailRecord_Click();
+
+            });
+        }
+    }
+
+    window.onload = function () {
+        $('#hidOrderbyId').val("1");
+
+        //		aurl   文件夹路径
+        //	divname   div的id ， （必传参数）
+        //	inputname  会为你生成input :text;设置input id 默认div id;
+        //	starnum    星星的个数；默认五个；
+        //	startnum   星星初始化个数，初始化后，不可更改；(op  设置 true ；)
+        //  textTure   星星数默认五颗；开启文本显示；
+        initPingFen({ divname: 'pingfen1', textTure: true, inputname: 'pin1' });
+        initPingFen({ divname: 'pingfen2', textTure: true, inputname: 'pin2' });
+        GetPaperID();
+    }
+
+    /*
+添加点赞
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnAddNewRecord_Click)
+*/
+    function btnAddVote_Click() {
+        //$('#hidSubViewpointId').val(strKeyId);
+        require(["../js/GraduateEduEx/PaperDetail.js"], function (PaperDetail) {
+            var objPage = new PaperDetail.PaperDetail();
+            objPage.btnAddVote_Click();
+
+            layer.msg('已点赞!', {
+                icon: 1,
+                time: 2000
+            });
+        });
+    }
+
+    /*
+添加收藏
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnAddNewRecord_Click)
+*/
+    function btnAddCollection_Click() {
+        //$('#hidSubViewpointId').val(strKeyId);
+        require(["../js/GraduateEduEx/PaperDetail.js"], function (PaperDetail) {
+            var objPage = new PaperDetail.PaperDetail();
+            objPage.btnAddCollection_Click();
+            layer.msg('已收藏!', {
+                icon: 1,
+                time: 2000
+            });
+        });
+    }
+
+    //下载
+    function btnDownLoadFile_Click() {
+        require(["../js/GraduateEduEx/PaperDetail.js"], function (PaperDetail) {
+            var objpage = new PaperDetail.PaperDetail();
+            objpage.btnDownLoadFile_Click();
+
+        });
+    }
+
+    //下载方法
+    function doDownLoad(filepath,filename) {
+        var aLink = document.createElement('a');
+        aLink.download = filename;
+        aLink.href = filepath;
+        document.body.appendChild(aLink);
+        aLink.click();
+        document.body.removeChild(aLink);
+
+        @*$.ajax(
+            {
+                url: "@Url.Action("DownloadFile", "testUploadPic")",    // 请求地址,
+                data: JSON.stringify({ path: filepath }),   // 需要传送的参数
+                type: 'POST',   // 请求方式
+                dataType: 'json', // 返回数据的格式, 通常为JSON
+                contentType: 'application/json',
+                success: function (result) {
+                    //成功/为空
+                    if (result.status == 0 || result.status == -1) {
+
+                        console.log('ok'); // 请求失败时的回调函数
+                        }
+                },
+                error: function () {
+                    console.log('Send Request Fail..'); // 请求失败时的回调函数
+                }
+            }
+        );*@
+    }
+
+    /*
+添加评论
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_mySubmit)
+*/
+    function SubmitAppraise1_Click(pstrOp) {
+        $("#J_PostBtn").attr("disabled", true);
+
+        $("#hidParentId").val("root");
+
+        if ($("#hidUserInfo").val() != "") {
+            //alert("提交" + strOp);
+            require(["../js/GraduateEduEx/PaperDetail.js"], function (PaperDetail) {
+                var objPage = new PaperDetail.PaperDetail();
+                objPage.SubmitAppraise1_Click();
+            });
+        } else {
+            $("#J_PostBtn").attr("disabled", false);
+            alert("用户session丢失，请重新登录！");
+        }
+    }
+
+
+    //回复评论
+    function SubmitAppraise2_Click(pstrOp) {
+        $("#btnOKUpdAppraise").attr("disabled", true);
+        if ($("#hidUserInfo").val() != "") {
+            //alert("提交" + strOp);
+            require(["../js/GraduateEduEx/PaperDetail.js"], function (PaperDetail) {
+                var objPage = new PaperDetail.PaperDetail();
+                objPage.SubmitAppraise2_Click();
+            });
+        } else {
+            $("#btnOKUpdAppraise").attr("disabled", false);
+            alert("用户session丢失，请重新登录！");
+        }
+    }
+
+    /*
+删除评论
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnDelRecordInTab_Click)
+*/
+    function btnDeleteComment_Click(strKeyId) {
+        require(["../js/GraduateEduEx/PaperDetail.js"], function (PaperDetail) {
+            if (strKeyId == "") {
+                alert("请选择需要删除的记录！");
+                return;
+            }
+            var objPage = new PaperDetail.PaperDetail();
+            objPage.btnDeleteComment_Click(strKeyId);
+        });
+    }
+    /*
+显示回复评论对话框
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_ShowDialog)
+*/
+    function ShowDialog() {
+        require(['jquery', 'bootstrap'], function ($) {
+            $('#divEditAppraise').modal('show');
+
+
+        });
+    }
+
+    /*
+ 隐藏对话框
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_HideDialog)
+*/
+    function HideDialog() {
+        require(['jquery', 'bootstrap'], function ($) {
+            $('#divEditAppraise').modal('hide');
+        });
+    }
+
+
+
+    function btnReplyComment_Click(strKeyId) {
+
+        $('#hidParentId').val(strKeyId);
+        ShowDialog();
+
+    }
+
+    //全部评论
+    function AllComment_Click() {
+        $('#hidOrderbyId').val("1");
+        require(["../js/GraduateEduEx/PaperDetail.js"], function (PaperDetail) {
+            var objPage = new PaperDetail.PaperDetail();
+            objPage.Bind_ShowAppraise_Click();
+
+            //layer.msg('已点赞!', {
+            //    icon: 1,
+            //    time: 2000
+            //});
+        });
+    }
+
+    //我的评论
+    function MyComment_Click() {
+        $('#hidOrderbyId').val("2");
+        require(["../js/GraduateEduEx/PaperDetail.js"], function (PaperDetail) {
+            var objPage = new PaperDetail.PaperDetail();
+            objPage.Bind_ShowAppraise_Click();
+
+            //layer.msg('已点赞!', {
+            //    icon: 1,
+            //    time: 2000
+            //});
+        });
+    }
+
+    //最新评论
+    function NewComment_Click() {
+        $('#hidOrderbyId').val("3");
+        require(["../js/GraduateEduEx/PaperDetail.js"], function (PaperDetail) {
+            var objPage = new PaperDetail.PaperDetail();
+            objPage.Bind_ShowAppraise_Click();
+
+            //layer.msg('已点赞!', {
+            //    icon: 1,
+            //    time: 2000
+            //});
+        });
+    }
+    function AlertOK() {
+
+        layer.msg('评论成功!', {
+            icon: 1,
+            time: 2000
+        });
+    }
+
+    function AlertNo() {
+
+        layer.msg('删除成功!', {
+            icon: 3,
+            time: 2000
+        });
+    }
+
+    function AlertScore() {
+
+        layer.msg('请输入评分!', {
+            icon: 2,
+            time: 2000
+        });
+    }
+
+    function AlertComment() {
+
+        layer.msg('请输入评语!', {
+            icon: 2,
+            time: 2000
+        });
+    }
+
+</script>
+
+<div id="divLoading" class="loading">
+    <img src="~/images/CirclePoint.gif" />
+</div>
+<a id="backtop" class="back-top" href="javascript:scroll(0,0);" target="_self" title="返回顶部" style="display: block;">
+    <i class="icon-backtop"></i>
+</a>
+<div id="tabLayout" class="tab_layout">
+    <div class="x-nav">
+        <span class="layui-breadcrumb">
+            <a href="">首页</a>
+            <a href="">论文管理</a>
+            <a>
+                <cite> 论文详情</cite>
+            </a>
+            <Label id="lblMsg_List" name="lblMsg_List"></Label>
+        </span>
+        <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+            <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+        </a>
+    </div>
+
+    @*<div id="divFunction" class="table table-bordered table-hover">
+            <ul class="nav">
+                <li class="nav-item">
+                    <Label id="lblPaperReadWriteList" name="lblPaperReadWriteList" class="col-form-label text-info" style="width:250px;">
+
+                    </Label>
+                </li>
+            </ul>
+        </div>*@
+
+
+
+    <div id="divList" class="div_List">
+        <div id="divDataLst" class="div_List">
+            <div class="modal-content" style="width: 100%;">
+                <div style="padding: 7px 10px 5px 5px; border-bottom: 1px solid #dee2e6; width:100%;">
+                    <div style="float:left;color:red;line-height:25px;margin-left:10px;">
+                        编辑时间：<label id="lblUpdDate" name="lblUpdDate"></label>&nbsp;&nbsp;
+                        编辑用户：<label id="lblUpdUser" name="lblUpdUser"></label>
+                    </div>
+                    @*<div style="float:right;"><a href="javascript:history.back(-1)" class="btn btn-outline-info text-nowrap btn-sm">返回</a></div>*@
+                    <div id="div_VoteCollection" style="float:right; margin-right:50px; line-height:25px;">
+                        评分:<label id="lblScore" name="lblScore"></label>
+                        &nbsp;&nbsp;
+                        浏览量:<label id="lblViews" name="lblViews"></label>
+                        &nbsp;&nbsp;
+                        <a href="#" onclick="btnAddVote_Click()"><img id="imgVotet" src="../img/vote.png" width="25px" height="25px" title="点赞"></a>
+                        <label id="lblOKCount" name="lblOKCount"></label>
+                        &nbsp;&nbsp;
+                        <a href="#" onclick="btnAddCollection_Click()"><img id="imgCollection" src="../img/collection.png" width="25px" height="25px" title="收藏"></a>
+
+                    </div>
+
+                </div>
+                <div class="modal-body" style="padding-left:80px;padding-right:80px; ">
+                    @*style="font-size:18px;font-weight:bold;"*@
+                    <div style="text-align:center;margin-bottom:20px;"> <h2><label id="txtPaperTitle" name="txtPaperTitle" /></h2></div>
+
+                    <div style="text-align:center;margin-top:20px;color:cadetblue;"><a href="#"><label id="txtAuthor" name="txtAuthor"></label></a></div>
+                    <div style="text-align:left;margin-top:20px;">
+                        <label id="txtPaperContent" name="txtPaperContent" />
+                    </div>
+                    <div style="text-align:left;margin-top:30px;">
+                        <Label id="lblResearchQuestion" name="lblResearchQuestion" style="font-weight:bold;">
+                            研究问题：
+                        </Label>
+                        <label id="txtResearchQuestion" name="txtResearchQuestion" />
+                    </div>
+                    <div style="text-align:left;margin-top:30px;">
+                        <Label id="lblKeyword" name="lblKeyword" style="font-weight:bold;">
+                            关键字：
+                        </Label>
+                        <label id="txtKeyword" name="txtKeyword" />
+                    </div>
+
+                    <div style="text-align:left;margin-top:30px;">
+                        <Label id="lblPeriodical" name="lblPeriodical" style="font-weight:bold;">
+                            期刊：
+                        </Label>
+                        <label id="txtPeriodical" name="txtPeriodical" />
+                    </div>
+
+
+                    <div style="text-align:right;margin-top:50px;">
+                        <button id="btnDownLoadFile" type="button" class="btn btn-primary" onclick="btnDownLoadFile_Click()">下载附件</button>
+                        <label id="lblDownLoadFile" name="txtPeriodical" style="color:crimson;font-weight:bold;">此论文暂无下载文件</label>
+                    </div>
+                </div>
+
+
+                @*<div>
+                        评分：<input id="txtAppraiseScore" name="txtAppraiseScore" class="form-control" style="width:200px;" value="10" />
+                        <textarea id="txtAppraiseContent" name="" placeholder="说两句吧..." class="form-control" style="width:600px;height:80px;"></textarea>
+                        <div>
+                            <label id="lblUserName" name="lblUserName" style="float:left;" />
+                            <button id="btnOKUpdAppraise" type="button" class="btn btn-primary" style="float:right;" onclick="SubmitAppraise_Click()">发布评论</button>
+                        </div>
+
+                    </div>*@
+                <div style="padding-left:170px;padding-right:100px;">
+                    <div id="pingfen1"></div>
+                </div>
+
+                <div style="padding-left:100px;padding-right:100px; padding-bottom:100px;">
+                    <div class="box" id="J_Post">
+                        <div class="common-avatar my-avatar J_userCenter">
+                            <img src="../img/avatar5.png" width="100%" height="100%">
+                        </div>
+                        <div class="box-content box-login">
+
+
+                            <div class="box-textarea-block">
+
+                                @*评分：<input id="txtAppraiseScore" name="txtAppraiseScore" class="form-control" style="width:200px;" value="10" /><br>*@
+                                <textarea class="box-textarea J_Textarea" id="txtAppraiseContent" placeholder="说两句吧..."></textarea>
+                            </div>
+
+                            <div class="box-info" style="height:60px;">
+                                <div class="box-operate">
+                                    <span class="box-avatar">
+                                        <img src="../img/avatar3.png" width="100%" height="100%">
+                                    </span>
+                                    <b class="box-username" id="bUserName"></b>
+                                    @*<span class="box-tab J_ChangeUser">切换用户</span>*@
+
+                                </div>
+                                <div class="box-commentBtn box-commentBtn--able J_PostBtn" id="J_PostBtn" onclick="SubmitAppraise1_Click()">发布评论</div>
+                            </div>
+
+                        </div>
+                    </div>
+                    @*</div>*@
+
+
+                    <div class="comment-short" id="J_Short">
+                        <div class="comment-title">
+                            <p class="comment-all" onclick="AllComment_Click()">全部评论</p>
+                            <div class="comment-center" id="J_CommentCenter">
+                                <span class="comment-center-slash">/</span>
+                                <span class="comment-my J_userCenter" onclick="MyComment_Click()">我的评论</span>
+                            </div>
+                            <p class="comment-sort">
+                                <span data-targetid="4760694256" data-sort="1" class="J_CommentSort comment-sort-cur" onclick="NewComment_Click()">最新</span> &nbsp;/&nbsp;
+                                <span data-targetid="4760694256" data-sort="0" class="J_CommentSort comment-sort-cur" onclick="HottestComment_Click()">最热</span>
+                            </p>
+                        </div>
+                        <div id="J_ShortComment">
+                            @*<div class="comment" id="J_Comment6631028263006567418">
+                                    <div class="common-avatar J_User" data-userid="17755842">
+                                        <img src="../img/avatar3.png" width="100%" height="100%">
+                                    </div>
+
+
+                                    <div class="comment-block" id="J_CommentBlock6655317757835372579">
+                                        <p class="comment-user">
+                                            <span class="comment-username J_User" data-userid="693886900">评论昵称</span> <span class="comment-time">评论时间</span>
+                                        </p>
+                                        <div class="comment-content J_CommentContent">
+                                            评论内容
+                                        </div>
+                                        <div class="reply J_ReplyBlock">
+                                            <div class="reply-block">
+                                                <div class="reply-content">
+                                                    <span class="reply-user"><b class="reply-user-nick J_User" data-userid="28805328">回复昵称</b>:</span>
+                                                    回复内容
+                                                </div>
+                                                <div class="reply-operate reply-operate--hot">
+
+                                                    <span class="J_Vote reply-operate-item reply-up">赞<i>1</i></span><i class="reply-dot">·</i>
+
+                                                    <span class="J_Reply reply-operate-item" id="J_Reply6655318904466366200" data-nick="想不起来叫啥名" data-userid="28805328">回复</span>
+
+                                                     <span>回复时间</span><i class="reply-dot">·</i>
+
+                                                    <i class="reply-dot reply-operate-report">·</i>
+                                                    <span class="reply-operate-item reply-operate-report J_ReplyReport" id="J_ReplyReport6655318904466366200" data-userid="28805328" data-targetid="5070738395" data-id="6655318904466366200">举报</span>
+                                                </div>
+                                            </div>
+
+                                            <div class="J_ReplyLatest"></div>
+                                            <span class="reply-allBtn J_ReplyMoreBtn" data-targetid="5070738395" data-id="6655317757835372579" data-replyhotid="6655318904466366200|6655319071742230449|"> 查看全部85条回复 </span>
+                                        </div>
+                                        <div class="comment-operate J_CommentOperate clearfix">
+                                            <span class="J_Vote comment-operate-item comment-operate-up">赞<i>1</i></span>
+                                            <span class="J_Reply comment-operate-item comment-operate-reply" id="J_Reply6655317757835372579"> 回复 </span>
+                                        </div>
+                                    </div>
+
+
+                                </div>*@
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
+                @*<div class="modal-footer">
+                        <button id="btnCancel" type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button id="btnOKUpd" type="button" class="btn btn-primary" onclick="mySubmit()">添加</button>
+                    </div>*@
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal -->
+    </div>
+
+    <div class="modal fade" style="z-index:1062;" id="divEditAppraise" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="margin-left:330px;margin-top:100px;">
+            <div class="modal-content" style="width: 800px;">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">评论回复</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                <div class="modal-body">
+                    <table id="tabwucPaperSubViewpointAppraise" name="tabwucPaperSubViewpointAppraise" style="width: 760px; padding: 1px; border:0px" class="table table-bordered table-hover">
+                        <tr>
+                            <td class="NameTD">
+                                <label class="col-form-label text-right" style="width:90px;">评分</label>
+                            </td>
+                            <td class="ValueTD">
+                                <div id="pingfen2"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="NameTD">
+                                <Label id="lblAppraiseContent2" name="lblAppraiseContent" class="col-form-label text-right" style="width:90px;">
+                                    评论
+                                </Label>
+                            </td>
+                            <td class="ValueTD">
+
+                                <textarea id="txtAppraiseContent2" name="txtAppraiseContent" class="form-control" style="width:500px;height:80px;"></textarea>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    @*<button id="btnCancel" type="button" class="btn btn-default" data-dismiss="modal">关闭</button>*@
+                    <button id="btnOKUpdAppraise" type="button" class="btn btn-primary" onclick="SubmitAppraise2_Click()">添加</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal -->
+    </div>
+</div>
+
+<input id="hidOpType" type="hidden" />
+<input id="hidPaperId" type="hidden" />
+<input id="hidSubviewPointId" type="hidden" />
+<input id="hidSubviewPointTypeId" type="hidden" />
+@*<input id="hidOperationType" type="hidden" value="@Model.GetSession("OperationType")" />*@<input id="hidOperationType" type="hidden" value="@Model.GetSession(" OperationType")" />
+<input id="hidKeyId" type="hidden" />
+
+@*<input id="hidUserId1" type="hidden" value="@strUserId1_Value" />*@<input id="hidUserId1" type="hidden" value="@strUserId1_Value" />
+<input id="hidCurrPageIndex" type="hidden" value="1" />
+<input id="hidSortvThesisBy" type="hidden" value="" />
+<input id="hidPicAddress" type="hidden" value="" />
+@*<input id="hidUserInfo" type="hidden" value="@Model.GetSession("objvUserRoleRelation")" />*@
+
+
+<input id="hidUserId" type="hidden" />
+<input id="hidRoleId" type="hidden" />
+
+<input id="hidUserName" type="hidden" />
+<input id="hidBrowseNumber" type="hidden" />
+
+<input id="hidParentId" type="hidden" />
+
+<input id="hidPaperUserId" type="hidden" />
+
+
+<input id="hidOrderbyId" type="hidden" />

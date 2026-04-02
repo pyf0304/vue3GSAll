@@ -1,0 +1,546 @@
+﻿@page
+@{
+    Layout = "~/Pages/Shared/_Layout_PC.cshtml";
+    ViewData["Title"] = "系统评论";
+}
+@section Styles{
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="../css/site.css" />
+    <link rel="shortcut icon" href="~/images/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="~/lib/Xadmin/css/font.css">
+    <link rel="stylesheet" href="~/lib/Xadmin/css/xadmin.css">
+    <link rel="stylesheet" href="~/css/public.css" />
+    <style>
+        .tab-pane {
+            padding: 20px;
+        }
+    </style>
+
+}
+@section Scripts{
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+
+    <script src="~/lib/Xadmin/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="~/lib/Xadmin/js/xadmin.js"></script>
+
+    <script>
+        layui.use(['laydate', 'form'],
+            function () {
+                var laydate = layui.laydate;
+
+                //执行一个laydate实例
+                laydate.render({
+                    elem: '#txtUpdDate_q' //指定元素
+                });
+
+            });
+    </script>
+
+    <script>
+        //注意：折叠面板 依赖 element 模块，否则无法进行功能性操作
+        layui.use('element', function () {
+            var element = layui.element;
+
+            //…
+        });
+    </script>
+    <script src="../lib/require/require.js" data-main="../js/src/config"></script>
+}
+<script>
+    /*
+ 页面导入-在导入页面后运行的函数
+(AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_Page_Load)
+*/
+    window.onload = function () {
+        require(["../js/InteractManage/qa_PaperCRUDEx.js"], function (qa_paper) {
+            var objPage = new qa_paper.qa_PaperCRUDEx();
+            objPage.Page_Load();
+        });
+        GetTypeId();
+    }
+
+    function GetRequest() {
+        var url = location.search; //获取url中"?"符后的字串
+        var theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1);
+            strs = str.split("&");
+            for (var i = 0; i < strs.length; i++) {
+                theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+            }
+        }
+        return theRequest;
+    }
+    function GetTypeId() {
+        var Request = new Object();
+        Request = GetRequest();
+        var strTypeId = Request['typeid'];
+        var IsReceive = Request['IsReceive'];
+
+        $('#hidTypeId').val(strTypeId);
+        if (IsReceive != null) {
+            $("#divtab1").removeClass("layui-show");
+            //添加背景色
+            $("#divtab2").addClass("layui-show");
+        }
+
+    }
+
+
+    /*
+     动态添加编辑区域
+    (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_AddDPV_Edit)
+    */
+    function AddDPV_Edit(divName4Edit: string) {
+        require(["../js/InteractManage/qa_PaperCRUDEx.js"], function (qa_paper) {
+            qa_paper.qa_PaperCRUDEx.AddDPV_Edit(divName4Edit);
+        });
+    }
+
+    /*
+     按钮单击,用于调用Js函数中btn_Click
+    (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_btn_Click)
+    */
+    function btn_Click(strCommandName, strKeyId) {
+        require(["../js/InteractManage/qa_PaperCRUDEx.js"], function (qa_paper) {
+            qa_paper.qa_PaperCRUDEx.btn_Click(strCommandName, strKeyId);
+        });
+    }
+
+    /*
+     添加新记录
+    (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_btnAddNewRecord_Click)
+    */
+    function btnAddNewRecord_Click() {
+        require(["../js/InteractManage/qa_PaperCRUDEx.js"], function (qa_paper) {
+            ShowDialog('Add');
+            var objPage = new qa_paper.qa_PaperCRUDEx();
+            objPage.btnAddNewRecord_Click();
+        });
+    }
+
+    /*
+     删除记录的事件函数
+    (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_btnDelRecord_Click)
+    */
+    function btnDelRecord_Click() {
+        require(["../js/InteractManage/qa_PaperCRUDEx.js", "../js/TS/PubFun/clsCommonFunc4Web.js"], function (qa_paper, commonfunc) {
+            var arrKeyIds = commonfunc.clsCommonFunc4Web.GetCheckedKeyIds();
+            if (arrKeyIds.length == 0) {
+                alert("请选择需要删除的记录！");
+                return;
+            }
+            var objPage = new qa_paper.qa_PaperCRUDEx();
+            objPage.btnDelRecord_Click();
+        });
+    }
+
+
+    /*
+     在数据表里删除记录的事件函数
+    (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_btnDelRecordInTab_Click)
+    */
+    function btnDelRecordInTab_Click(strKeyId: string) {
+        require(["../js/InteractManage/qa_PaperCRUDEx.js"], function (qa_paper) {
+            if (strKeyId == "") {
+                alert("请选择需要删除的记录！");
+                return;
+            }
+            var objPage = new qa_paper.qa_PaperCRUDEx();
+            objPage.btnDelRecordInTab_Click(strKeyId);
+        });
+    }
+
+
+    /*
+    答疑列表进入pdf答疑
+    (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_btnUpdateRecordInTab_Click)
+    */
+    function btnQARecord_Click(strKeyId: string) {
+        require(["../js/InteractManage/qa_PaperCRUDEx.js"], function (qa_paper) {
+            if (strKeyId == "") {
+                alert("请选择需要修改的记录！");
+                return;
+            }
+            var objPage = new qa_paper.qa_PaperCRUDEx();
+            objPage.btnQARecord_Click(strKeyId);
+        });
+    }
+
+
+    /*
+     单击数据列表中每行首列的复选框所引发的事件
+    (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_ChkClick)
+    */
+    function ChkClick(myThis) {
+        require(["../js/InteractManage/qa_PaperCRUDEx.js", "../js/TS/PubFun/clsCommonFunc4Web.js"], function (qa_paper, commonfunc) {
+            var strId = myThis.id;
+            var strKey = strId.substring(3);
+            var arrKeys = commonfunc.arrSelectedKeys;
+            if (myThis.checked == true) {
+                if (arrKeys.indexOf(strKey) < 0) {
+                    arrKeys.push(strKey);
+                }
+            }
+            else {
+                var index = arrKeys.indexOf(strKey);
+                if (index > -1) {
+                    arrKeys.splice(index, 1);
+                }
+            }
+            var sstrKey = "";
+            for (let strK of arrKeys) {
+                sstrKey += `${strK},`;
+            }
+            $('#nResult').html(sstrKey);
+        });
+    }
+
+    /*
+     修改记录
+    (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_ExpandDiv)
+    */
+    function ExpandDiv(divName) {
+        //基于RequireJS来调用tzPubFun.ts中的函数OnlyShowDiv。
+        require(["../js/TS/PubFun/tzPubFun"], function (pubfun) {
+            pubfun.OnlyShowDiv(divName, "function", "content");
+        });
+    }
+
+    /*
+     获取数据列表中的所选记录
+    (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_GetAllCkechedKeys)
+    */
+    function GetAllCkechedKeys(tabName) {
+        var arrKeys = tabName.getElementsByTagName('chkInTab');
+        alert(arrKeys.length.toString());
+    }
+
+    /*
+     修改记录
+    (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_IndexPage)
+    */
+    function IndexPage(intPageIndex: number) {
+        console.log("跳转到" + intPageIndex + "页");
+        require(["../js/InteractManage/qa_PaperCRUDEx.js"], function (qa_paper) {
+            var objPage = new qa_paper.qa_PaperCRUDEx();
+            objPage.IndexPage(intPageIndex);
+        });
+    }
+
+    /*
+     修改记录
+    (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_JumpToPage)
+    */
+    function JumpToPage() {
+        var intCurrPageIndex = $('#input_number').val();
+        var intPageIndex = Number(intCurrPageIndex);
+        console.log("跳转到" + intPageIndex + "页");
+        require(["../js/InteractManage/qa_PaperCRUDEx.js"], function (qa_paper) {
+            var objPage = new qa_paper.qa_PaperCRUDEx();
+            objPage.IndexPage(intPageIndex);
+        });
+    }
+
+    /*
+     提交编辑
+    (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_mySubmit)
+    */
+    function mySubmit(pstrOp: string) {
+        //    alert("提交" + strOp);
+        require(["../js/InteractManage/qa_PaperCRUDEx.js"], function (qa_paper) {
+            var objPage = new qa_paper.qa_PaperCRUDEx();
+            objPage.btnOKUpd_Click();
+        });
+    }
+
+    /*
+     修改记录
+    (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_NextPage)
+    */
+    function NextPage() {
+        var intCurrPageIndex = $('#hidCurrPageIndex').val();
+        var intPageIndex = Number(intCurrPageIndex) + 1;
+        console.log("跳转到" + intPageIndex + "页");
+        require(["../js/InteractManage/qa_PaperCRUDEx.js"], function (qa_paper) {
+            var objPage = new qa_paper.qa_PaperCRUDEx();
+            objPage.IndexPage(intPageIndex);
+        });
+    }
+
+
+
+    /*
+     修改记录
+    (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_PageNum)
+    */
+    function PageNum(intPageIndex: number) {
+        console.log("跳转到" + intPageIndex + "页");
+        require(["../js/InteractManage/qa_PaperCRUDEx.js"], function (qa_paper) {
+            var objPage = new qa_paper.qa_PaperCRUDEx();
+            objPage.IndexPage(intPageIndex);
+        });
+    }
+
+    /*
+     修改记录
+    (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_PrevPage)
+    */
+    function PrevPage() {
+        var intCurrPageIndex = $('#hidCurrPageIndex').val();
+        var intPageIndex = Number(intCurrPageIndex) - 1;
+        console.log("跳转到" + intPageIndex + "页");
+        require(["../js/InteractManage/qa_PaperCRUDEx.js"], function (qa_paper) {
+            var objPage = new qa_paper.qa_PaperCRUDEx();
+            objPage.IndexPage(intPageIndex);
+        });
+    }
+
+    /*
+     全选数据列表中的所有记录
+    (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_SetAllCkechedKeys)
+    */
+    function SetAllCkechedKeys(tabName) {
+        var thisChk = event.target;
+        require(["../js/TS/PubFun/clsCommonFunc4Web.js"], function (commonfunc) {
+            console.log(tabName);
+            console.log(thisChk);
+            commonfunc.clsCommonFunc4Web.SetAllCkechedKeys(tabName, thisChk);
+        });
+    }
+
+    /*
+     修改记录
+    (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_SortBy)
+    */
+    function SortBy(strFldName: string) {
+        console.log("按：" + strFldName + "排序");
+        require(["../js/InteractManage/qa_PaperCRUDEx.js"], function (qa_paper) {
+            var objPage = new qa_paper.qa_PaperCRUDEx();
+            objPage.SortBy(strFldName);
+        });
+    }
+
+
+    function Alert1(strMsg) {
+
+        layer.msg(strMsg, {
+            icon: 1,
+            time: 2000
+        });
+    }
+
+    /*
+    回复邀请
+   (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_SortBy)
+   */
+    //function btnQA_PushRecord_Click(qa_PaperId, QuestionsId, PushId) {
+    //    require(["../js/InteractManage/qa_PaperCRUDEx.js"], function (qa_paper) {
+    //        var objPage = new qa_paper.qa_PaperCRUDEx();
+    //        objPage.btnQA_PushRecord_Click(qa_PaperId, QuestionsId, PushId);
+    //    });
+    //}
+    function btnQA_PushRecord_Click(PaperId, QuestionsId, PushId, id_CurrEduCls) {
+
+
+        //require(["../js/InteractManage/qa_PaperCRUDEx.js"], function (qa_paper) {
+        //    var objPage = new qa_paper.qa_PaperCRUDEx();
+        //    objPage.btnQA_PushRecord_Click(qa_PaperId, QuestionsId, PushId);
+        //});
+
+        xadmin.open('pdf论文答疑回复', '../GraduateEduEx/PaperSubViewpoint_pdf?Type=02&QuestionsTypeId=01&PaperId=' + PaperId + '&QuestionsId=' + QuestionsId + '&PushId=' + PushId + '&id_CurrEduCls=' + id_CurrEduCls, '', '', true);
+    }
+
+    /*
+    忽略邀请
+   (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_SortBy)
+   */
+    function btnUpdQA_Push_Click(strKey) {
+        require(["../js/InteractManage/qa_PaperCRUDEx.js"], function (qa_paper) {
+            var objPage = new qa_paper.qa_PaperCRUDEx();
+            objPage.btnUpdQA_Push_Click(strKey);
+        });
+    }
+
+    //我的论文
+
+    //function MyPA_Click() {
+    //    //xadmin.open('申请添加主题', '../GraduateEduTopic/ApplyTopic', '', '', true);
+    //    xadmin.open('我的答疑', '../InteractManage/qa_PaperCRUD?typeid=2', '', '', true);
+    //}
+
+    
+    function btnAnswer_Click(strKey) {
+       
+        require(["../js/InteractManage/qa_PaperCRUDEx.js"], function (qa_paper) {
+            var objPage = new qa_paper.qa_PaperCRUDEx();
+            objPage.btnAnswer_Click(strKey);
+        });
+    }
+
+    //跳转弹出页
+    function xadminopen(strTitle,strUrl) {
+        xadmin.open(strTitle, strUrl, '', '', true)
+
+    }
+
+</script>
+<div id="tabLayout" class="tab_layout">
+    @*-- 标题层 --*@
+
+    @*<div style="position: relative; width: 648px; height: 37px; left: 0px; top: 0px;">
+            <Label id="lblViewTitle" name="lblViewTitle" class="h5">
+                论文答疑表CRUD
+            </Label>
+            <Label id="lblMsg_List" name="lblMsg_List" class="text-warning" style="width:250px;">
+            </Label>
+        </div>*@
+    <div class="x-nav">
+        <n class="layui-breadcrumb">
+            <a href="">首页</a>
+            <a href="">答疑管理</a>
+            <a>
+                <cite>论文答疑维护</cite>
+            </a>
+            <Label id="lblMsg_List" name="lblMsg_List"></Label>
+        </n>
+        <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin:0px 0px 0px 5px; float:right" onclick="location.reload()" title="刷新">
+            <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+        </a>
+
+        @*<a id="MyQA" class="layui-btn layui-btn-small" style="line-height:1.6em;margin:0px 5px 0px 5px;float:right" onclick="MyPA_Click()" title="我的答疑">
+            <i class="layui-icon layui-icon-username" style="line-height:30px"></i>我的答疑
+        </a>*@
+
+    </div>
+    @*-- 查询层 --*@
+
+    <div id="divQuery" class="div_query">
+        <table id="tabQuery" style="width: 60%;" class="table table-bordered table-hover table td table-sm">
+            <tr>
+
+                <td>
+                    <input id="txtPaperTitle_q" name="txtPaperTitle_q" placeholder="论文标题" class="layui-input" style="width:200px;" />
+                </td>
+                <td>
+                    <input id="txtQuestionsContent_q" name="txtQuestionsContent_q" placeholder="问题内容" class="layui-input" style="width:200px;" />
+                </td>
+                <td>
+
+                    <input id="txtUserName_q" name="txtUserName_q" placeholder="提问用户" class="layui-input" style="width:150px;" />
+                </td>
+                <td>
+                    <input id="txtUpdDate_q" name="txtUpdDate_q" placeholder="编辑日期" class="layui-input" style="width:150px;" />
+                </td>
+                <td>
+                    <button class="layui-btn" lay-submit="" lay-filter="sreach" onclick="btn_Click('Query')">
+                        <i class="layui-icon">&#xe615;</i>
+                    </button>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+
+
+    @*-- 功能区 --*@
+    <div id="FunInfo" class="alert alert-info" style="display:none;">
+        <strong>本界面功能：</strong> 可以接受其他同学的提问邀请回答或者忽略，处理完的可以在历史邀请内重新处理！
+    </div>
+    @*<div id="divFunction" class="table table-bordered table-hover">
+            <ul class="nav">
+                <li class="nav-item">
+                    <Label id="lblqa_PaperList" name="lblqa_PaperList" class="col-form-label text-info" style="width:250px;">
+                        论文答疑列表
+                    </Label>
+                </li>
+                <li class="nav-item ml-3">
+
+                </li>
+                <li class="nav-item ml-3">
+                        <button id="btnUpdateRecord" name="btnUpdateRecord" class="btn btn-outline-info btn-sm text-nowrap" onclick="btn_Click('Update')">修改</button>
+                    </li>
+                <li class="nav-item ml-3">
+
+                </li>
+            </ul>
+        </div>*@
+    @*-- 列表层 --*@
+
+    <div class="layui-collapse" lay-accordion>
+        <div class="layui-colla-item">
+            <h2 class="layui-colla-title">论文答疑列表</h2>
+            <div id="divtab1" class="layui-colla-content layui-show">
+
+
+                @*<div class="btn-group btn-group-sm">
+                        <button class="btn btn-success" id="btnAddNewRecord" name="btnAddNewRecord" onclick="btn_Click('AddNewRecordWithMaxId')"><i class="layui-icon">&#xe654;</i>添加答疑</button>
+                        <button class="btn btn-danger" id="btnDelRecord" style="display:none;" name="btnDelRecord" onclick="btn_Click('Delete')"><i class="layui-icon">&#xe640;</i>删除答疑</button>
+                    </div>*@
+                <div id="divList" class="div_List">
+                    <div id="divDataLst" class="div_List">
+                    </div>
+                    <div id="divPager" class="pager" value="1">
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-colla-item">
+            <h2 class="layui-colla-title">您有<span class="layui-badge" id="QuestionsCount">0</span>个问题邀请未回复</h2>
+
+            @*<div id="divtab2" class="layui-colla-content layui-show">*@
+            <div id="divtab2" class="layui-colla-content">
+                <ul class="nav nav-pills" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="pill" href="#home">现有邀请</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="pill" href="#menu1">历史邀请</a>
+                    </li>
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <div id="home" class="tab-pane active">
+
+                    </div>
+                    <div id="menu1" class="tab-pane fade">
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="layui-colla-item">
+            <h2 class="layui-colla-title">您的同学都没有未解决的问题</h2>
+            <div id="divtab3" class="layui-colla-content">
+
+            </div>
+        </div>
+    </div>
+
+    @*-- 详细信息层 --*@
+    <div id="divDetail" value="1"></div>
+    @*-- 编辑层 --*@
+    <div id="divEdit" value="1"></div>
+</div>
+<input id="hidOpType" type="hidden" />
+<input id="hidKeyId" type="hidden" />
+@*<input id="hidUserId" type="hidden" value="@Model.seUserId" />
+    <input id="hidUserId1" type="hidden" value="@strUserId1_Value" />*@
+<input id="hidCurrPageIndex" type="hidden" value="1" />
+
+<input id="hidSortvqa_PaperBy" type="hidden" value="" />
+
+@*//类型用于区分是查看的还是个人维护的*@
+<input id="hidTypeId" type="hidden" />
+
+@*//类型用于区分是查看的还是个人维护的*@
+<input id="hidIsReceive" type="hidden" />
+
+@* 被邀请数 *@
+<input id="hidQuestionsCount" type="hidden" />

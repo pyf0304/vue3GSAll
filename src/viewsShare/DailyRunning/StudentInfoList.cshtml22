@@ -1,0 +1,361 @@
+﻿
+@page
+@{
+    Layout = "~/Pages/Shared/_Layout_PC.cshtml";
+    ViewData["Title"] = "学生维护";
+}
+@section Styles{
+    <link rel="stylesheet" href="../lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="../css/site.css" />
+    <link rel="shortcut icon" href="~/images/favicon.ico" type="image/x-icon" />
+
+    <link rel="stylesheet" href="~/lib/Xadmin/css/font.css">
+    <link rel="stylesheet" href="~/lib/Xadmin/css/xadmin.css">
+    <script src="~/lib/Xadmin/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="~/lib/Xadmin/js/xadmin.js"></script>
+
+    <link rel="stylesheet" href="~/css/public.css" />
+}
+@section Scripts{
+    <script src="../lib/jquery/dist/jquery.js"></script>
+    <script src="../lib/bootstrap/dist/js/bootstrap.js"></script>
+    @*<script src="../js/site.js" asp-append-version="true"></script>*@
+    <script src="../lib/bootstrap/dist/js/popper.js" type="module"></script>
+    <!--文件上传-->
+    <script src="../lib/jquery-form.js"></script>
+    <script src="../lib/jquery.min.js"></script>
+
+
+
+    <script src="../lib/require/require.js" data-main="../js/src/config"></script>
+}
+<script>
+//所有用户自定义的JS函数建议都放在这里
+
+    function btnCurrEduClsInTab_Click(strKeyId) {
+        require(["../js/DailyRunning/StudentInfoList.js"], function (CurrEduCls) {
+            if (strKeyId == "") {
+                alert("请选择需要的记录！");
+                return;
+            }
+            //ShowDialogOne();
+            var objPage = new CurrEduCls.StudentInfoList();
+            objPage.btnCurrEduClsInTab_Click(strKeyId);
+        });
+    }
+
+    function CloseWindow() {
+
+        try {
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            parent.layer.close(index); //再执行关闭
+
+
+            window.parent.btn_Click("Query");
+
+
+        } catch (e) {
+            window.opener.location = "父页面地址";
+            window.opener = null;
+
+            window.close();
+        }
+    }
+
+    /*
+确定推送
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnDelRecord_Click)
+*/
+    function btnOkPushStuText() {
+        require(["../js/DailyRunning/StudentInfoList.js", "../js/TS/PubFun/clsCommFunc4Web.js"], function (concept, commonfunc) {
+            var arrKeyIds = commonfunc.GetCheckedKeyIds();
+            if (arrKeyIds.length == 0) {
+                alert("请选择需要推送的记录！");
+                return;
+            }
+            var objPage = new concept.StudentInfoList();
+            objPage.btnOkPushStuText();
+        });
+    }
+</script>
+<script>
+
+ /*
+  按钮单击,用于调用Js函数中btn_Click
+ (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_btn_Click)
+ */
+function btn_Click(strCommandName, strKeyId) {
+   require(["../js/DailyRunning/StudentInfoList.js"], function(studentinfo) {
+studentinfo.StudentInfoList.btn_Click(strCommandName, strKeyId);
+});
+}
+
+ /*
+  单击数据列表中每行首列的复选框所引发的事件
+ (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_ChkClick)
+ */
+function ChkClick(myThis)
+{
+require(["../js/DailyRunning/StudentInfoList.js", "../js/TS/PubFun/clsCommFunc4Web.js"], function(studentinfo, commonfunc) {
+var strId = myThis.id;
+var strKey = strId.substring(3);
+var arrKeys = commonfunc.arrSelectedKeys;
+if (myThis.checked == true) {
+if (arrKeys.indexOf(strKey) < 0)
+{
+arrKeys.push(strKey);
+}
+}
+else {
+var index = arrKeys.indexOf(strKey);
+if (index > -1)
+{
+arrKeys.splice(index, 1);
+}
+}
+var sstrKey = "";
+for (let strK of arrKeys)
+{
+sstrKey += `${ strK},`;
+}
+$('#spanResult').html(sstrKey);
+});
+}
+
+ /*
+  获取数据列表中的所选记录
+ (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_GetAllCkechedKeys)
+ */
+function GetAllCkechedKeys(tabName)
+{
+var arrKeys = tabName.getElementsByTagName('chkInTab');
+alert(arrKeys.length.toString());
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_IndexPage)
+ */
+function IndexPage(intPageIndex)
+{
+console.log("跳转到" + intPageIndex + "页");
+require(["../js/DailyRunning/StudentInfoList.js"], function(studentinfo) {
+var objPage = new studentinfo.StudentInfoList();
+objPage.IndexPage(intPageIndex);
+});
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_JumpToPage)
+ */
+function JumpToPage()
+{
+var intCurrPageIndex = $('#input_number').val();
+var intPageIndex = Number(intCurrPageIndex);
+console.log("跳转到" + intPageIndex + "页");
+require(["../js/DailyRunning/StudentInfoList.js"], function(studentinfo) {
+var objPage = new studentinfo.StudentInfoList();
+objPage.IndexPage(intPageIndex);
+});
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_NextPage)
+ */
+function NextPage()
+{
+var intCurrPageIndex = $('#hidCurrPageIndex').val();
+var intPageIndex = Number(intCurrPageIndex) + 1;
+console.log("跳转到" + intPageIndex + "页");
+require(["../js/DailyRunning/StudentInfoList.js"], function(studentinfo) {
+var objPage = new studentinfo.StudentInfoList();
+objPage.IndexPage(intPageIndex);
+});
+}
+
+function GetRequest() {
+    var url = location.search; //获取url中"?"符后的字串
+    var theRequest = new Object();
+    if (url.indexOf("?") != -1) {
+        var str = url.substr(1);
+        strs = str.split("&");
+        for (var i = 0; i < strs.length; i++) {
+            theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+        }
+    }
+    return theRequest;
+}
+
+function GetCurrEduClsId() {
+    var Request = new Object();
+    Request = GetRequest();
+    var strCurrEduClsId = Request['CurrEduClsId'];
+
+    $('#hidCurrEduClsId').val(strCurrEduClsId);
+
+    //根据参数判断是什么界面传入；01 教学班界面、02中学课文界面；
+    var strPagetype = Request['Pagetype'];
+    $('#hidPagetype').val(strPagetype);
+
+    //课程Id
+    var strTextId = Request['TextId'];
+    $('#hidTextId').val(strTextId);
+
+    if (strCurrEduClsId != null) {
+        require(["../js/DailyRunning/StudentInfoList.js"], function (studentinfo) {
+            var objPage = new studentinfo.StudentInfoList();
+            objPage.Page_Load();
+        });
+    }
+}
+
+
+ /*
+  页面导入-在导入页面后运行的函数
+ (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_Page_Load)
+ */
+window.onload = function() {
+    GetCurrEduClsId();
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_PageNum)
+ */
+function PageNum(intPageIndex)
+{
+console.log("跳转到" + intPageIndex + "页");
+require(["../js/DailyRunning/StudentInfoList.js"], function(studentinfo) {
+var objPage = new studentinfo.StudentInfoList();
+objPage.IndexPage(intPageIndex);
+});
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_PrevPage)
+ */
+function PrevPage()
+{
+var intCurrPageIndex = $('#hidCurrPageIndex').val();
+var intPageIndex = Number(intCurrPageIndex) - 1;
+console.log("跳转到" + intPageIndex + "页");
+require(["../js/DailyRunning/StudentInfoList.js"], function(studentinfo) {
+var objPage = new studentinfo.StudentInfoList();
+objPage.IndexPage(intPageIndex);
+});
+}
+
+ /*
+  全选数据列表中的所有记录
+ (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_SetAllCkechedKeys)
+ */
+function SetAllCkechedKeys(tabName)
+{
+var thisChk = event.target;
+require(["../js/TS/PubFun/clsCommFunc4Web.js"], function (commonfunc) {
+console.log(tabName);
+console.log(thisChk);
+commonfunc.SetAllCkechedKeysV2(tabName, thisChk);
+});
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_SortBy)
+ */
+function SortBy(strFldName)
+{
+console.log("按：" + strFldName + "排序");
+require(["../js/DailyRunning/StudentInfoList.js"], function(studentinfo) {
+var objPage = new studentinfo.StudentInfoList();
+objPage.SortBy(strFldName);
+});
+}
+</script>
+<div id="tabLayout" class="tab_layout">
+    @*-- 标题层 --*@
+
+    <div style="position: relative; width: 648px; height: 37px; left: 0px; top: 0px;">
+        <Label id="lblViewTitle" name="lblViewTitle" class="h5">
+            学生CRUD
+        </Label>
+        <Label id="lblMsg_List" name="lblMsg_List" class="text-warning" style="width:250px;">
+        </Label>
+    </div>
+    @*-- 查询层 --*@
+
+    <div id="divQuery" class="div_query">
+        <table id="tabEdit" style="width:900px" class="table table-bordered table-hover table td table-sm">
+            <tr>
+                <td class="text-left">
+                    <Label id="lblStuID_q" name="lblStuID_q" class="col-form-label text-right" style="width:90px;">
+                        学号
+                    </Label>
+                </td>
+                <td class="text-left">
+                    <input id="txtStuID_q" name="txtStuID_q" class="form-control" style="width:120px;" />
+                </td>
+                <td class="text-left">
+                    <Label id="lblStuName_q" name="lblStuName_q" class="col-form-label text-right" style="width:90px;">
+                        姓名
+                    </Label>
+                </td>
+                <td class="text-left">
+                    <input id="txtStuName_q" name="txtStuName_q" class="form-control" style="width:120px;" />
+                </td>
+                <td class="text-left">
+                    <button type="submit" id="btnQuery" name="btnQuery" class="btn btn-outline-warning text-nowrap" onclick="btn_Click('Query')">查询</button>
+                </td>
+
+            </tr>
+        </table>
+    </div>
+    @*-- 功能区 --*@
+
+    <div id="divFunction" class="table table-bordered table-hover">
+        <ul class="nav">
+            @*<li class="nav-item">
+            <Label id="lblStudentInfoList" name="lblStudentInfoList" class="col-form-label text-info" style="width:250px;">
+                学生列表
+            </Label>
+        </li>
+        <li class="nav-item ml-3">
+            <button id="btnAddNewRecord" name="btnAddNewRecord" class="btn btn-outline-info btn-sm text-nowrap" onclick="btn_Click('Create')">添加</button>
+        </li>
+        <li class="nav-item ml-3">
+            <button id="btnUpdateRecord" name="btnUpdateRecord" class="btn btn-outline-info btn-sm text-nowrap" onclick="btn_Click('Update')">修改</button>
+        </li>
+        <li class="nav-item ml-3">
+            <button id="btnDelRecord" name="btnDelRecord" class="btn btn-outline-info btn-sm text-nowrap" onclick="btn_Click('Delete')">删除</button>
+        </li>*@
+
+            @*<li class="nav-item ml-3">
+                <button id="btnOkPushStuText" name="btnOkPushStuText" class="btn btn-primary" onclick="btnOkPushStuText()" style="display:none;">确定推送</button>
+            </li>*@
+        </ul>
+        </div>
+    @*-- 列表层 --*@
+    <div id="divList" class="div_List">
+        <div id="divDataLst" class="div_List">
+        </div>
+        <div id="divPager" class="pager">
+            @*@Html.Partial("~/Pages/PubWebClass/pager.cshtml")*@
+        </div>
+    </div>
+    @*-- 编辑层 --*@
+    <div id="divEdit" value="1"></div>
+</div>
+<input id="hidOpType" type="hidden" />
+<input id="hidKeyId" type="hidden" />
+<input id="hidCurrPageIndex" type="hidden" value="1" />
+<input id="hidSortvStudentInfoBy" type="hidden" value="" />
+
+<input id="hidCurrEduClsId" type="hidden" />
+@*-- 页面类型 --*@
+<input id="hidPagetype" type="hidden" />
+@*-- 课文Id --*@
+<input id="hidTextId" type="hidden" />
+

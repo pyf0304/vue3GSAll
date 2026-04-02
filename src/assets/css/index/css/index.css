@@ -1,0 +1,899 @@
+﻿body,
+ul,
+ol,
+li,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+form,
+fieldset,
+table,
+td,
+img,
+div,
+menu,
+dl,
+dt,
+dd,
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nva,
+section {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  list-style: none;
+}
+
+body {
+  margin: 0px;
+  font-family: tahoma, 宋体;
+  font-size: 13px;
+  color: #555;
+  background-image: url(@/assets/css/index/img/bg.gif);
+}
+
+a,
+a:hover {
+  color: #333;
+  text-decoration: none;
+}
+
+/*网页头部样式*/
+.top {
+  /*background: url(../images/top_bg.gif) repeat-x;*/
+  background-color: #24998d;
+}
+
+.top .top_con {
+  width: 1000px;
+  background: url(@/assets/css/index/img/logo.png) no-repeat;
+  /*background: url(../img/logo_2.png) repeat-x;*/
+  height: 95px;
+  margin: 0 auto;
+  margin-top: 2px;
+  top: 10px;
+}
+
+.top_title {
+  padding-top: 40px;
+  width: 300px;
+  font-size: 30px;
+  color: white;
+  font-family: 'Microsoft Himalaya';
+  float: left;
+  margin-left: 350px;
+}
+
+.top_login {
+  padding-top: 10px;
+  width: 280px;
+  font-size: 18px;
+  color: white;
+  text-align: right;
+  float: right;
+  margin-right: 20px;
+}
+
+.top_login a {
+  color: white;
+}
+
+.top_login a:hover {
+  color: coral;
+}
+
+.content {
+  margin: 5px auto;
+  width: 1000px;
+  clear: both;
+}
+
+.box1,
+.box2,
+.box3,
+.box4,
+.box5,
+.box6,
+.box7,
+.box8 {
+  width: 1000px;
+  float: left;
+  _float: none;
+}
+
+/*.box3, .box4, .box5, .box7, .box8 {
+    margin-top: 15px;
+}*/
+
+/*.box2, .box6 {
+    margin-top: 2px;
+}*/
+
+.box2 {
+  margin-bottom: 5px;
+}
+
+.title {
+  /*float: left;*/
+  padding-top: 10px;
+  text-indent: 10px;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.title a {
+  font-size: 14px;
+}
+
+/**************************************登录区*************************************/
+.leftLogin {
+  width: 400px;
+  background: #fff;
+  height: 255px;
+  border-right: solid 1px #dededf;
+  border-bottom: solid 1px #dbdcde;
+  /*border-top: solid 1px #dededf;
+    border-left: solid 1px #dbdcde;*/
+  border-radius: 7px 4px 4px 2px; /* 四个半径值分别是左上角、右上角、右下角和左下角 */
+  float: left;
+}
+
+.login {
+  width: 380px;
+  z-index: 120;
+}
+
+.login h3 {
+  padding: 15px 0 5px 50px;
+  font: bold 18px/38px 'Microsoft YaHei';
+  color: #444;
+}
+
+.login .form {
+  width: 360px;
+  height: 25px;
+  margin: 0 0 26px 38px;
+}
+
+.login .yzm {
+  width: 360px;
+  height: 25px;
+  margin: 0 0 26px 38px;
+}
+
+.login .form input {
+  display: block;
+  width: 250px;
+  height: 28px;
+  background: #fafafa;
+  margin-top: 2px;
+  border: 1px solid #dfdfdf;
+  box-shadow: 0px 0px 1px 1px #2683e9;
+  font: 14px/30px 'Microsoft YaHei';
+  text-indent: 10px;
+  color: #000;
+}
+
+.login .form label {
+  font: 16px/31px 'Microsoft YaHei';
+  color: #333;
+  float: left;
+  margin-right: 10px;
+  height: 28px;
+}
+
+.login .yzm label {
+  font: 16px/32px 'Microsoft YaHei';
+  color: #333;
+  float: left;
+  margin-right: 10px;
+  height: 28px;
+}
+
+.login button {
+  cursor: pointer;
+  width: 308px;
+  height: 36px;
+  border: none;
+  margin: 10px 0 0 30px;
+  background: #0078d7;
+  color: #fff;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.loginbutton1 {
+  cursor: pointer;
+  width: 308px;
+  height: 36px;
+  border: none;
+  margin: 10px 0 0 0px;
+  background: #0078d7;
+  color: #fff;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.loginform1 {
+  width: 300px;
+  height: 43px;
+  margin: 0 0 26px 38px;
+}
+
+.loginInfo {
+  width: 380px;
+  text-align: center;
+  margin-top: 40px;
+  margin-left: 10px;
+}
+
+.loginInfo button {
+  cursor: pointer;
+  width: 80px;
+  height: 36px;
+  border: none;
+  margin: 10px 0 0 30px;
+  background: #0078d7;
+  color: #fff;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.btnUpdPwd {
+  cursor: pointer;
+  width: 80px;
+  height: 36px;
+  border: none;
+  margin: 10px 0 0 0px;
+  background: #0078d7;
+  color: #fff;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.btnOut {
+  cursor: pointer;
+  width: 80px;
+  height: 36px;
+  border: none;
+  margin: 10px 0 0 0px;
+  background: #0078d7;
+  color: #fff;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.rightOffice {
+  width: 590px;
+  background: #fff;
+  height: 255px;
+  border-right: solid 1px #dededf;
+  border-bottom: solid 1px #dbdcde;
+  /*border-top: solid 1px #dededf;
+    border-left: solid 1px #dbdcde;*/
+  border-radius: 7px 4px 4px 2px; /* 四个半径值分别是左上角、右上角、右下角和左下角 */
+  float: right;
+}
+
+.rightOffice .content {
+  overflow: hidden;
+  width: 590px;
+  height: 189px;
+  margin-top: 8px;
+  margin-left: 10px;
+  font-size: 14px;
+}
+/********************************快速通道列表1********************************/
+
+.ExpressLane1 {
+  width: 1000px;
+  height: 165px;
+  overflow: hidden;
+  border-right: solid 1px #dededf;
+  border-bottom: solid 1px #dbdcde;
+  /*border-top: solid 1px #dededf;
+    border-left: solid 1px #dbdcde;*/
+  border-radius: 7px 4px 4px 2px; /* 四个半径值分别是左上角、右上角、右下角和左下角 */
+  /*float: left;*/
+  background: #fff;
+  margin-bottom: 5px;
+}
+
+.list_ul1 {
+  margin-top: 5px;
+  margin-left: 5px;
+  overflow: hidden;
+  width: 100%;
+  list-style: none;
+  padding: 0;
+  /*background: #EDEDED;*/
+}
+/*background修改*/
+.list_ul1 li {
+  text-align: center;
+  float: left;
+  width: 485px;
+  margin: 5px;
+}
+
+.list_ul1 a {
+  /*margin: 0 0.5px;*/
+  display: block;
+  height: 145px;
+  border-radius: 7px; /* 四个半径值分别是左上角、右上角、右下角和左下角 */
+  /*padding: 0px 0;*/
+  /*background: #FFFFFF;*/
+}
+
+.list_ul1 .iconLeft {
+  float: left;
+  width: 120px;
+  text-align: center;
+  line-height: 200px;
+  /*color: #333;*/
+}
+
+/*background修改*/
+.list_ul1 i {
+  display: block;
+  width: 100px;
+  height: 100px;
+  border-radius: 45%;
+  margin: 0 auto;
+  overflow: hidden;
+  background-size: 300% auto;
+  background-image: url(@/assets/css/index/img/icon.png);
+}
+
+.list_ul1 label {
+  text-align: center;
+  height: 30px;
+  line-height: 30px;
+  display: block;
+  overflow: hidden;
+  word-spacing: normal;
+  word-break: break-all;
+  font-size: 20px;
+  font-weight: bold;
+  text-shadow: none;
+  color: white;
+  padding-bottom: 5px;
+  /*color: #333;*/
+}
+
+.list_ul1 span {
+  float: right;
+  width: 350px;
+  margin: 5px;
+  text-align: left;
+  line-height: 22px;
+  display: block;
+  overflow: hidden;
+  word-spacing: normal;
+  word-break: break-all;
+  font-size: 16px;
+  /*font-weight: bold;*/
+  text-shadow: none;
+  color: blanchedalmond;
+  /*padding-bottom: 5px;*/
+  /*color: #333;*/
+}
+
+/********************************快速通道列表1********************************/
+
+.ExpressLane2 {
+  width: 1000px;
+  height: 200px;
+  overflow: hidden;
+  border-right: solid 1px #dededf;
+  border-bottom: solid 1px #dbdcde;
+  /*border-top: solid 1px #dededf;
+    border-left: solid 1px #dbdcde;*/
+  border-radius: 7px 4px 4px 2px; /* 四个半径值分别是左上角、右上角、右下角和左下角 */
+  /*float: left;*/
+  background: #fff;
+}
+
+.list_ul2 {
+  margin-top: 5px;
+  margin-left: 5px;
+  overflow: hidden;
+  width: 100%;
+  list-style: none;
+  padding: 0;
+  /*background: #EDEDED;*/
+}
+/*background修改*/
+.list_ul2 li {
+  text-align: center;
+  float: left;
+  width: 320px;
+  margin: 5px;
+}
+
+.list_ul2 a {
+  /*margin: 0 0.5px;*/
+  display: block;
+  text-align: center;
+  height: 180px;
+  border-radius: 7px; /* 四个半径值分别是左上角、右上角、右下角和左下角 */
+  /*padding: 0px 0;*/
+  /*background: #FFFFFF;*/
+}
+/*background修改*/
+.list_ul2 i {
+  display: block;
+  width: 60px;
+  height: 60px;
+  border-radius: 45%;
+  margin: 0 auto;
+  overflow: hidden;
+  background-size: 300% auto;
+  background-image: url(@/assets/css/index/img/icon.png);
+}
+
+.list_ul2 label {
+  text-align: center;
+  height: 24px;
+  line-height: 24px;
+  display: block;
+  overflow: hidden;
+  word-spacing: normal;
+  word-break: break-all;
+  font-size: 19px;
+  font-weight: bold;
+  text-shadow: none;
+  color: white;
+  padding-bottom: 5px;
+  /*color: #333;*/
+}
+
+.list_ul2 span {
+  margin: 5px;
+  text-align: left;
+  line-height: 20px;
+  display: block;
+  overflow: hidden;
+  word-spacing: normal;
+  word-break: break-all;
+  font-size: 15px;
+  font-weight: 400;
+  text-shadow: none;
+  color: ghostwhite;
+  padding-bottom: 5px;
+  /*color: #333;*/
+}
+
+.icon-1 {
+  background-color: #ffa54f;
+}
+
+.icon-2 {
+  background-color: #40b990;
+}
+
+.icon-3 {
+  background-color: #c6958e;
+}
+
+.icon-4 {
+  background-color: #e9ad7b;
+}
+
+.icon-5 {
+  background-color: #6bc36d;
+}
+
+.icon-6 {
+  background-color: #4cc7eb;
+}
+
+.icon-7 {
+  background-color: #7994af;
+}
+
+.icon-8 {
+  background-color: #d32d13;
+}
+
+.icon-9 {
+  background-color: #699bd0;
+}
+
+.icon-10 {
+  background-color: #bd5ce1;
+}
+
+.icon-11 {
+  background-color: #9acabc;
+}
+
+.icon-12 {
+  background-position: 100% 99.4%;
+  background-color: #e9ad7b;
+}
+
+.icon-1 i {
+  background-position: 0 0;
+  /*background-color: #FFA54F;*/
+}
+
+.icon-2 i {
+  background-position: 50% 0;
+  /*background-color: #40B990;*/
+}
+
+.icon-3 i {
+  background-position: 100% 0;
+  /*background-color: #4CC7EB;*/
+}
+
+.icon-4 i {
+  background-position: 0 33.3%;
+  /*background-color: #E9AD7B;*/
+}
+
+.icon-5 i {
+  background-position: 50% 33.3%;
+  /*background-color: #6BC36D;*/
+}
+
+.icon-6 i {
+  background-position: 100% 33.3%;
+  /*background-color: #C6958E;*/
+}
+
+.icon-7 i {
+  background-position: 0 66.6%;
+  /*background-color: #7994AF;*/
+}
+
+.icon-8 i {
+  background-position: 50% 66%;
+  /*background-color: #D32D13;*/
+}
+
+.icon-9 i {
+  background-position: 100% 66.6%;
+  /*background-color: #699BD0;*/
+}
+
+.icon-10 i {
+  background-position: 0 100%;
+  /*background-color: #BD5CE1;*/
+}
+
+.icon-11 i {
+  background-position: 50% 100%;
+  /*background-color: #9ACABC;*/
+}
+
+.icon-12 i {
+  background-position: 100% 99.4%;
+  /*background-color: #E9AD7B;*/
+}
+
+/*******************报表区*********************/
+.rightReport {
+  width: 590px;
+  background: #fff;
+  height: 450px;
+  border-right: solid 1px #dededf;
+  border-bottom: solid 1px #dbdcde;
+  /*border-top: solid 1px #dededf;
+    border-left: solid 1px #dbdcde;*/
+  border-radius: 7px 4px 4px 2px; /* 四个半径值分别是左上角、右上角、右下角和左下角 */
+  float: right;
+}
+
+.rightReport .content {
+  overflow: hidden;
+  width: 590px;
+  height: 240px;
+  margin-top: 8px;
+  margin-left: 10px;
+  font-size: 14px;
+}
+
+/************************************子内容区*********************************/
+.nav0 {
+  width: 1000px;
+  height: 40px;
+  line-height: 40px;
+  font-size: 16px;
+  font-weight: bold;
+  border: solid 1px #dededf;
+  border-radius: 5px;
+  background: #fff;
+  margin-bottom: 5px;
+  /*color: #0080ff;*/
+  background: url(@/assets/css/index/img/home.png) no-repeat 1.4% #fff;
+  text-indent: 2.5em;
+  overflow: hidden;
+}
+
+.nav0 a {
+  margin-left: 10px;
+}
+
+.SubContent {
+  width: 1000px;
+  min-height: 500px;
+  overflow: hidden;
+  border-right: solid 1px #dededf;
+  border-bottom: solid 1px #dbdcde;
+  /*border-top: solid 1px #dededf;
+    border-left: solid 1px #dbdcde;*/
+  border-radius: 7px 4px 4px 2px; /* 四个半径值分别是左上角、右上角、右下角和左下角 */
+  /*float: left;*/
+  background: #fff;
+}
+
+/***************************************学校见闻相关***************************************/
+
+.panel-default {
+  border: none;
+  border-radius: 0px;
+  margin-bottom: 0px;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+}
+
+.panel-default > .panel-heading {
+  color: #777;
+  font-size: 18px;
+  font-weight: bold;
+  background-color: #fff;
+  border-color: #e6e6e6;
+  padding: 10px 10px;
+  color: darkcyan;
+}
+
+.panel-default > .panel-body {
+  font-size: 15px;
+  padding: 10px;
+  padding-bottom: 0px;
+}
+
+.panel-default > .panel-body ul {
+  overflow: hidden;
+  padding: 0;
+  margin: 0px;
+  margin-top: -5px;
+}
+
+.panel-default > .panel-body ul li {
+  line-height: 27px;
+  list-style-type: none;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.panel-default > .panel-body ul li .time {
+  color: #a1a1a1;
+  float: right;
+  padding-right: 5px;
+}
+
+/*底部样式*/
+.footer {
+  overflow: hidden;
+  margin: 10px auto 0px auto;
+  min-width: 1004px;
+  height: 193px;
+  clear: both;
+  color: #929292;
+  /*background-color: #fff;*/
+  background-color: #454545;
+  /*border-top: solid 1px #e3e3e3;*/
+  /*background: url(img/footer.jpg) no-repeat bottom;*/
+}
+
+.foot {
+  width: 1000px;
+  margin: 0 auto;
+}
+
+.fleft {
+  width: 700px;
+  float: left;
+  margin-top: 17px;
+  padding-left: 21px;
+}
+
+.flogo,
+.flogo a {
+  width: 400px;
+  height: 90px;
+  float: left;
+}
+
+.flogo a {
+  display: block;
+  font-size: 30px;
+  color: ivory;
+  /*background: url(../img/logo_tz3.png) no-repeat;*/
+}
+
+.flogo a:hover {
+  font-size: 30px;
+  color: dodgerblue;
+  /*background: url(../img/logo_tz2.png) no-repeat;*/
+}
+
+.flogotext {
+  font-size: 14px;
+  color: #999;
+  text-indent: 15px;
+  /*padding-top: 60px;*/
+  margin-top: 30px;
+  float: left;
+}
+
+.flist {
+  clear: both;
+  padding-top: 17px;
+}
+
+.flist li {
+  float: left;
+  padding-right: 12px;
+  margin-left: 12px;
+  background: url(@/assets/css/index/img/line1.gif) no-repeat right;
+}
+
+.flist li a {
+  font-weight: bold;
+  color: #777;
+}
+
+.flist li a:hover {
+  color: #03a8b1;
+}
+
+#flfirst {
+  margin: 0;
+}
+
+.copyright {
+  clear: both;
+  color: #999;
+  line-height: 16px;
+  margin-top: 18px;
+  float: left;
+}
+
+.icp {
+  clear: both;
+  color: #999;
+  margin-top: 11px;
+  float: left;
+}
+
+.fright {
+  float: right;
+}
+
+.rlist {
+  float: right;
+  padding-right: 18px;
+  padding-top: 26px;
+}
+
+.rlist li {
+  float: left;
+  padding-left: 18px;
+}
+
+.rlist li a {
+  font-weight: bold;
+  color: #777;
+}
+
+.rlist li a:hover {
+  color: #03a8b1;
+}
+
+.flink1,
+.flink2,
+.flink3,
+.flink4 {
+  display: block;
+  text-indent: 21px;
+  height: 20px;
+  float: left;
+}
+
+.flink1 {
+  background: url(@/assets/css/index/img/f01.gif) no-repeat;
+}
+
+.flink2 {
+  background: url(@/assets/css/index/img/f02.gif) no-repeat;
+}
+
+.flink3 {
+  background: url(@/assets/css/index/img/f03.gif) no-repeat;
+}
+
+.flink4 {
+  background: url(@/assets/css/index/img/f04.gif) no-repeat;
+}
+
+/* .flink1:hover {
+  background: url(@/assets/css/index/img/f01_1.gif) no-repeat;
+}
+
+.flink2:hover {
+  background: url(@/assets/css/index/img/f02_1.gif) no-repeat;
+}
+
+.flink3:hover {
+  background: url(@/assets/css/index/img/f03_1.gif) no-repeat;
+}
+
+.flink4:hover {
+  background: url(@/assets/css/index/img/f04_1.gif) no-repeat;
+} */
+
+.fimg {
+  float: right;
+  padding-right: 21px;
+  margin-top: 19px;
+  clear: both;
+  _clear: none;
+  /* *clear: none; */
+}
+
+.fimg li {
+  float: left;
+  padding-left: 21px;
+}
+
+.fimglink1,
+.fimglink2,
+.fimglink3 {
+  height: 40px;
+  width: 40px;
+  display: block;
+  border-radius: 5px 5px 5px 5px;
+}
+
+.fimglink1 {
+  background: url(@/assets/css/index/img/wx.gif) no-repeat white;
+}
+
+.fimglink2 {
+  background: url(@/assets/css/index/img/qq.gif) no-repeat white;
+}
+
+.fimglink3 {
+  background: url(@/assets/css/index/img/sian.gif) no-repeat white;
+}
+
+.fimglink1:hover {
+  background: url(@/assets/css/index/img/wx_1.gif) no-repeat white;
+}
+
+.fimglink2:hover {
+  background: url(@/assets/css/index/img/qq_1.gif) no-repeat white;
+}
+
+.fimglink3:hover {
+  background: url(@/assets/css/index/img/sian_1.gif) no-repeat white;
+}

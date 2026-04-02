@@ -1,0 +1,129 @@
+﻿@page
+@{
+    Layout = "";
+}
+@section Styles{
+    <link rel="stylesheet" href="../lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="../css/site.css" />
+}
+@section Scripts{
+    <script src="../lib/jquery/dist/jquery.js"></script>
+    <script src="../lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="../js/site.js" asp-append-version="true"></script>
+    <script src="../lib/bootstrap/dist/js/popper.js"></script>
+    <script src="../lib/require/require.js" data-main="../js/src/config"></script>
+}
+
+<script>
+
+
+    /*
+  显示对话框
+ (AutoGCLib.WA_ViewScript_Edit_TS4Html:Gen_WApi_JS_ShowDialog)
+ */
+    function ShowDialog(strDialogName) {
+        require(['jquery', 'bootstrap'], function ($) {
+            $(strDialogName).modal('show');
+        });
+    }
+
+    /*
+     隐藏对话框
+    (AutoGCLib.WA_ViewScript_Edit_TS4Html:Gen_WApi_JS_HideDialog)
+    */
+    function HideDialog(strDialogName) {
+        require(['jquery', 'bootstrap'], function ($) {
+            $(strDialogName).modal('hide');
+        });
+    }
+
+</script>
+
+
+<div id="tabLayout" class="tab_layout">
+
+
+
+    @*- 论文列表 --*@
+    <div class="modal fade" style="z-index:1060;" id="divPaperList" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+        <div class="modal-dialog" style="margin-left:200px;">
+            <div class="modal-content" style="width: 1400px;">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">论文列表</h4>
+                    <h4 class="modal-title" style="color:red;">(当前只显示已提交的论文数据)</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+
+                <div id="divQuery_PaperLstSel" class="div_query">
+                    <table id="tabQuery" name="tabQuery" style="width: 70%; " class="table table-bordered table-hover table td table-sm">
+                        <tr>
+                            @*<td>
+                                    <Label id="lblPaperTitle_q" name="lblPaperTitle_q" class="col-form-label text-right" style="width:80px;width:90px;">
+                                        论文标题
+                                    </Label>
+                                </td>*@
+                            <td>
+                                <input id="txtPaperTitle_q" name="txtPaperTitle_q" placeholder="论文标题" class="layui-input" style="width:300px;" />
+                            </td>
+                          
+                            @*<td class="NameTD">
+                                    <Label id="lblLiteratureTypeId_q" name="lblLiteratureTypeId_q" class="col-form-label text-right" style="width:90px;">
+                                        文献类型
+                                    </Label>
+                                </td>*@
+                            <td class="ValueTD">
+                                <select id="ddlLiteratureTypeId_q" name="ddlLiteratureTypeId_q" class="form-control" style="width:180px;" />
+                            </td>
+                            <td>
+                                <select id="ddlUserId_q" name="ddlUserId_q" class="form-control" style="width:180px;" />
+
+                            </td>
+                            <td>
+                                <button id="btnQuery" class="layui-btn" lay-submit="" lay-filter="sreach" >
+                                    <i class="layui-icon">&#xe615;</i>
+                                </button>
+                            </td>
+                        </tr>
+                        @*<tr>
+
+                                <td>
+                                    <Label id="lblReadUser_q" name="lblReadUser_q" class="col-form-label text-right" style="width:80px;width:90px;">
+                                        用户
+                                    </Label>
+                                </td>
+
+                                <td>
+                                    <button type="submit" id="btnPaperQuery" name="btnPaperQuery" class="btn btn-outline-warning text-nowrap btn-sm" onclick="btnPaperQuery_Click()">查询</button>
+                                </td>
+                                <td></td>
+                                <td></td>
+                            </tr>*@
+
+                    </table>
+                </div>
+
+
+                <div class="modal-body">
+                    <div id="divList" class="div_List">
+                        <div id="divPaperDataLst" class="div_List">
+                        </div>
+                        <div id="divPager_PaperLst" class="pager" value="1">
+                            @*@Html.Partial("~/Pages/PubWebClass/pageTwo.cshtml")*@
+
+                        </div>
+                    </div>
+                </div>
+                @*<div class="modal-footer">
+                        <button id="btnCancel" type="button" class="btn btn-default btn-sm" data-dismiss="modal" onclick="closeTwo_Click()">关闭</button>
+
+                    </div>*@
+            </div>
+            <!-- /.modal-content -->
+        </div>
+
+    </div>
+
+
+</div>
+

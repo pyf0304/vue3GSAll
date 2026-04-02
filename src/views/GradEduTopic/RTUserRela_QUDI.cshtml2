@@ -1,0 +1,689 @@
+﻿
+@page
+@model GraduateStudyWebApp.Pages.GraduateEduTopic.RTUserRela_QUDIModel
+@{
+    Layout = "~/Pages/Shared/_Layout_PC.cshtml";
+    ViewData["Title"] = "论文用户关系列表";
+    //操作Session样例，方法1：
+    //Model.seUserId = "TestUserId";
+    var strUserId_Value = Model.seUserId;
+    //操作Session样例，方法2：
+    Model.SetSession("UserId1", "TestUserId1");
+    var strUserId1_Value = Model.GetSession("UserId1");
+    //请参见页尾的隐形控件hidUserid和hidUserId1的使用。
+}
+@section Styles{
+    <link rel="stylesheet" href="../lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="../css/site.css" />
+    <!-- 界面样式调整相关样式 -->
+    <link rel="stylesheet" href="~/lib/Xadmin/css/font.css">
+    <link rel="stylesheet" href="~/lib/Xadmin/css/xadmin.css">
+    <!-- <link rel="stylesheet" href="./css/theme5.css"> -->
+    <script src="~/lib/Xadmin/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="~/lib/Xadmin/js/xadmin.js"></script>
+
+    <link rel="stylesheet" href="~/css/public.css" />
+}
+@section Scripts{
+    <script src="../lib/jquery/dist/jquery.js"></script>
+    <script src="../lib/bootstrap/dist/js/bootstrap.js"></script>
+    @*<script src="../js/site.js" asp-append-version="true"></script>*@
+    <script src="../lib/bootstrap/dist/js/popper.js" type="module"></script>
+    <script src="../lib/require/require.js" data-main="../js/src/config"></script>
+}
+<script>
+
+var strUrl_Session_SetString = "@Model.Url_Session_SetString";
+var strUrl_Session_GetString = "@Model.Url_Session_GetString";
+    var strCurrPrjId = "@Model.CurrPrjId";
+
+
+
+
+    function GetRequest() {
+        var url = location.search; //获取url中"?"符后的字串
+        var theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1);
+            strs = str.split("&");
+            for (var i = 0; i < strs.length; i++) {
+                theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+            }
+        }
+        return theRequest;
+    }
+
+    function GetTopicRelaId() {
+        var Request = new Object();
+        Request = GetRequest();
+        var str1;
+        str1 = Request['TopicRelaId'];
+        $("#hidTopicRelaId").val(str1);
+    }
+
+
+    function GetTopicRelaId_load() {
+        var Request = new Object();
+        Request = GetRequest();
+        var str1;
+        str1 = Request['TopicRelaId'];
+
+        if (str1 != null) {
+            $('#hidTopicRelaId').val(str1);
+
+            require(["../js/GraduateEduTopic/RTUserRela_QUDIEx.js"], function (researchtopic) {
+                var objPage = new researchtopic.RTUserRela_QUDIEx();
+                objPage.Page_Load();
+            });
+
+        }
+        else {
+            require(["../js/GraduateEduTopic/RTUserRela_QUDIEx.js"], function (researchtopic) {
+                var objPage = new researchtopic.RTUserRela_QUDIEx();
+                objPage.Page_Load();
+            });
+        }
+    }
+
+    /*
+ 页面导入-在导入页面后运行的函数
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_Page_Load)
+*/
+    window.onload = function () {
+
+        GetTopicRelaId_load();
+        //require(["../js/GraduateEduTopic/RTUserRela_QUDIEx.js"], function (rtuserrela) {
+        //    var objPage = new rtuserrela.RTUserRela_QUDIEx();
+        //    objPage.Page_Load();
+        //});
+    }
+
+
+
+ /*
+  添加新记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnAddNewRecord_Click)
+ */
+function btnAddNewRecord_Click() {
+   require(["../js/GraduateEduTopic/RTUserRela_QUDIEx.js"], function(rtuserrela) {
+ShowDialog('Add');
+var objPage = new rtuserrela.RTUserRela_QUDIEx();
+objPage.btnAddNewRecord_Click();
+});
+}
+
+ /*
+  删除记录的事件函数
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnDelRecord_Click)
+ */
+function btnDelRecord_Click() {
+   require(["../js/GraduateEduTopic/RTUserRela_QUDIEx.js", "../js/TS/PubFun/clsCommonFunc4Web.js"], function(rtuserrela, commonfunc) {
+var arrKeyIds = commonfunc.clsCommonFunc4Web.GetCheckedKeyIds();
+if (arrKeyIds.length == 0)
+{
+alert("请选择需要删除的记录！");
+return;
+}
+var objPage = new rtuserrela.RTUserRela_QUDIEx();
+objPage.btnDelRecord_Click();
+});
+}
+
+
+ /*
+  在数据表里删除记录的事件函数
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnDelRecordInTab_Click)
+ */
+function btnDelRecordInTab_Click(strKeyId) {
+   require(["../js/GraduateEduTopic/RTUserRela_QUDIEx.js"], function(rtuserrela) {
+if (strKeyId == "")
+{
+alert("请选择需要删除的记录！");
+return;
+}
+var objPage = new rtuserrela.RTUserRela_QUDIEx();
+objPage.btnDelRecordInTab_Click(strKeyId);
+});
+}
+
+
+ /*
+  查询记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+ */
+function btnQuery_Click()
+{
+   require(["../js/GraduateEduTopic/RTUserRela_QUDIEx.js"], function(rtuserrela) {
+$("#Text1").val("进入函数：btnQuery_Click");
+var objPage = new rtuserrela.RTUserRela_QUDIEx();
+objPage.btnQuery_Click();
+});
+}
+
+
+ /*
+  在数据表里修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnUpdateRecordInTab_Click)
+ */
+function btnUpdateRecordInTab_Click(strKeyId) {
+   require(["../js/GraduateEduTopic/RTUserRela_QUDIEx.js"], function(rtuserrela) {
+    if (strKeyId == "")
+{
+alert("请选择需要修改的记录！");
+return;
+}
+ShowDialog('Update');
+var objPage = new rtuserrela.RTUserRela_QUDIEx();
+  objPage.btnUpdateRecordInTab_Click(strKeyId);
+});
+}
+
+
+ /*
+  单击数据列表中每行首列的复选框所引发的事件
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_ChkClick)
+ */
+function ChkClick(myThis)
+{
+require(["../js/GraduateEduTopic/RTUserRela_QUDIEx.js", "../js/TS/PubFun/clsCommonFunc4Web.js"], function(rtuserrela, commonfunc) {
+var strId = myThis.id;
+var strKey = strId.substring(3);
+var arrKeys = commonfunc.arrSelectedKeys;
+if (myThis.checked == true) {
+if (arrKeys.indexOf(strKey) < 0)
+{
+arrKeys.push(strKey);
+}
+}
+else {
+var index = arrKeys.indexOf(strKey);
+if (index > -1)
+{
+arrKeys.splice(index, 1);
+}
+}
+var sstrKey = "";
+for (let strK of arrKeys)
+{
+sstrKey += `${ strK},`;
+}
+$('#spanResult').html(sstrKey);
+});
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_ExpandDiv)
+ */
+         function ExpandDiv(divName) {
+//基于RequireJS来调用tzPubFun.ts中的函数OnlyShowDiv。
+require(["../js/TS/PubFun/tzPubFun"], function (pubfun) {
+      pubfun.OnlyShowDiv(divName, "function", "content");
+});
+}
+
+ /*
+  获取数据列表中的所选记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_GetAllCkechedKeys)
+ */
+function GetAllCkechedKeys(tabName)
+{
+var arrKeys = tabName.getElementsByTagName('chkInTab');
+alert(arrKeys.length.toString());
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_IndexPage)
+ */
+function IndexPage(intPageIndex)
+{
+console.log("跳转到" + intPageIndex + "页");
+require(["../js/GraduateEduTopic/RTUserRela_QUDIEx.js"], function(rtuserrela) {
+var objPage = new rtuserrela.RTUserRela_QUDIEx();
+objPage.IndexPage(intPageIndex);
+});
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_JumpToPage)
+ */
+function JumpToPage()
+{
+var intCurrPageIndex = $('#input_number').val();
+var intPageIndex = Number(intCurrPageIndex);
+console.log("跳转到" + intPageIndex + "页");
+require(["../js/GraduateEduTopic/RTUserRela_QUDIEx.js"], function(rtuserrela) {
+var objPage = new rtuserrela.RTUserRela_QUDIEx();
+objPage.IndexPage(intPageIndex);
+});
+}
+
+ /*
+  提交编辑
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_mySubmit)
+ */
+function mySubmit(pstrOp) {
+//    alert("提交" + strOp);
+   require(["../js/GraduateEduTopic/RTUserRela_QUDIEx.js"], function(rtuserrela) {
+var objPage = new rtuserrela.RTUserRela_QUDIEx();
+           objPage.btnOKUpd_Click();
+    });
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_NextPage)
+ */
+function NextPage()
+{
+var intCurrPageIndex = $('#hidCurrPageIndex').val();
+var intPageIndex = Number(intCurrPageIndex) + 1;
+console.log("跳转到" + intPageIndex + "页");
+require(["../js/GraduateEduTopic/RTUserRela_QUDIEx.js"], function(rtuserrela) {
+var objPage = new rtuserrela.RTUserRela_QUDIEx();
+objPage.IndexPage(intPageIndex);
+});
+}
+
+
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_PageNum)
+ */
+function PageNum(intPageIndex)
+{
+console.log("跳转到" + intPageIndex + "页");
+require(["../js/GraduateEduTopic/RTUserRela_QUDIEx.js"], function(rtuserrela) {
+var objPage = new rtuserrela.RTUserRela_QUDIEx();
+objPage.IndexPage(intPageIndex);
+});
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_PrevPage)
+ */
+function PrevPage()
+{
+var intCurrPageIndex = $('#hidCurrPageIndex').val();
+var intPageIndex = Number(intCurrPageIndex) - 1;
+console.log("跳转到" + intPageIndex + "页");
+require(["../js/GraduateEduTopic/RTUserRela_QUDIEx.js"], function(rtuserrela) {
+var objPage = new rtuserrela.RTUserRela_QUDIEx();
+objPage.IndexPage(intPageIndex);
+});
+}
+
+ /*
+  全选数据列表中的所有记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_SetAllCkechedKeys)
+ */
+function SetAllCkechedKeys(tabName)
+{
+var thisChk = event.target;
+require(["../js/TS/PubFun/clsCommonFunc4Web.js"], function (commonfunc) {
+console.log(tabName);
+console.log(thisChk);
+commonfunc.clsCommonFunc4Web.SetAllCkechedKeys(tabName, thisChk);
+});
+}
+
+ /*
+  显示对话框
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_ShowDialog)
+ */
+function ShowDialog(pstrOp) {
+   strOp = pstrOp;
+   require(['jquery', 'bootstrap'], function($) {
+       if (strOp === "Add") {
+           $('#myModalLabel').html('添加记录');
+//RTUserRela_QUDIEx.GetMaxStrId('#txtmId');
+        }
+else if (strOp === "Update")
+{
+            $('#myModalLabel').html('修改记录');
+}
+else if (strOp === "Detail")
+{
+            $('#btnOKUpd').hide();
+            $('#myModalLabel').html('详细信息');
+}
+        $('#divEditRegion').modal('show');
+  });
+}
+
+ /*
+  隐藏对话框
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_HideDialog)
+ */
+function HideDialog() {
+  require(['jquery', 'bootstrap'], function($) {
+      $('#divEditRegion').modal('hide');
+  });
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_SortBy)
+ */
+function SortBy(strFldName)
+{
+console.log("按：" + strFldName + "排序");
+require(["../js/GraduateEduTopic/RTUserRela_QUDIEx.js"], function(rtuserrela) {
+var objPage = new rtuserrela.RTUserRela_QUDIEx();
+objPage.SortBy(strFldName);
+});
+}
+
+
+    //详情
+
+    /*
+     在数据表里修改记录
+    (AutoGCLib.WA_ViewScript_TS4CSharp:btnDetailInTab_Click)
+    */
+
+    function btnDetailInTab_Click(strKeyId) {
+        require(["../js/GraduateEduTopic/RTUserRela_QUDIEx.js"], function (rtviewpointrela) {
+            if (strKeyId == "") {
+                alert("请选择需要的记录！");
+                return;
+            }
+            ShowDialogOne();
+            var objPage = new rtviewpointrela.RTUserRela_QUDIEx();
+            objPage.RtUserRelaDetailRecord(strKeyId);
+        });
+    }
+    //关闭详情
+    function close_Click() {
+
+        HideDialogOne();
+    }
+
+    /*
+显示对话框
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_ShowDialog)
+*/
+    function ShowDialogOne() {
+        require(['jquery', 'bootstrap'], function ($) {
+            $('#divRtUserRelaDetail').modal('show');
+        });
+    }
+
+    /*
+隐藏对话框
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_HideDialog)
+*/
+    function HideDialogOne() {
+        require(['jquery', 'bootstrap'], function ($) {
+            $('#divRtUserRelaDetail').modal('hide');
+        });
+    }
+</script>
+
+
+<div id="divLoading" class="loading">
+    <img src="~/images/CirclePoint.gif" />
+</div>
+<div id="tabLayout" class="tab_layout">
+    @*-- 标题层 --*@
+
+    <div class="x-nav">
+        <span class="layui-breadcrumb">
+            <a href="">首页</a>
+            <a href="">主题研究管理</a>
+            <a>
+                <cite>主题用户关系</cite>
+            </a>
+            <Label id="lblMsg_List" name="lblMsg_List"></Label>
+        </span>
+        <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+            <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+        </a>
+    </div>
+
+    @*<div style="position: relative; width: 648px; height: 37px; left: 0px; top: 0px;">
+        <Label id="lblViewTitle" name="lblViewTitle" class="h5">RTUserRelaCRUD
+        </Label>
+        <Label id="lblMsg_List" name="lblMsg_List" class="text-warning" style="width:250px;">
+        </Label>
+        </div>*@
+    @*-- 查询层 --*@
+
+    <div id="divQuery" class="div_query">
+        <table id="tabQuery" name="tabQuery" style="width: 20%; " class="table table-bordered table-hover table td table-sm">
+            <tr>
+
+                <td>
+                    <input id="txtUserId_q" name="txtUserId_q" placeholder="用户ID" class="layui-input" style="width:200px;" />
+                </td>
+
+                <td>
+                    <input id="txtTopicName_q" name="txtTopicName_q" placeholder="栏目主题" class="layui-input" style="width:200px;" />
+                </td>
+                <td>
+                    <button class="layui-btn" lay-submit="" lay-filter="sreach" onclick="btnQuery_Click()">
+                        <i class="layui-icon">&#xe615;</i>
+                    </button>
+                </td>
+            </tr>
+            @*<tr>
+                    <td >
+                        <button type="submit" id="btnQuery" name="btnQuery" class="btn btn-outline-warning text-nowrap btn-sm" onclick="btnQuery_Click()">查询</button>
+                    </td>
+
+                </tr>*@
+        </table>
+    </div>
+    @*-- 功能区 --*@
+
+    <div id="divFunction" class="table table-bordered table-hover">
+        <ul class="nav">
+            <li class="nav-item">
+                <Label id="lblRTUserRelaList" name="lblRTUserRelaList" class="col-form-label text-info" style="width:250px;">
+
+                </Label>
+            </li>
+         
+            <li class="nav-item ml-3">
+                <button id="btnCancelOne" name="btnCancelOne" class="btn btn-outline-info text-nowrap btn-sm" onclick="javascript:history.go(-1)">
+                    返回上一页
+                </button>
+            </li>
+            <li class="nav-item ml-3">
+                <button id="btnDelRecord" name="btnDelRecord" class="btn btn-outline-info text-nowrap btn-sm" onclick="btnDelRecord_Click()">删除</button>
+            </li>
+        </ul>
+    </div>
+    @*-- 列表层 --*@
+    <div id="divList" class="div_List">
+        <div id="divDataLst" class="div_List">
+        </div>
+        <div id="divPager" class="pager" value="1">
+           
+        </div>
+    </div>
+    @*-- 编辑层 --*@
+
+    <div class="modal fade" id="divEditRegion" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" style="width: 800px;">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">模态框（Modal）标题</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <table id="tabwucRTUserRela" name="tabwucRTUserRela" style="width: 600px; padding: 1px; border:0px" class="table table-bordered table-hover">
+                        <tr>
+                            <td class="NameTD">
+                                <Label id="lblTopicId" name="lblTopicId" class="col-form-label text-right" style="width:90px;">
+                                    主题编号
+                                </Label>
+                            </td>
+                            <td class="ValueTD">
+                                <select id="ddlTopicId" name="ddlTopicId" class="form-control" style="width:200px;" />
+                            </td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td class="NameTD">
+                                <Label id="lblUserId" name="lblUserId" class="col-form-label text-right" style="width:90px;">
+                                    用户ID
+                                </Label>
+                            </td>
+                            <td class="ValueTD">
+                                <input id="txtUserId" name="txtUserId" class="form-control" style="width:200px;" />
+                            </td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td class="NameTD">
+                                <Label id="lblMemo" name="lblMemo" class="col-form-label text-right" style="width:90px;">
+                                    备注
+                                </Label>
+                            </td>
+                            <td class="ValueTD">
+                                <input id="txtMemo" name="txtMemo" class="form-control" style="width:200px;" />
+                            </td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnCancel" type="button" class="btn btn-default btn-sm" data-dismiss="modal">关闭</button>
+                    <button id="btnOKUpd" type="button" class="btn btn-primary btn-sm" onclick="mySubmit()">添加</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal -->
+    </div>
+
+
+    @*-- 详细 --*@
+    <div class="modal fade" style="z-index:1060;" id="divRtUserRelaDetail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+        <div class="modal-dialog" style="margin-left:200px;">
+            <div class="modal-content" style="width: 1000px;">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">主题用户关系详细</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                <div class="modal-body">
+                    <div id="divList" class="div_List">
+                        <table id="tabwucViewpointDetail" name="tabwucViewpointDetail" style="width: 100%; padding: 1px; border:0px" class="table table-bordered table-hover">
+                            <tr>
+                                <td class="NameTD">
+                                    <Label id="lblTopicName" name="lblTopicName" class="col-form-label text-right" style="width:90px;">
+                                        栏目主题
+                                    </Label>
+                                </td>
+                                <td class="ValueTD">
+                                    <Label id="txtTopicNameDetail" name="txtTopicNameDetail" class="col-form-label" style="width:400px;" />
+                                </td>
+
+                            </tr>
+                            <tr>
+                                <td class="NameTD">
+                                    <Label id="lblTopicContent" name="lblTopicContent" class="col-form-label text-right" style="width:90px;">
+                                        主题内容
+                                    </Label>
+                                </td>
+                                <td class="ValueTD">
+
+                                    <Label id="txtTopicContentDetail" name="txtTopicContentDetail" class="col-form-label" style="width:500px;height:80px;"></Label>
+
+                                </td>
+
+                            </tr>
+                            <tr>
+                                <td class="NameTD">
+                                    <Label id="lblViewpointName" name="lblViewpointName" class="col-form-label text-right" style="width:90px;">
+                                        主题提出人
+                                    </Label>
+                                </td>
+                                <td class="ValueTD">
+                                    <Label id="txtTopicProposePeopleDetail" name="txtTopicProposePeopleDetail" class="col-form-label" style="width:400px;" />
+                                </td>
+
+                            </tr>
+                            <tr>
+                                <td class="NameTD">
+                                    <Label id="lblViewpointTypeId" name="lblViewpointTypeId" class="col-form-label text-right" style="width:90px;">
+                                        用户ID
+                                    </Label>
+                                </td>
+                                <td class="ValueTD">
+                                    <Label id="txtUserIdDetail" name="txtUserIdDetail" class="col-form-label" style="width:200px;" />
+                                </td>
+
+                            </tr>
+                            <tr>
+                                <td class="NameTD">
+                                    <Label id="lblVPProposePeople" name="lblVPProposePeople" class="col-form-label text-right" style="width:90px;">
+                                        用户名
+                                    </Label>
+                                </td>
+                                <td class="ValueTD">
+                                    <Label id="txtUserNameDetail" name="txtUserNameDetail" class="col-form-label" style="width:200px;" />
+                                </td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td class="NameTD">
+                                    <Label id="lblViewpointContent" name="lblViewpointContent" class="col-form-label text-right" style="width:90px;">
+                                        学院
+                                    </Label>
+                                </td>
+                                <td class="ValueTD">
+                                    <Label id="txtCollegeNameDetail" name="txtCollegeNameDetail" class="col-form-label" style="width:200px;"></Label>
+
+                                </td>
+
+                            </tr>
+                            <tr>
+                                <td class="NameTD">
+                                    <Label id="lblViewpointContent" name="lblViewpointContent" class="col-form-label text-right" style="width:90px;">
+                                        专业
+                                    </Label>
+                                </td>
+                                <td class="ValueTD">
+                                    <Label id="txtMajorNameDetail" name="txtMajorNameDetail" class="col-form-label" style="width:500px;height:80px;"></Label>
+                                </td>
+
+                            </tr>
+
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnCancel" type="button" class="btn btn-default btn-sm" data-dismiss="modal" onclick="close_Click()">关闭</button>
+
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+
+    </div>
+
+
+
+</div>
+<input id="hidOpType" type="hidden" />
+<input id="hidKeyId" type="hidden" />
+@*<input id="hidUserId" type="hidden" value="@Model.seUserId" />*@
+<input id="hidUserId1" type="hidden" value="@strUserId1_Value" />
+<input id="hidCurrPageIndex" type="hidden" value="1" />
+<input id="hidSortvRTUserRelaBy" type="hidden" value="" />
+
+<input id="hidUserInfo" type="hidden" value="@Model.GetSession("objvUserRoleRelation")" />
+<input id="hidUserId" type="hidden" />
+
+<input id="hidTopicRelaId" type="hidden" />

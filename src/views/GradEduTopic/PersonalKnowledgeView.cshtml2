@@ -1,0 +1,502 @@
+﻿@page
+@model GraduateStudyWebApp.Pages.GraduateEduTopic.PersonalKnowledgeViewModel
+@{
+
+    Layout = "~/Pages/Shared/_Layout_PC.cshtml";
+    ViewData["Title"] = "个人知识查看";
+    //操作Session样例，方法1：
+    //Model.seUserId = "TestUserId";
+    var strUserId_Value = Model.seUserId;
+    //操作Session样例，方法2：
+    Model.SetSession("UserId1", "TestUserId1");
+    var strUserId1_Value = Model.GetSession("UserId1");
+    //请参见页尾的隐形控件hidUserid和hidUserId1的使用。
+}
+@section Styles{
+
+
+    @*<link rel="stylesheet" href="../css/Bootstrap-3.0.3.css" />*@
+    <link rel="stylesheet" href="../lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="../css/site.css" />
+
+    <link rel="stylesheet" href="~/lib/Xadmin/css/font.css">
+    <link rel="stylesheet" href="~/lib/Xadmin/css/xadmin.css">
+
+
+    <link rel="stylesheet" type="text/css" href="../css/SimpleTree.css">
+    <link rel="stylesheet" href="~/css/public.css" />
+
+}
+@section Scripts{
+    <script src="~/lib/Xadmin/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="~/lib/Xadmin/js/xadmin.js"></script>
+    <!-- 树形菜单样式 。js -->
+    <script type="text/javascript" src="../lib/jquery-1.6.min.js"></script>
+    <script src="../lib/jquery/dist/jquery.js"></script>
+    <script src="../lib/bootstrap/dist/js/bootstrap.js"></script>
+
+    <!--tab选项卡-->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap.min.js"></script>
+
+
+    <script src="../lib/require/require.js" data-main="../js/src/config"></script>
+
+
+    @*<script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
+        <script src="http://libs.baidu.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>*@
+
+}
+<script>
+
+    /*
+页面导入-在导入页面后运行的函数
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_Page_Load)
+*/
+    window.onload = function () {
+        //获取隐藏控件值
+        var y = localStorage.getItem("hidNum");
+        $('#hidTabNum').val(y);
+
+        require(["../js/GraduateEduTopic/PersonalKnowledgeViewEx.js"], function (researchtopic) {
+            var objPage = new researchtopic.PersonalKnowledgeViewEx();
+            objPage.Page_Load();
+        });
+
+    }
+    //论文
+    function liPaperClick(strKeyId) {
+        var strnum = "1"
+        $('#hidTabNum').val(strnum);
+        var y = $('#hidTabNum').val();
+        localStorage.setItem("hidNum", y);
+        require(["../js/GraduateEduTopic/PersonalKnowledgeViewEx.js"], function (viewpoint) {
+            var objPage = new viewpoint.PersonalKnowledgeViewEx();
+            objPage.liPaperClick();
+        });
+    }
+    //论文读写
+    function liPaperReadWriteClick(strKeyId) {
+        var strnum = "2"
+        $('#hidTabNum').val(strnum);
+        var y = $('#hidTabNum').val();
+        localStorage.setItem("hidNum", y);
+        require(["../js/GraduateEduTopic/PersonalKnowledgeViewEx.js"], function (viewpoint) {
+            var objPage = new viewpoint.PersonalKnowledgeViewEx();
+            objPage.liPaperReadWriteClick();
+        });
+    }
+    //论文子观点
+    function liPaperSubViewpointClick(strKeyId) {
+        var strnum = "3"
+        $('#hidTabNum').val(strnum);
+        var y = $('#hidTabNum').val();
+        localStorage.setItem("hidNum", y);
+        require(["../js/GraduateEduTopic/PersonalKnowledgeViewEx.js"], function (viewpoint) {
+            var objPage = new viewpoint.PersonalKnowledgeViewEx();
+            objPage.liPaperSubViewpointClick();
+        });
+    }
+    //个人观点
+    function liViewpointClick() {
+        var strnum = "4";
+        $('#hidTabNum').val(strnum);
+        var y = $('#hidTabNum').val();
+        localStorage.setItem("hidNum", y);
+        require(["../js/GraduateEduTopic/PersonalKnowledgeViewEx.js"], function (viewpoint) {
+            var objPage = new viewpoint.PersonalKnowledgeViewEx();
+            objPage.liViewpointClick();
+        });
+    }
+    //专家观点
+    function liExpertViewpointClick() {
+        var strnum = "5";
+        $('#hidTabNum').val(strnum);
+        var y = $('#hidTabNum').val();
+        localStorage.setItem("hidNum", y);
+        require(["../js/GraduateEduTopic/PersonalKnowledgeViewEx.js"], function (viewpoint) {
+            var objPage = new viewpoint.PersonalKnowledgeViewEx();
+            objPage.liExpertViewpointClick();
+        });
+    }
+    //概念
+    function liConceptClick() {
+        var strnum = "6";
+        $('#hidTabNum').val(strnum);
+        var y = $('#hidTabNum').val();
+        localStorage.setItem("hidNum", y);
+        require(["../js/GraduateEduTopic/PersonalKnowledgeViewEx.js"], function (viewpoint) {
+            var objPage = new viewpoint.PersonalKnowledgeViewEx();
+            objPage.liConceptClick();
+        });
+    }
+
+    //客观事实
+    function liObjectiveFactClick() {
+        var strnum = "7";
+        $('#hidTabNum').val(strnum);
+        var y = $('#hidTabNum').val();
+        localStorage.setItem("hidNum", y);
+        require(["../js/GraduateEduTopic/PersonalKnowledgeViewEx.js"], function (viewpoint) {
+            var objPage = new viewpoint.PersonalKnowledgeViewEx();
+            objPage.liObjectiveFactClick();
+        });
+    }
+    //客观数据
+    function liObjectiveBasisClick() {
+        var strnum = "8";
+        $('#hidTabNum').val(strnum);
+        var y = $('#hidTabNum').val();
+        localStorage.setItem("hidNum", y);
+        require(["../js/GraduateEduTopic/PersonalKnowledgeViewEx.js"], function (viewpoint) {
+            var objPage = new viewpoint.PersonalKnowledgeViewEx();
+            objPage.liObjectiveBasisClick();
+        });
+    }
+    //客观数据
+    function liSysskillClick() {
+        var strnum = "9";
+        $('#hidTabNum').val(strnum);
+        var y = $('#hidTabNum').val();
+        localStorage.setItem("hidNum", y);
+        require(["../js/GraduateEduTopic/PersonalKnowledgeViewEx.js"], function (viewpoint) {
+            var objPage = new viewpoint.PersonalKnowledgeViewEx();
+            objPage.liSysskillClick();
+        });
+    }
+
+    //客观数据
+    function liSysSocialRelationsClick() {
+        var strnum = "10";
+        $('#hidTabNum').val(strnum);
+        var y = $('#hidTabNum').val();
+        localStorage.setItem("hidNum", y);
+        require(["../js/GraduateEduTopic/PersonalKnowledgeViewEx.js"], function (viewpoint) {
+            var objPage = new viewpoint.PersonalKnowledgeViewEx();
+            objPage.liSysSocialRelationsClick();
+        });
+    }
+
+    /*
+ 修改记录
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_IndexPage)
+*/
+    function IndexPage(intPageIndex) {
+        console.log("跳转到" + intPageIndex + "页");
+        require(["../js/GraduateEduTopic/PersonalKnowledgeViewEx.js"], function (concept) {
+            var objPage = new concept.PersonalKnowledgeViewEx();
+            objPage.IndexPage(intPageIndex);
+        });
+    }
+
+    /*
+     修改记录
+    (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_JumpToPage)
+    */
+    function JumpToPage() {
+        var intCurrPageIndex = $('#input_number').val();
+        var intPageIndex = Number(intCurrPageIndex);
+        console.log("跳转到" + intPageIndex + "页");
+        require(["../js/GraduateEduTopic/PersonalKnowledgeViewEx.js"], function (concept) {
+            var objPage = new concept.PersonalKnowledgeViewEx();
+            objPage.IndexPage(intPageIndex);
+        });
+    }
+
+
+
+    /*
+     修改记录
+    (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_NextPage)
+    */
+    function NextPage() {
+        var intCurrPageIndex = $('#hidCurrPageIndex').val();
+        var intPageIndex = Number(intCurrPageIndex) + 1;
+        console.log("跳转到" + intPageIndex + "页");
+        require(["../js/GraduateEduTopic/PersonalKnowledgeViewEx.js"], function (concept) {
+            var objPage = new concept.PersonalKnowledgeViewEx();
+            objPage.IndexPage(intPageIndex);
+        });
+    }
+
+
+
+    /*
+     修改记录
+    (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_PageNum)
+    */
+    function PageNum(intPageIndex) {
+        console.log("跳转到" + intPageIndex + "页");
+        require(["../js/GraduateEduTopic/PersonalKnowledgeViewEx.js"], function (concept) {
+            var objPage = new concept.PersonalKnowledgeViewEx();
+            objPage.IndexPage(intPageIndex);
+        });
+    }
+
+    /*
+     修改记录
+    (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_PrevPage)
+    */
+    function PrevPage() {
+        var intCurrPageIndex = $('#hidCurrPageIndex').val();
+        var intPageIndex = Number(intCurrPageIndex) - 1;
+        console.log("跳转到" + intPageIndex + "页");
+        require(["../js/GraduateEduTopic/PersonalKnowledgeViewEx.js"], function (concept) {
+            var objPage = new concept.PersonalKnowledgeViewEx();
+            objPage.IndexPage(intPageIndex);
+        });
+    }
+
+
+</script>
+
+
+<div id="divLoading" class="loading">
+    <img src="~/images/CirclePoint.gif" />
+</div>
+
+<div id="tabLayout" class="tab_layout">
+    @*-- 标题层 --*@
+
+    <div class="x-nav">
+        <span class="layui-breadcrumb">
+            <a href="">首页</a>
+            <a href="">个人中心</a>
+            <a>
+                <cite>个人知识点</cite>
+            </a>
+            <Label id="lblMsg_List" name="lblMsg_List"></Label>
+        </span>
+        <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+            <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+        </a>
+    </div>
+    <div id="divContent" style="width:100%;">
+        <div id="divContent_list">
+            <ul id="myTab" class="nav nav-tabs">
+
+
+                <li id="liPaper"><a href="#li_Paper" data-toggle="tab" onclick="liPaperClick()">相关论文</a></li>
+                <li id="liPaperReadWrite"><a href="#li_PaperReadWrite" data-toggle="tab" onclick="liPaperReadWriteClick()">论文读写</a></li>
+                <li id="liPaperSubViewpoint"><a href="#li_PaperSubViewpoint" data-toggle="tab" onclick="liPaperSubViewpointClick()">论文子观点</a></li>
+                <li id="liViewpoint"><a href="#li_Viewpoint" data-toggle="tab" onclick="liViewpointClick()">个人观点</a></li>
+                <li id="liExpertViewpoint"><a href="#li_ExpertViewpoint" data-toggle="tab" onclick="liExpertViewpointClick()">专家观点</a></li>
+                <li id="liConcept"><a href="#li_Concept" data-toggle="tab" onclick="liConceptClick()">相关概念</a></li>
+                <li id="liObjectiveFact"><a href="#li_Objective" data-toggle="tab" onclick="liObjectiveFactClick()">客观事实</a></li>
+                <li id="liObjectiveBasis"><a href="#li_ObjectiveBasis" data-toggle="tab" onclick="liObjectiveBasisClick()">客观数据</a></li>
+                <li id="liSysskill"><a href="#li_Sysskill" data-toggle="tab" onclick="liSysskillClick()">操作技能</a></li>
+                <li id="liSysSocialRela"><a href="#li_SysSocialRela" data-toggle="tab" onclick="liSysSocialRelationsClick()">社会关系</a></li>
+            </ul>
+            <div id="myTabContent" class="tab-content">
+
+                @*-- 论文--*@
+                <div class="tab-pane fade" id="li_Paper">
+
+                    <div id="divRtPaperRela" class="div_List">
+                        @*<div id="divRtPaperRelaDataLst" class="div_List"></div>*@
+                        <div id="divRtCitedPaperRelaDataLst" class="div_List"></div>
+
+                        <div id="divPagerPaper" class="paperviewpoint" value="1">
+                           
+                        </div>
+                    </div>
+                </div>
+
+                @*-- 论文读写--*@
+                <div class="tab-pane fade" id="li_PaperReadWrite">
+
+                    <div id="divPaperReadWrite" class="div_List">
+                        <div id="divPaperReadWriteDataLst" class="div_List"></div>
+
+                        <div id="divPagerPaperReadWrite" class="paperviewpoint" value="1">
+                           
+                        </div>
+                    </div>
+                </div>
+                @*-- 论文子观点--*@
+                <div class="tab-pane fade" id="li_PaperSubViewpoint">
+
+                    <div id="divPaperSubViewpoint" class="div_List">
+                        <div id="divPaperSubViewpointDataLst" class="div_List"></div>
+
+                        <div id="divPagerPaperSubViewpoint" class="paperviewpoint" value="1">
+                           
+                        </div>
+                    </div>
+                </div>
+
+                @*-- 下 1个人观点 --*@
+                <div class="tab-pane fade" id="li_Viewpoint">
+
+                    <div id="divRtViewPointRela" class="div_List">
+                        <div id="divRtViewPointRelaDataLst" class="div_List">
+                        </div>
+                        <div id="divPagerViewpoint" class="paperviewpoint" value="1">
+                           
+                        </div>
+                    </div>
+                </div>
+                @*-- 下 2专家观点 --*@
+                <div class="tab-pane fade" id="li_ExpertViewpoint">
+
+                    <div id="divRtViewPointRela" class="div_List">
+                        <div id="divRtExpertViewPointRelaDataLst" class="div_List">
+                        </div>
+                        <div id="divExpertPagerViewpoint" class="paperviewpoint" value="1">
+                           
+                        </div>
+                    </div>
+                </div>
+                @*--  概念 --*@
+                <div class="tab-pane fade" id="li_Concept">
+
+                    <div id="divRtConceptRela" class="div_List">
+                        <div id="divRtConceptRelaDataLst" class="div_List">
+                        </div>
+                        <div id="divPagerConcept" class="paperviewpoint" value="1">
+                           
+                        </div>
+                    </div>
+                </div>
+
+                @*--  客观事实 --*@
+                <div class="tab-pane fade" id="li_Objective">
+
+                    <div id="divRtTopicObjectiveRela" class="div_List">
+                        <div id="divRtTopicObjectiveDataLst" class="div_List">
+                        </div>
+                        <div id="divPagerObjective" class="paperviewpoint" value="1">
+                           
+                        </div>
+                    </div>
+                </div>
+
+                @*--  客观数据 --*@
+                <div class="tab-pane fade" id="li_ObjectiveBasis">
+
+                    <div id="divRtTopicObjectiveRela" class="div_List">
+                        <div id="divBasisRtTopicObjectiveDataLst" class="div_List">
+                        </div>
+                        <div id="divPagerBasis" class="paperviewpoint" value="1">
+                           
+                        </div>
+                    </div>
+                </div>
+
+                @*--  技能 --*@
+                <div class="tab-pane fade" id="li_Sysskill">
+
+                    <div id="divRtSysskillRela" class="div_List">
+                        <div id="divSysskillDataLst" class="div_List">
+                        </div>
+                        <div id="divPagerSysskill" class="paperviewpoint" value="1">
+                           
+                        </div>
+                    </div>
+                </div>
+
+
+                @*--  社会关系 --*@
+                <div class="tab-pane fade" id="li_SysSocialRela">
+
+                    <div id="divRtSysSocialRelaRela" class="div_List">
+                        <div id="divSysSocialRelaDataLst" class="div_List">
+                        </div>
+                        <div id="divPagerSysSocialRela" class="paperviewpoint" value="1">
+                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+<input id="hidOpType" type="hidden" />
+<input id="hidKeyId" type="hidden" />
+@*<input id="hidUserId" type="hidden" value="@Model.seUserId" />*@
+<input id="hidUserId1" type="hidden" value="@strUserId1_Value" />
+<input id="hidCurrPageIndex" type="hidden" value="1" />
+<input id="hidSortBy" type="hidden" value="" />
+
+<input id="hidUserInfo" type="hidden" value="@Model.GetSession("objvUserRoleRelation")" />
+<input id="hidUserId" type="hidden" value="" />
+<input id="hidRoleId" type="hidden" value="" />
+@*- 观点 个人 专家 --*@
+<input id="hidSortvViewpointBy" type="hidden" value="" />
+<input id="hidTopicRelaId" type="hidden" value="" />
+<input id="hidViewpointId" type="hidden" value="" />
+
+@*- 论文 --*@
+<input id="hidSortvPaperBy" type="hidden" value="" />
+<input id="hidPaperId" type="hidden" value="" />
+
+<input id="hidSortQxUsersBy" type="hidden" value="" />
+<input id="hidUserIdKey" type="hidden" value="" />
+@*- 主题用户关系 --*@
+<input id="hidSortvRTUserRelaBy" type="hidden" value="" />
+<input id="hidCurrPageIndexUser" type="hidden" value="1" />
+
+
+
+@*- 主题观点关系 --*@
+<input id="hidSortvRTViewpointRelaBy" type="hidden" value="" />
+<input id="hidCurrPageIndexViewpoint" type="hidden" value="1" />
+
+@*- 主题论文关系 --*@
+<input id="hidSortvRTPaperRelaBy" type="hidden" value="" />
+<input id="hidCurrPageIndexPaper" type="hidden" value="1" />
+
+@*- 主题概念关系 --*@
+<input id="hidCurrPageIndex" type="hidden" value="1" />
+<input id="hidSortvRTConceptRelaBy" type="hidden" value="" />
+<input id="hidConceptId" type="hidden" value="" />
+
+@*- 主题客观关系 --*@
+<input id="hidSortvTopicObjectiveBy" type="hidden" value="" />
+<input id="hidObjectiveId" type="hidden" value="" />
+
+@*- 观点角色类型 --*@
+<input id="hidUserTypeId" type="hidden" value="" />
+
+@*- 客观类型 --*@
+<input id="hidObjectiveTypeId" type="hidden" value="" />
+
+@*- 用户列表 --*@
+<input id="hidSortvUsersBy" type="hidden" value="" />
+@*- 客观事实列表 --*@
+<input id="hidSortvTopicObjectiveBy" type="hidden" value="" />
+@*- 存放tab页顺序 --*@
+<input id="hidTabNum" type="hidden" />
+
+@*-研究结果 --*@
+<input id="hidSortvRTResearchResultBy" type="hidden" value="" />
+
+@*- 区分所有论文，和小组成员论文 --*@
+<input id="hidstrType" type="hidden" />
+
+@* 区分个人专家观点  区分客观事实和客观数据 *@
+<input id="hidPageType" type="hidden" />
+
+@*-技能 --*@
+<input id="hidSortvRTSysSkillBy" type="hidden" value="" />
+<input id="hidSkillId" type="hidden" value="" />
+
+@*-社会关系 --*@
+<input id="hidSortvRTSysSocialRelaBy" type="hidden" value="" />
+<input id="hidSocialId" type="hidden" value="" />
+@*-研究计划 --*@
+<input id="hidSortvgs_ResearchPlanBy" type="hidden" value="" />
+@*-研究计划 教师任务布置 --*@
+<input id="hidSortgs_TeacherTaskBy" type="hidden" value="" />
+
+
+@* 论文类型 *@
+<input id="hidPaperTypeId" type="hidden" value="" />
+@* 当前教学班Id *@
+<input id="hidId_CurrEduCls" type="hidden" />
+

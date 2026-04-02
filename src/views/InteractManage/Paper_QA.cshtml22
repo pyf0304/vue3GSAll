@@ -1,0 +1,891 @@
+﻿@page
+@{
+    Layout = "~/Pages/Shared/_Layout_PC.cshtml";
+    ViewData["Title"] = "PDF论文答疑";
+}
+
+@section Styles{
+    <link rel="stylesheet" href="../lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="../css/site.css" />
+
+    <link rel="stylesheet" href="~/lib/Xadmin/css/font.css">
+    <link rel="stylesheet" href="~/lib/Xadmin/css/xadmin.css">
+    <link rel="stylesheet" href="~/css/comment.css">
+    <link rel="stylesheet" href="~/css/SimpleTree.css">
+
+    <link rel="stylesheet" href="~/css/public.css" />
+
+
+
+
+
+    <style>
+        li {
+            line-height: 30px;
+        }
+
+        .info {
+            margin-top: 10px;
+            border-bottom: solid 0px #dbdcde;
+        }
+
+
+
+        #leftPart {
+            float: left;
+            width: 55%;
+            height: 100%;
+            position: fixed;
+            top: 40px;
+            left: 1px;
+            border-radius: 10px;
+        }
+
+        #rightPart {
+            float: right;
+            width: 45%;
+            margin-top: 20px;
+        }
+
+        #list_Tags {
+            border-radius: 5px;
+            margin: 10px 10px 10px 10px;
+            background-color: #fff;
+            height: 220px;
+            /*height: 400px;*/
+            width: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .div_Questions {
+            /*border-radius: 15px;*/
+            /*margin-top: 15px;*/
+            /*height: 350px;*/
+        }
+
+        #div_qa_Questions {
+            border-radius: 5px;
+            margin: 10px 10px 10px 10px;
+            background-color: #fff;
+            height: 300px;
+            width: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            /*overflow-x: scroll;*/
+        }
+
+
+
+        .div_Answer {
+            margin-top: 5px;
+            /*position: fixed;
+            bottom: 1px;
+            right: 0px;*/
+        }
+
+        #div_qa_Welcome {
+            border-radius: 5px;
+            background-color: beige;
+            margin: 10px 10px 10px 10px;
+            padding: 20px 20px 20px 20px;
+        }
+
+        .artlist li {
+            line-height: 35px;
+        }
+
+        .rowtit {
+            font-size: 16px;
+        }
+
+        #div_qa_Answer {
+            border-radius: 5px;
+            background-color: #fff;
+            margin: 10px 10px 10px 10px;
+            padding: 10px 10px 10px 10px;
+            display: none;
+            min-height: 450px;
+        }
+
+        #divEditQuestionsRegion {
+            width: 100%;
+            min-height: 450px;
+            margin: 10px 10px 10px 10px;
+            padding: 10px 10px 10px 10px;
+            border-radius: 5px;
+            background-color: #fff;
+            display: none;
+        }
+
+        #divEditAnswerRegion {
+            width: 100%;
+            min-height: 450px;
+            margin: 10px 10px 10px 10px;
+            padding: 10px 10px 10px 10px;
+            border-radius: 5px;
+            background-color: #fff;
+            display: none;
+        }
+
+
+        /*pdf高亮*/
+        .text-span {
+            background-color: crimson;
+            /*color: red;*/
+        }
+
+        .liRowsColor {
+            border: 1px solid #ddd;
+            background-color: aliceblue;
+            color: #fff;
+        }
+    </style>
+
+}
+@section Scripts{
+
+
+
+    <script src="../lib/jquery/dist/jquery.js"></script>
+    <script src="../lib/Xadmin/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../lib/Xadmin/js/xadmin.js"></script>
+    <script src="../lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="../lib/at/AtPaper_QA.js"></script>
+    <script src="../lib/require/require.js" data-main="../js/src/config"></script>
+}
+
+
+
+<script>
+    window.onload = function () {
+        $('#hidOrderbyId').val("1");
+        Getqa_PaperId();
+        require(["../js/InteractManage/Paper_QA.js"], function (Paper_QA) {
+            var objPage = new Paper_QA.Paper_QA();
+            objPage.Page_Load();
+        });
+    }
+
+    function GetRequest() {
+        var url = location.search; //获取url中"?"符后的字串
+        var theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1);
+            strs = str.split("&");
+            for (var i = 0; i < strs.length; i++) {
+                theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+            }
+        }
+        return theRequest;
+    }
+    function Getqa_PaperId() {
+        var Request = new Object();
+        Request = GetRequest();
+
+        var strid_CurrEduCls = Request['id_CurrEduCls'];
+        //var strqa_PaperId = Request['qa_PaperId'];
+
+        var strPushId = Request['PushId'];
+        var strPaperId = Request['PaperId'];
+        var strQuestionsId = Request['QuestionsId'];
+        //var strTopicId = Request['TopicId'];
+
+
+        if (strid_CurrEduCls != null) {
+            $('#hidId_CurrEduCls').val(strid_CurrEduCls);
+        }
+        //if (strqa_PaperId != null) {
+        //    $('#hidqa_PaperId').val(strqa_PaperId);
+        //}
+
+        if (strPushId != null) {
+            $('#hidPushId').val(strPushId);
+        }
+        if (strPaperId != null) {
+            $('#hidPaperId').val(strPaperId);
+        }
+        if (strQuestionsId != null) {
+            $('#hidQuestionsId').val(strQuestionsId);
+        }
+        //if (strTopicId != null) {
+        //    $('#hidTopicId').val(strTopicId);
+        //    $('#QA_back').hide();
+        //    $('#TopicPdf').show();
+        //} else {
+        //    $('#QA_back').show();
+        //    $('#TopicPdf').hide();
+        //}
+
+
+    }
+
+
+    function AddQ() {
+        $("#icon").hide();
+        //$('#div_qa_Questions').hide();
+        var pdfDiv_top = $("#iframe_qaPdf", parent.document).contents().find("#pdfDiv_top").val()
+        var pdfDiv_left = $("#iframe_qaPdf", parent.document).contents().find("#pdfDiv_left").val();
+        $('#pdfDiv_top').val(pdfDiv_top);
+        $('#pdfDiv_left').val(pdfDiv_left);
+
+
+        $('#div_qa_Answer').hide();
+        $('#div_qa_Welcome').hide();
+        $('#divEditAnswerRegion').hide();
+
+
+        $('#divEditQuestionsRegion').show();
+
+        if ($('#btnOKUpd1').html() != "确认修改") {
+            $('#btnOKUpd1').html("确认添加");
+            $('#btnCancel1').html("取消添加");
+
+            $('#txtQuestionsContent').val("");
+        }
+
+
+        //txt_PdfPageNum.value = pageNum;
+        //txt_PdfContent.value = txt;
+    }
+
+
+    function AddT_Q() {
+        //jQuery("#leftPart").mouseup(function (e) {
+
+        var txt;
+        var page_Number = document.getElementById("pageNumber");
+
+        var txt_PdfContent = document.getElementById("txtPdfContent");
+        var txt_PdfPageNum = document.getElementById("txtPdfPageNum");
+
+        var parentOffset = jQuery(this).offset();
+        var x = e.pageX - parentOffset.left;
+        var y = e.pageY - parentOffset.top;
+        txt = window.getSelection();
+
+
+
+        if (txt.toString().length > 1) {
+
+            //$('#div_qa_Questions').hide();
+            $('#div_qa_Answer').hide();
+
+            $('#div_qa_Welcome').hide();
+            $('#divEditAnswerRegion').hide();
+            $('#divEditQuestionsRegion').show();
+
+            if ($('#btnOKUpd1').html() != "确认修改") {
+                $('#btnOKUpd1').html("确认添加");
+                $('#btnCancel1').html("取消添加");
+
+                $('#txtQuestionsContent').val("");
+            }
+
+            txt_PdfContent.value = txt;
+            txt_PdfPageNum.value = page_Number.value;
+
+        }
+        //});
+    }
+    //设置div位置
+    //function SetDivLertTop(pageNum, strDiv) {
+    //function SetDivLertTop(PdfPageNum, TagsId, PdfDivTop, PdfDivLet, TagsContent) {
+
+    //    var pdfPage = document.getElementsByClassName("page");
+
+    //    var i;
+    //    for (i = 1; i <= pdfPage.length; i++) {
+    //        if (PdfPageNum == i) {
+
+    //            var div = document.createElement("img");
+    //            div.innerText = TagsContent;
+    //            div.style.left = PdfDivLet;
+    //            div.style.top = PdfDivTop;
+    //            div.style.position = "absolute";
+    //            div.style.zIndex = "999";
+    //            //div.width = "200px";
+    //            //div.height = "100px";
+    //            div.title = TagsContent;
+    //            div.id = TagsId;
+    //            div.src = "/GraduateStudyWebApp/images/001_50.png";
+    //            div.setAttribute("onclick", "btnUpdateTags_Click('" + TagsId + "')");
+
+    //            //div.onclick = btnUpdateTags_Click(TagsId);
+
+    //            //document.getElementById("myList").appendChild(div);
+    //            //var node = document.createElement("div");
+    //            //var textnode = document.createTextNode(strDiv);
+    //            //node.appendChild(textnode);
+    //            //document.getElementById("myList").appendChild(textnode);
+
+    //            pdfPage[i-1].appendChild(div);
+    //            //pdfPage[i].appendChild(textnode);
+    //            //pdfPage[i].appendChild(strDiv);
+
+    //        }
+    //    }
+
+    //}
+
+
+
+    //点击问题显示答案
+    function btnShowAnswer_Click(strKey, pageNum, pdfContent) {
+        $('#div_qa_Welcome').hide();
+        $('#div_qa_Answer').show();
+        $('#hidQuestionsId').val(strKey);
+        $('#hidPdfContent').val(pdfContent);
+        //先清除背景色
+        $("#infoPaper_QA div").removeClass("liRowsColor");
+        //添加背景色
+        strKey = "Q" + strKey;
+        $("#" + strKey).addClass("liRowsColor");
+
+        //定位pdf页码
+        //var page_Number = document.getElementById("pageNumber");
+        //page_Number.value = pageNum;
+        //PDFViewerApplication.page = pageNum;
+
+        //定位pdf页码
+        //$("#iframe_qaPdf", parent.document)[0].contentWindow.btnLocationPdfPageNum_Click(pageNum);
+        $("#iframe_qaPdf", parent.document).contents().find("#hidIsQA_Tags").val(1);
+        $("#iframe_qaPdf", parent.document)[0].contentWindow.btnLocationPdfPageNum_Click(pageNum, pdfContent);
+      
+
+        require(["../js/InteractManage/Paper_QA.js"], function (Paper_QA) {
+
+            var objPage = new Paper_QA.Paper_QA();
+            objPage.btnShowAnswer_Click();
+        });
+    }
+    ////////////////////////////////////////////////////问题//////////////////////////////////////////////////////
+
+    /**显示绑定标注悬浮层 */
+    function Showdiv_PdfQuestions_Click() {
+        require(["../js/InteractManage/Paper_QA.js"], function (Paper_QA) {
+            var objPage = new Paper_QA.Paper_QA();
+            objPage.Showdiv_PdfQuestions();
+        });
+    }
+
+    /*
+ 添加问题
+(AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_btnAddNewRecord_Click)
+*/
+    function btnAddNewQuestions_Click() {
+        require(["../js/InteractManage/Paper_QA.js"], function (Paper_QA) {
+            //ShowDialog('Add');
+            //$('#div_qa_Questions').hide();
+            $('#div_qa_Answer').hide();
+            $('#divEditAnswerRegion').hide();
+            $('#divEditQuestionsRegion').show();
+
+            var objPage = new Paper_QA.Paper_QA();
+            objPage.btnAddNewQuestions_Click();
+        });
+    }
+    /*
+修改问题
+(AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_btnAddNewRecord_Click)
+*/
+    function btnUpdateQuestions_Click(strKey) {
+        $('#div_qa_Welcome').hide();
+        $('#div_qa_Answer').hide();
+        $('#divEditQuestionsRegion').show();
+        require(["../js/InteractManage/Paper_QA.js"], function (Paper_QA) {
+            //ShowDialog('Add');
+            //$('#div_qa_Questions').hide();
+
+            var objPage = new Paper_QA.Paper_QA();
+            objPage.btnUpdateQuestions_Click(strKey);
+        });
+    }
+
+
+    //锚点
+    function btnIndexesQuestions_Click(strKeyId: string) {
+        //先清除观点 和问题的 背景
+
+        //先清除背景色
+        $("#infoPaper_QA div").removeClass("liRowsColor");
+        //添加背景色
+        strKeyId = "Q" + strKeyId;
+        $("#" + strKeyId).addClass("liRowsColor");
+        //$("#" + strKey).addClass("liRowsColor");
+        //window.location.hash = "#Q" + strKeyId;
+    }
+    /*
+删除问题
+(AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_btnAddNewRecord_Click)
+*/
+    function btnDelQuestions_Click(strKey) {
+        require(["../js/InteractManage/Paper_QA.js"], function (Paper_QA) {
+            var objPage = new Paper_QA.Paper_QA();
+            objPage.btnDelQuestions_Click(strKey);
+        });
+    }
+
+
+
+
+    /*
+ 问题提交编辑
+(AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_mySubmit)
+*/
+    function QuestionsSubmit(pstrOp: string) {
+        //    alert("提交" + strOp);
+        require(["../js/InteractManage/Paper_QA.js"], function (Paper_QA) {
+            var objPage = new Paper_QA.Paper_QA();
+            objPage.btnOKUpd1_Click();
+        });
+    }
+    /*
+取消问题
+(AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_btnAddNewRecord_Click)
+*/
+    function btnCancel1_Click() {
+        //$('#div_qa_Questions').show();
+        $('#divEditQuestionsRegion').hide();
+        $('#div_qa_Welcome').show();
+        $('#btnOKUpd1').html("添加");
+        $('#btnCancel1').html("取消编辑");
+    }
+
+
+    ////////////////////////////////////////////////////答案//////////////////////////////////////////////////////
+    /*
+添加答案
+(AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_btnAddNewRecord_Click)
+*/
+    function btnAddNewAnswer_Click() {
+        $("#hidParentId").val("root");
+        require(["../js/InteractManage/Paper_QA.js"], function (Paper_QA) {
+
+            $('#div_qa_Answer').hide();
+            $('#divEditAnswerRegion').show();
+            var objPage = new Paper_QA.Paper_QA();
+            objPage.btnAddNewAnswer_Click();
+        });
+    }
+
+
+    //回复弹窗
+    function btnReplyAnswer_Click(strKeyId: string) {
+
+        $('#hidParentId').val(strKeyId);
+        require(["../js/InteractManage/Paper_QA.js"], function (Paper_QA) {
+
+            $('#div_qa_Answer').hide();
+            $('#divEditAnswerRegion').show();
+            var objPage = new Paper_QA.Paper_QA();
+            objPage.btnAddNewAnswer_Click();
+        });
+
+    }
+    /*
+修改答案
+(AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_btnAddNewRecord_Click)
+*/
+    function btnUpdateAnswer_Click(strKey) {
+        require(["../js/InteractManage/Paper_QA.js"], function (Paper_QA) {
+            //ShowDialog('Add');
+            $('#div_qa_Answer').hide();
+            $('#divEditAnswerRegion').show();
+            var objPage = new Paper_QA.Paper_QA();
+            objPage.btnUpdateAnswer_Click(strKey);
+        });
+    }
+
+    /*
+删除问题
+(AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_btnAddNewRecord_Click)
+*/
+    function btnDelAnswer_Click(strKey) {
+        require(["../js/InteractManage/Paper_QA.js"], function (Paper_QA) {
+            var objPage = new Paper_QA.Paper_QA();
+            objPage.btnDelAnswer_Click(strKey);
+        });
+    }
+    /*
+ 答案提交编辑
+(AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_mySubmit)
+*/
+    function AnswerSubmit(pstrOp: string) {
+        //    alert("提交" + strOp);
+        require(["../js/InteractManage/Paper_QA.js"], function (Paper_QA) {
+            var objPage = new Paper_QA.Paper_QA();
+            objPage.btnOKUpd2_Click();
+        });
+    }
+    /*
+取消答案
+(AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_btnAddNewRecord_Click)
+*/
+    function btnCancel2_Click() {
+        $('#div_qa_Answer').show();
+        $('#divEditAnswerRegion').hide();
+    }
+
+
+
+
+    //全部评论
+    function AllQA_Click() {
+        $('#hidOrderbyId').val("1");
+        require(["../js/InteractManage/Paper_QA.js"], function (Paper_QA) {
+            var objPage = new Paper_QA.Paper_QA();
+            objPage.btnShowAnswer_Click();
+
+            //layer.msg('已点赞!', {
+            //    icon: 1,
+            //    time: 2000
+            //});
+        });
+    }
+
+    //我的评论
+    function MyQA_Click() {
+        $('#hidOrderbyId').val("2");
+        require(["../js/InteractManage/Paper_QA.js"], function (Paper_QA) {
+            var objPage = new Paper_QA.Paper_QA();
+            objPage.btnShowAnswer_Click();
+
+            //layer.msg('已点赞!', {
+            //    icon: 1,
+            //    time: 2000
+            //});
+        });
+    }
+
+    //最新评论
+    function NewQA_Click() {
+        $('#hidOrderbyId').val("3");
+        require(["../js/InteractManage/Paper_QA.js"], function (Paper_QA) {
+            var objPage = new Paper_QA.Paper_QA();
+            objPage.btnShowAnswer_Click();
+
+            //layer.msg('已点赞!', {
+            //    icon: 1,
+            //    time: 2000
+            //});
+        });
+    }
+
+    /*
+添加点赞
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnAddNewRecord_Click)
+*/
+    function btnAddVote_Click(strKeyId, UserId) {
+        //$('#hidSubViewpointId').val(strKeyId);
+        require(["../js/InteractManage/Paper_QA.js"], function (Paper_QA) {
+            var objPage = new Paper_QA.Paper_QA();
+            objPage.btnAddVote_Click(strKeyId, UserId);
+        });
+    }
+
+    function Alert1(strMsg) {
+
+        layer.msg(strMsg, {
+            icon: 1,
+            time: 2000
+        });
+    }
+
+    function Alert2(strMsg) {
+
+        layer.msg(strMsg, {
+            icon: 2,
+            time: 2000
+        });
+    }
+
+    function Alert3(strMsg) {
+
+        layer.msg(strMsg, {
+            icon: 3,
+            time: 2000
+        });
+    }
+    function Alert4(strMsg) {
+
+        layer.msg(strMsg, {
+            icon: 4,
+            time: 2000
+        });
+    }
+
+    //邀请其他同学回答
+    function InviteOthers_Click(key) {
+
+        $('#hidInviteKey').val(key);
+        //Alert2('hi，功能还在搭建中....');
+        require(["../js/InteractManage/Paper_QA.js"], function (Paper_QA) {
+            var objPage = new Paper_QA.Paper_QA();
+            objPage.InviteOthers_Click(key);
+        });
+
+        //atOthers();
+    }
+
+    //at弹出层教师学生数据
+    function atOthers(strStuName, strTeaName) {
+        layer.tab({
+            area: ['500px', '400px'],
+            tab: [{
+                title: '同学',
+                content: strStuName
+            }, {
+                title: '老师',
+                content: strTeaName
+            }]
+        });
+
+    }
+
+    //确定at姓名
+    function btnAtUserName_Click(strKey, strName) {
+
+        require(["../js/InteractManage/Paper_QA.js"], function (Paper_QA) {
+            var objPage = new Paper_QA.Paper_QA();
+            objPage.btnAtUserName_Click(strKey, strName);
+        });
+
+        //atOthers();
+    }
+
+    function LayercClose() {
+        //var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+        //var index = layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+        //layer.close(index); //如果设定了yes回调，需进行手工关闭
+
+        var index = layer.index
+        layer.close(index);
+    }
+
+
+
+
+</script>
+
+
+
+<div id="divLoading" class="loading">
+    <img src="~/images/CirclePoint.gif" />
+</div>
+@*<a id="backtop" class="back-top" href="javascript:scroll(0,0);" target="_self" title="返回顶部" style="display: block;">
+        <i class="icon-backtop"></i>
+    </a>*@
+
+<div style="width:100%; height:100%;">
+    @* 问题 *@
+    <div id="div_Questions" class="div_Questions">
+        @*-- 问题显示列表 --*@
+        <div id="div_qa_Questions">
+
+        </div>
+    </div>
+    @* 欢迎 *@
+    <div id="div_qa_Welcome">
+        <div style="text-align:center;"><h2>论文答疑使用说明</h2></div>
+        <ul>
+            <li class="rowtit color1">选中左边的pdf文字会弹出两个图标，选中问号图标就可以添加问题了，问题可推送给其他人</li>
+            <li class="rowtit color2">选中右边的问题可以在问题下面显示回答，并追踪到pdf页码</li>
+            <li class="rowtit color3">选中问题可以在显示回答区对问题进行回复、并可以对自己的回答修改、删除</li>
+            <li class="rowtit color4">选中回答可以对父类回答进行回复</li>
+        </ul>
+    </div>
+
+    @*-- 答案显示列表 --*@
+    <div id="div_qa_Answer">
+        <div class="divComment">
+            <div class="comment-short" id="J_Short">
+
+                <div class="comment-title" style="margin-top:5px;">
+                    <p class="comment-all" onclick="AllQA_Click()">全部回答</p>
+                    <div class="comment-center" id="J_CommentCenter">
+                        <span class="comment-center-slash">/</span>
+                        <span class="comment-my J_userCenter" onclick="MyQA_Click()">我的回答</span>
+                        <span class="comment-center-slash">/</span>
+                        <span class="comment-my J_userCenter" onclick="NewQA_Click()">最新回答</span>
+                    </div>
+                    <p class="comment-sort">
+                        @* <span data-targetid="4760694256" data-sort="1" class="J_CommentSort comment-sort-cur" onclick="NewQA_Click()">最新</span> &nbsp;/&nbsp;*@
+                        @*<span data-targetid="4760694256" data-sort="0" class="J_CommentSort comment-sort-cur" onclick="HottestComment_Click()">最热</span> &nbsp;&nbsp; &nbsp;&nbsp;*@
+                        <button id="btnOKUpd" type="button" class="btn btn-primary btn-sm" style="width:150px;" onclick="btnAddNewAnswer_Click()">我来回答</button>
+                    </p>
+                </div>
+                <div class="comment-title" style="margin-top:5px;">
+                    <p id="Questions_Name"></p>
+                </div>
+                <div id="J_ShortComment">
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    @*问题编辑*@
+    <div id="divEditQuestionsRegion">
+        <div class="modal-content" style="width: 100%;">
+
+            @*<div class="modal-header">
+                    <h3 class="modal-title" id="myModalLabel">问题编辑</h3>
+                </div>*@
+            <div>
+                <h3 class="modal-title" id="myModalLabel">问题编辑</h3>
+            </div>
+            <div class="modal-body">
+                <table id="tabEdit" style="width:100%" class="table table-bordered table-hover table td table-sm">
+                    <tr style="display:none;">
+                        <td>
+                            <input id="txtOrderNum" name="txtOrderNum" class="form-control" style="width:50px;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <textarea id="txtQuestionsContent" name="txtQuestionsContent" placeholder="问题内容" class="layui-input" style="width:100%; height:150px;"></textarea>
+                        </td>
+                    </tr>
+                    @*<tr style="display:none;">
+                            <td colspan="2">
+                                <input id="txtPdfContent" name="txtPdfContent" placeholder="pdf内容" class="layui-input" style="width:500px;" />
+                                <input id="txtPdfPageNum" name="txtPdfPageNum" placeholder="pdf页码" class="layui-input" style="width:50px;" />
+                            </td>
+                        </tr>*@
+                    <tr>
+                        <td colspan="2">
+                            <button type="button" class="layui-btn layui-btn-sm layui-btn-radius layui-btn-normal" onclick="InviteOthers_Click(1)">
+                                <i class="layui-icon">&#xe613;</i>邀请其他人来回答
+                            </button>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="chkIsRequestReply" name="chkIsRequestReply" Text="是否要求回复">要求回复
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><button id="btnCancel1" type="button" class="layui-btn layui-btn-primary" style="width:100%;" onclick="btnCancel1_Click()">取消编辑</button></td>
+                        <td><button id="btnOKUpd1" type="button" class="layui-btn" style="width:100%;" onclick="QuestionsSubmit()">添加</button></td>
+                    </tr>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+
+
+    @* 答案编辑 *@
+    <div id="divEditAnswerRegion">
+
+        <div class="modal-content" style="width: 100%;">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">回答编辑</h4>
+            </div>
+            <div class="modal-body">
+                <table id="tabEdit" style="width:100%" class="table table-bordered table-hover table td table-sm">
+                    <tr>
+                        <td colspan="2">
+                            <textarea id="txtAnswerContent" name="txtAnswerContent" placeholder="回答内容" class="layui-input" style="width:100%; height:200px;"></textarea>
+                        </td>
+                    </tr>
+                    <tr style="display:none;">
+                        <td colspan="2">
+                            <button type="button" class="layui-btn layui-btn-sm layui-btn-radius layui-btn-normal" onclick="InviteOthers_Click(2)">
+                                <i class="layui-icon">&#xe613;</i>邀请其他人来回答
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><button id="btnCancel2" type="button" class="layui-btn layui-btn-primary" style="width:100%;" onclick="btnCancel2_Click()">取消编辑</button></td>
+                        <td><button id="btnOKUpd2" type="button" class="layui-btn" style="width:100%;" onclick="AnswerSubmit()">添加</button></td>
+                    </tr>
+                </table>
+            </div>
+            @*<div class="modal-footer">
+
+                </div>*@
+        </div>
+        <!-- /.modal-content -->
+        <!-- /.modal -->
+
+    </div>
+    @*</div>*@
+
+
+
+
+
+
+</div>
+
+@* 当前教学班Id *@
+<input id="hidId_CurrEduCls" type="hidden" />
+
+@* 答疑Id *@
+<input id="hidqa_PaperId" type="hidden" />
+@* 论文Id *@
+<input id="hidPaperId" type="hidden" />
+
+@* 推送ID *@
+<input id="hidPushId" type="hidden" />
+
+@* 主题Id *@
+<input id="hidTopicId" type="hidden" />
+
+
+@* 问题用户 *@
+<input id="hidQuestionsUser" type="hidden" />
+@* 答案排序标识 *@
+<input id="hidOrderbyId" type="hidden" />
+
+<input id="hidOpType" type="hidden" />
+
+<input id="hidQuestionsId" type="hidden" />
+
+<input id="hidAnswerId" type="hidden" />
+
+
+@* pdf页码 *@
+<input id="hidPdfPageNum" type="hidden" />
+
+@* pdf内容 *@
+<input id="hidPdfContent" type="hidden" />
+
+@* 答案父节点Id *@
+<input id="hidParentId" type="hidden" />
+
+@* 邀请key *@
+<input id="hidInviteKey" type="hidden" />
+
+
+@* pdfContent num *@
+<input id="hidleftNum" type="hidden" value="55" />
+@* rightContent num *@
+<input id="hidrightNum" type="hidden" value="45" />
+
+@* at用户Id数量 *@
+<input id="hidUserIdLst" type="hidden" />
+
+
+
+@* 标注ID *@
+<input id="hidTagsId" type="hidden" />
+
+@* pdf当前页top *@
+<input type="hidden" id="page_top" name="page_top" />
+
+@* pdf当前页内码 *@
+<input type="hidden" id="page_cache" name="page_cache" />
+
+@* pdf——zoom *@
+<input type="hidden" id="pdf_zoom" name="pdf_zoom" />
+
+@* pdf选中文本top *@
+<input type="hidden" id="pdfDiv_top" name="pdfDiv_top" />
+
+@* pdf选中文本left *@
+<input type="hidden" id="pdfDiv_left" name="pdfDiv_left" />
+
+@* pdf选中文本left *@
+<input type="hidden" id="hidPdfFile" name="hidPdfFile" />

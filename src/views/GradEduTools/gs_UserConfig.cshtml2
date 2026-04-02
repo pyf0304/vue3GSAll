@@ -1,0 +1,239 @@
+﻿@page
+@model GraduateStudyWebApp.Pages.GraduateEduTools.gs_UserConfigModel
+@{
+    Layout = "~/Pages/Shared/_Layout_PC.cshtml";
+    ViewData["Title"] = "用户权限配置";
+    //操作Session样例，方法1：
+    //Model.seUserId = "TestUserId";
+    var strUserId_Value = Model.seUserId;
+    //操作Session样例，方法2：
+    Model.SetSession("UserId1", "TestUserId1");
+    var strUserId1_Value = Model.GetSession("UserId1");
+    //请参见页尾的隐形控件hidUserid和hidUserId1的使用。
+}
+
+@section Styles{
+    <link rel="stylesheet" href="../css/Bootstrap-3.0.3.css" />
+    <link rel="stylesheet" href="../lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="../css/site.css" />
+    <link rel="stylesheet" href="~/lib/Xadmin/css/font.css">
+    <link rel="stylesheet" href="~/lib/Xadmin/css/xadmin.css">
+
+
+    <!-- 树形菜单样式 。js -->
+    <script type="text/javascript" src="../lib/jquery-1.6.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/SimpleTree.css">
+    <link rel="stylesheet" href="~/css/public.css" />
+    <link rel="stylesheet" href="~/css/paperlist.css" />
+    <style>
+
+        /* 四个半径值分别是左上角、右上角、右下角和左下角 */
+
+        .divleft {
+            width: 54%;
+            height: 100%;
+            padding: 10px;
+            float: left;
+            /*background: #fff;*/
+            font-family: 'Microsoft YaHei';
+            /*top: 40px;*/
+            /*left: 10px;*/
+            /*bottom: 5%;*/
+            z-index: 999;
+        }
+
+        /*右边内容区*/
+        .divComment {
+            margin-right: 10px;
+            padding: 20px;
+            width: 100%;
+            float: right;
+            overflow: hidden;
+        }
+
+        .nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
+            color: #495057;
+            background-color: azure;
+            font-weight: bold;
+            border-color: #dee2e6 #dee2e6 #fff;
+        }
+    </style>
+}
+@section Scripts{
+    <script src="~/lib/Xadmin/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="~/lib/Xadmin/js/xadmin.js"></script>
+
+    <script src="../lib/jquery/dist/jquery.js"></script>
+    <script src="../lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="../js/site.js" asp-append-version="true"></script>
+    @*<script src="../lib/bootstrap/dist/js/popper-utils.js"></script>*@
+
+
+    <script src="../lib/require/require.js" data-main="../js/src/config"></script>
+}
+<script>
+
+var strUrl_Session_SetString = "@Model.Url_Session_SetString";
+var strUrl_Session_GetString = "@Model.Url_Session_GetString";
+    var strCurrPrjId = "@Model.CurrPrjId";
+    var vs;
+
+    window.onload = function () {
+
+        require(["../js/GraduateEduTools/gs_UserConfigEx.js"], function (Statistics) {
+            var objPage = new Statistics.gs_UserConfigEx();
+            objPage.Page_Load();
+        });
+    }
+
+
+    function ShardIdfunc(strKeyId, strShardId)
+    {
+        $('#ddlShardId' + strKeyId).show();
+        //默认选中当前项；
+        $('#ddlShardId' + strKeyId).find("option[value='" + strShardId + "']").prop("selected",true);
+        //$("#id").find("option[value='"+value+"']").prop("selected",true);
+       
+    }
+    
+    //function BtnShardName_Click(strShardId, strkey, strName) {
+    function BtnShardName_Click(strKeyId, strShardId) {
+        $("#hidshardId").val(strShardId);
+        $("#hidConfigId").val(strKeyId);
+
+       // $("#hidshardId").val($('#ddlShardId' + strKeyId).val());
+       // var test = $("#hidshardIdId").val();
+        require(["../js/GraduateEduTools/gs_UserConfigEx.js"], function (index) {
+            var objPage = new index.gs_UserConfigEx();
+            
+          //  $("#hidShardName").val(strName);
+            objPage.BtnShardName_Click(strKeyId, strShardId);
+        });
+        layer.msg('已切换!', {
+            icon: 1,
+            time: 2000
+        });
+
+        $('#ddlShardId' + strKeyId).hide();
+
+        $('.layui-tab-title li[lay-id]').find('.layui-tab-close').click();
+    }
+
+
+
+</script>
+
+<div id="tabLayout" class="tab_layout">
+    @*-- 标题层 --*@
+
+    <div class="x-nav">
+        <span class="layui-breadcrumb">
+            <a href="">首页</a>
+            <a href="">个人中心</a>
+            <a>
+                <cite>配置权限</cite>
+            </a>
+            <Label id="lblMsg_List" name="lblMsg_List"></Label>
+        </span>
+        <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+            <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+        </a>
+
+    </div>
+
+    @*-- 查询层 --*@
+
+    @*<div id="divQuery" class="div_query">
+            <table id="tabQuery" style="width: 20%; " class="table table-bordered table-hover table td table-sm">
+                <tr>
+                    <td>
+                        <input id="txtUserName_q" name="txtUserName_q" class="layui-input" placeholder="用户名" style="width:200px;" />
+                    </td>
+                    <td>
+                        <select id="ddlScoreType" name="ddlScoreType" class="form-control" style="width:170px;">
+                            <option value="0">选评分类型</option>
+                            <option value="1">学生</option>
+                            <option value="2">教师</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input class="layui-input" placeholder="起始日期" name="txtStartDate_q" id="txtStartDate_q" style="width:150px;">
+                    </td>
+                    <td>
+                        <input class="layui-input" placeholder="结束日期" name="txtEndDate_q" id="txtEndDate_q" style="width:150px;">
+                    </td>
+                    <td>
+
+                        <button class="layui-btn" lay-submit="" lay-filter="sreach" onclick="btnQuery_Click()">
+                            <i class="layui-icon">&#xe615;</i>
+                        </button>
+                    </td>
+
+                </tr>
+            </table>
+        </div>*@
+
+    @*-- 列表层 --*@
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+
+                <div class="layui-card">
+
+                    @*<div class="layui-card-header">
+
+                        </div>*@
+
+
+                    <div id="myTabContent" class="tab-content">
+                        @*-- 分配权限 --*@
+                        <div class="tab-pane fade in active show" id="PaperComment" style="padding:5px;">
+                            <div class="layui-card-body ">
+                                <table class="layui-table">
+                                    <thead>
+                                        <tr>
+                                            <th width="300">配置类型Id</th>
+                                            <th width="300">配置类型名称</th>
+                                            <th width="300">分享名称Id</th>
+                                            @*<th width="10">分享名称</th>*@
+                                            <th width="300">数据表Id</th>
+                                            <th width="25">数据表</th>
+                                            <th width="30">修改人</th>
+                                            <th width="90">修改时间</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbList1" class="x-cate"></tbody>
+                                </table>
+                            </div>
+                            <div id="divPager" class="pager" value="1" style="display:none;">
+                               
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+            </div>
+        </div>
+    </div>
+
+
+</div>
+<input id="hidOpType" type="hidden" />
+<input id="hidKeyId" type="hidden" />
+<input id="hidCurrPageIndex" type="hidden" value="1" />
+<input id="hidSortvgs_UserConfigBy" type="hidden" value="" />
+
+<input id="hidUserInfo" type="hidden" value="@Model.GetSession("objvUserRoleRelation")" />
+<input id="hidUserId" type="hidden" />
+@*-- 表Id --*@
+<input id="hidConfigId" type="hidden" />
+<input id="hidshardId" type="hidden" />
+<input id="hidShardName" type="hidden" />
+
+

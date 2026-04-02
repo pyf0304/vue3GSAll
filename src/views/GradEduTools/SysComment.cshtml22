@@ -1,0 +1,571 @@
+﻿@page
+@{
+    Layout = "~/Pages/Shared/_Layout_PC.cshtml";
+    ViewData["Title"] = "系统评论";
+}
+
+
+@section Styles{
+    <link rel="stylesheet" href="../lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="../css/site.css" />
+
+    <link rel="stylesheet" href="~/lib/Xadmin/css/font.css">
+    <link rel="stylesheet" href="~/lib/Xadmin/css/xadmin.css">
+    <link rel="stylesheet" href="~/css/comment.css">
+    <link rel="stylesheet" type="text/css" href="../css/SimpleTree.css">
+    <link rel="stylesheet" href="~/css/public.css" />
+    <link rel="stylesheet" type="text/css" href="~/lib/startnum-1.0/css/startnum.css" />
+
+    <style>
+        .divleft {
+            width: 45%;
+            /*position: fixed;*/
+            /*border-right: solid 1px #dededf;*/
+            /*border-bottom: solid 1px #dbdcde;*/
+            /*border-radius: 10px 8px 8px 4px;*/ /* 四个半径值分别是左上角、右上角、右下角和左下角 */
+            float: left;
+            /*background: #fff;*/
+            font-family: 'Microsoft YaHei';
+            top: 40px;
+            left: 10px;
+            /*bottom: 5%;*/
+            z-index: 999;
+            /*height:500px;*/
+            /*overflow: hidden;*/
+        }
+
+        /*右边内容区*/
+        .divComment {
+            margin-right: 10px;
+            padding: 20px;
+            width: 50%;
+            float: right;
+            overflow: hidden;
+        }
+
+        /*各观点*/
+        .artlist {
+            font-size: 16px;
+        }
+    </style>
+}
+@section Scripts{
+
+
+    <script src="../lib/jquery/dist/jquery.js"></script>
+
+    <script src="~/lib/Xadmin/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="~/lib/Xadmin/js/xadmin.js"></script>
+
+    <script src="../lib/bootstrap/dist/js/bootstrap.js"></script>
+    @*<script src="../js/site.js" asp-append-version="true"></script>*@
+    @*<script src="../lib/bootstrap/dist/js/popper.js"></script>*@
+
+    <!-- 评论评分 -->
+    @*<script src="../js/startnum-1.0/jquery.min.js" type="text/javascript" charset="utf-8"></script>*@
+    @*<script src="../lib/startnum-1.0/starnum.js" type="text/javascript" charset="utf-8"></script>*@
+    <script src="~/lib/zoomify/zooming.js"></script>
+    <script src="../lib/require/require.js" data-main="../js/src/config"></script>
+}
+<script>
+
+    window.onload = function () {
+        $('#hidOrderbyId').val("1");
+        GetRequestId_PageLoad();
+
+        //initPingFen({
+        //    divname: 'pingfen2',
+        //    textTure: true,
+        //    inputname: 'pin'
+        //});
+    }
+
+    function Layui_Score(){
+        layui.use('rate', function () {
+            var rate = layui.rate;
+            var txtContent = document.getElementById("txtAppraiseContent");
+            var hidScore = document.getElementById("hidScoreNum");
+
+            //渲染
+            var ins1 = rate.render({
+                elem: '#pingfen2'  //绑定元素
+                , length: 10 //设置多少星
+                , value: 0 //初始值
+                , half: true//开启半星
+                , text: true//开启文本
+
+                , setText: function (value) {
+                    //var arrs = {
+                    //    '1': '极差',
+                    //    '2': '极差',
+                    //    '3': '极差',
+                    //    '4': '差',
+                    //    '5': '中等',
+                    //    '6': '及格',
+                    //    '7': '良好',
+                    //    '8': '很好',
+                    //    '9': '极好',
+                    //    '10': '非常好'
+                    //};
+                    //this.span.text(arrs[value] || (value + "分"));
+                    this.span.text(value + "分");
+                }
+                , choose: function (value) {
+                    hidScore.value = value;
+                    if (value < 4) {
+                        txtContent.value = "极差";
+                    } else if (value > 3 && value < 5) {
+                        txtContent.value = "差";
+                    } else if (value > 4 && value < 6) {
+                        txtContent.value = "中等";
+                    }
+                    else if (value > 5 && value < 7) {
+                        txtContent.value = "及格";
+                    }
+                    else if (value > 6 && value < 8) {
+                        txtContent.value = "良好";
+                    }
+                    else if (value > 7 && value < 9) {
+                        txtContent.value = "很好";
+                    }
+                    else if (value > 8 && value < 10) {
+                        txtContent.value = "极好";
+                    }
+                    else if (value > 9) {
+                        txtContent.value = "非常好";
+                    }
+                }
+            });
+        });
+
+    }
+
+    function GetRequest() {
+        var url = location.search; //获取url中"?"符后的字串
+        var theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1);
+            strs = str.split("&");
+            for (var i = 0; i < strs.length; i++) {
+                theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+            }
+        }
+        return theRequest;
+    }
+
+
+    function GetRequestId_PageLoad() {
+        var Request = new Object();
+        Request = GetRequest();
+
+        var strKey = Request['Key'];
+        var strType = Request['Type'];
+        var strUser = Request['User'];
+        var strPubParentId = Request['PubParentId'];
+        var strFontSize = Request['FontSize'];
+        var strScoreType = Request['ScoreType'];
+        if (strKey != null) {
+            $('#hidTableKey').val(strKey);
+            $('#hidCommentTypeId').val(strType);
+            $('#hidUser').val(strUser);
+            $('#hidPubParentId').val(strPubParentId);
+            $('#hidScoreType').val(strScoreType);
+            require(["../js/GraduateEduTools/SysCommentEx.js"], function (syscomments) {
+                var objPage = new syscomments.SysCommentEx();
+                objPage.Page_Load();
+            });
+        }
+        if (strFontSize != null) {
+            $('#hidFontSize').val(strFontSize);
+        }
+
+    }
+    //设置全局字体
+    function SetFontSize() {
+        var ClassArtlist = document.getElementsByClassName("artlist");
+        var varFontSize = document.getElementById("hidFontSize");
+        if (varFontSize != "") {
+            var i;
+            for (i = 0; i < ClassArtlist.length; i++) {
+                ClassArtlist[i].style.fontSize = varFontSize.value + "px";
+            }
+        }
+    }
+    /*
+添加评论
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnAddNewRecord_Click)
+*/
+    function btnAddAppraise_Click(strKeyId: string) {
+
+        $('#hidSubViewpointId').val(strKeyId);
+        ShowDialog();
+        //require(["../js/GraduateEduTools/SysCommentEx.js"], function (syscomments) {
+
+        //    var objPage = new syscomments.SysCommentEx();
+        //    objPage.btnAddNewRecord_Click();
+        //});
+    }
+
+    //评论弹窗
+    function btnDetailAddAppraise_Click() {
+        $("#hidParentId").val("root");
+        if ($('#hidScoreType').val() != "3") {
+            //initPingFen(
+            //    {
+            //        divname: 'pingfen2',
+            //        textTure: true,
+            //        inputname: 'pin'
+            //    }
+            //);
+            Layui_Score();
+        }
+
+        //$('#hidSubViewpointId').val(strKeyId);
+        ShowDialog();
+
+    }
+
+    //回复弹窗
+    function btnReplyComment_Click(strKeyId: string) {
+
+        $('#hidParentId').val(strKeyId);
+        if ($('#hidScoreType').val() != "3") {
+            //initPingFen(
+            //    {
+            //        divname: 'pingfen2',
+            //        textTure: true,
+            //        inputname: 'pin'
+            //    }
+            //);
+            Layui_Score();
+        }
+        ShowDialog();
+
+    }
+
+    /*
+显示对话框
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_ShowDialog)
+*/
+    function ShowDialog() {
+        require(['jquery', 'bootstrap'], function ($) {
+            $('#divEditAppraise').modal('show');
+        });
+    }
+
+    /*
+ 隐藏对话框
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_HideDialog)
+*/
+    function HideDialog() {
+        require(['jquery', 'bootstrap'], function ($) {
+            $('#divEditAppraise').modal('hide');
+        });
+    }
+
+
+    /*
+显示评论
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnAddNewRecord_Click)
+*/
+    //function btnShowAppraise_Click(strKeyId: string) {
+    //    $('#hidSubViewpointId').val(strKeyId);
+    //    require(["../js/GraduateEduTools/SysComments.js"], function (syscomments) {
+    //        ShowDialog4();
+    //        var objPage = new syscomments.SysComments();
+    //        objPage.btnShowAppraise_Click();
+    //    });
+    //}
+
+
+    /*
+ 提交评论
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_mySubmit)
+*/
+    function SubmitAppraise_Click(pstrOp: string) {
+        $("#btnOKUpdAppraise").attr("disabled", true);
+        //    alert("提交" + strOp);
+
+        require(["../js/GraduateEduTools/SysCommentEx.js"], function (syscomments) {
+            var objPage = new syscomments.SysCommentEx();
+            objPage.SubmitAppraise_Click();
+        });
+
+
+
+    }
+    /*
+ 删除评论
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnDelRecordInTab_Click)
+*/
+    function btnDeleteComment_Click(strKeyId: string) {
+        require(["../js/GraduateEduTools/SysCommentEx.js"], function (syscomments) {
+            if (strKeyId == "") {
+                alert("请选择需要删除的记录！");
+                return;
+            }
+            var objPage = new syscomments.SysCommentEx();
+            objPage.btnDeleteComment_Click(strKeyId);
+        });
+    }
+
+
+    //全部评论
+    function AllComment_Click() {
+        $('#hidOrderbyId').val("1");
+        require(["../js/GraduateEduTools/SysCommentEx.js"], function (syscomments) {
+            var objPage = new syscomments.SysCommentEx();
+            objPage.btnShowAppraise_Click();
+
+            //layer.msg('已点赞!', {
+            //    icon: 1,
+            //    time: 2000
+            //});
+        });
+    }
+
+    //我的评论
+    function MyComment_Click() {
+        $('#hidOrderbyId').val("2");
+        require(["../js/GraduateEduTools/SysCommentEx.js"], function (syscomments) {
+            var objPage = new syscomments.SysCommentEx();
+            objPage.btnShowAppraise_Click();
+
+            //layer.msg('已点赞!', {
+            //    icon: 1,
+            //    time: 2000
+            //});
+        });
+    }
+
+    //最新评论
+    function NewComment_Click() {
+        $('#hidOrderbyId').val("3");
+        require(["../js/GraduateEduTools/SysCommentEx.js"], function (syscomments) {
+            var objPage = new syscomments.SysCommentEx();
+            objPage.btnShowAppraise_Click();
+
+            //layer.msg('已点赞!', {
+            //    icon: 1,
+            //    time: 2000
+            //});
+        });
+    }
+
+    //添加评论以后刷新父页面数据
+    function RefreshWindow() {
+
+        try {
+            var strPageType = $('#hidCommentTypeId').val();
+
+            switch (strPageType) {
+                case "02":
+                    window.parent.Refresh_vPaperSubViewpoint();
+                    break;
+                case "03":
+                    window.parent.Refresh_AllTopicRela();
+                    break;
+                case "04":
+                    window.parent.Refresh_AllTopicRela();
+                    break;
+                case "05":
+                    window.parent.Refresh_AllTopicRela();
+                    break;
+                case "06":
+                    window.parent.Refresh_AllTopicRela();
+                    break;
+                case "07":
+                    window.parent.Refresh_AllTopicRela();
+                    break;
+                case "11":
+                    window.parent.Refresh_vTea_QA();
+                    break;
+                case "12":
+                    window.parent.liPaperReportClick();
+                    break;
+                case "13":
+                    window.parent.liResearchResultClick();
+                    break;
+                default:
+                    window.parent.Refresh_AllTopicRela();
+                    break;
+
+            }
+            //if (strPageType == "02") {
+            //    window.parent.Refresh_vPaperSubViewpoint();
+            //}
+            //else if (strPageType == "03") {
+            //    window.parent.Refresh_AllTopicRela();
+            //}
+            //else if (strPageType == "04") {
+            //    window.parent.Refresh_AllTopicRela();
+            //}
+            //else if (strPageType == "05") {
+            //    window.parent.Refresh_AllTopicRela();
+            //}
+            //else if (strPageType == "06") {
+            //    window.parent.Refresh_AllTopicRela();
+            //}
+            //else if (strPageType == "07") {
+            //    window.parent.Refresh_AllTopicRela();
+            //}
+            //else if (strPageType == "11") {
+            //    window.parent.Refresh_vTea_QA();
+            //}
+            //else if (strPageType == "12") {
+            //    window.parent.liPaperReportClick();
+            //}
+            //else {
+            //    window.parent.Refresh_AllTopicRela();
+            //}
+        } catch (e) {
+            window.opener.location = "父页面地址";
+            window.opener = null;
+            window.close();
+        }
+    }
+
+    function AlertOK() {
+
+        layer.msg('评论成功!', {
+            icon: 1,
+            time: 2000
+        });
+    }
+
+    function AlertNo() {
+
+        layer.msg('删除成功!', {
+            icon: 1,
+            time: 2000
+        });
+    }
+
+    function AlertScore() {
+
+        layer.msg('请输入评分!', {
+            icon: 2,
+            time: 2000
+        });
+    }
+
+    function AlertComment() {
+
+        layer.msg('请输入评语!', {
+            icon: 2,
+            time: 2000
+        });
+    }
+</script>
+
+<div id="divLoading" class="loading">
+    <img src="~/images/loading.gif" />
+</div>
+@*<a id="backtop" class="back-top" href="javascript:scroll(0,0);" target="_self" title="返回顶部" style="display: block;">
+        <i class="icon-backtop"></i>
+    </a>*@
+
+
+
+<div style="padding:10px 30px 10px 30px; ">
+    <div class="divleft">
+        <div id="div_Viewpoint"></div>
+    </div>
+    <div class="divComment">
+        <div class="comment-short" id="J_Short">
+            <div class="comment-title" style="margin-top:5px;">
+                <p class="comment-all" onclick="AllComment_Click()">全部评论</p>
+                <div class="comment-center" id="J_CommentCenter">
+                    <span class="comment-center-slash">/</span>
+                    <span class="comment-my J_userCenter" onclick="MyComment_Click()">我的评论</span>
+                </div>
+                <p class="comment-sort">
+                    <span data-targetid="4760694256" data-sort="1" class="J_CommentSort comment-sort-cur" onclick="NewComment_Click()">最新</span> &nbsp;/&nbsp;
+                    <span data-targetid="4760694256" data-sort="0" class="J_CommentSort comment-sort-cur" onclick="HottestComment_Click()">最热</span> &nbsp;&nbsp; &nbsp;&nbsp;
+                    <button id="btnOKUpd" type="button" class="btn btn-primary btn-sm" style="width:150px;" onclick="btnDetailAddAppraise_Click()">添加评论</button>
+                </p>
+            </div>
+            <div id="J_ShortComment">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" style="z-index:1062;" id="divEditAppraise" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="margin-left:330px;margin-top:100px;">
+        <div class="modal-content" style="width: 800px;">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">观点评论</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="modal-body">
+                <table id="tabwucsyscommentsAppraise" name="tabwucsyscommentsAppraise" style="width: 760px; padding: 1px; border:0px" class="table table-bordered table-hover">
+
+                    <tr>
+                        <td class="NameTD">
+                            <label class="col-form-label text-right" style="width:90px;">评分</label>
+                        </td>
+                        <td class="ValueTD">
+                            <div id="ScoreType">
+                                @*<div id="pingfen2"></div>*@
+                                @*<input id="txtScoreNum" name="txtScoreNum" placeholder="请输入1~100的分值" class="form-control" style="width:150px;" />*@
+                                @*<span style="color:red;">(请输入1~100的分值)</span>*@
+                            </div>
+
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td class="NameTD">
+                            <Label id="lblAppraiseContent" name="lblAppraiseContent" class="col-form-label text-right" style="width:90px;">
+                                评议
+                            </Label>
+                        </td>
+                        <td class="ValueTD">
+                            @*<input id="txtAppraiseContent" name="txtAppraiseContent" class="form-control" style="width:200px;" />*@
+                            <textarea id="txtAppraiseContent" placeholder="请输入您的评语" name="txtAppraiseContent" class="form-control" style="width:500px;height:80px;"></textarea>
+                        </td>
+
+                    </tr>
+                    @*<tr>
+                            <td class="NameTD">
+                                <Label id="lblMeno" name="lblMeno" class="col-form-label text-right" style="width:90px;">
+                                    备注
+                                </Label>
+                            </td>
+                            <td class="ValueTD">
+                                <input id="txtMeno" name="txtMeno" class="form-control" style="width:200px;" />
+                            </td>
+                            <td></td>
+                            <td></td>
+                        </tr>*@
+                </table>
+            </div>
+            <div class="modal-footer">
+                @*<button id="btnCancel" type="button" class="btn btn-default" data-dismiss="modal">关闭</button>*@
+                <button id="btnOKUpdAppraise" type="button" class="btn btn-primary" onclick="SubmitAppraise_Click()">添加</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal -->
+</div>
+
+
+<input id="hidParentId" type="hidden" />
+<input id="hidPubParentId" type="hidden" />
+
+<input id="hidTableKey" type="hidden" />
+<input id="hidCommentTypeId" type="hidden" />
+<input id="hidUser" type="hidden" />
+
+<input id="hidScoreNum" type="hidden" />
+
+<input id="hidOrderbyId" type="hidden" />
+
+<input id="hidFontSize" type="hidden" />
+
+<input id="hidScoreType" type="hidden" />

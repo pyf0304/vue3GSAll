@@ -1,0 +1,385 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+}
+
+ul, ol, li {
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.c {
+    *zoom: 1;
+}
+
+    .c:before, .c:after {
+        content: "";
+        display: table;
+    }
+
+    .c:after {
+        clear: both;
+    }
+
+html {
+    height: 100%;
+    overflow-x: auto;
+    overflow-y: scroll;
+}
+
+.f1 {
+    float: left;
+}
+
+
+/******************************************************************公共样式部分 *******************************************************************/
+
+
+/******************************************************************公共样式部分 *******************************************************************/
+
+
+
+/*920*/
+.main-w1 {
+    padding-left: 20px;
+    padding-right: 20px;
+    width: 100%;
+    min-height: 100px;
+}
+
+/*=============详情列表 start=============*/
+.list-count {
+    margin-bottom: 10px;
+    color: #888;
+    line-height: 18px;
+}
+
+    .list-count em {
+        margin: 0 3px;
+    }
+
+    .list-count i {
+        margin-left: 11px;
+    }
+
+.detail-list dd {
+    padding-top: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+    .detail-list dd + dd {
+        padding-top: 27px;
+    }
+
+.detail-list h6 {
+    margin-bottom: 10px;
+    font-weight: normal;
+    font-size: 18px;
+    line-height: 26px;
+}
+
+    .detail-list h6 a {
+        color: #2267c7;
+    }
+
+        .detail-list h6 a:hover {
+            color: #53a2e3;
+        }
+
+.detail-list .baseinfo {
+    margin-bottom: 5px;
+    line-height: 24px;
+    font-size: 14px;
+    color: #3f4a5e;
+}
+
+    .detail-list .baseinfo span {
+        padding-right: 13px;
+    }
+
+        .detail-list .baseinfo span:after {
+            content: "·";
+            margin-left: 13px;
+        }
+
+    .detail-list .baseinfo em {
+        color: #999;
+    }
+
+.detail-list .abstract {
+    line-height: 20px;
+    color: #777;
+    word-break: break-all;
+    text-justify: inter-ideograph;
+    text-align: justify;
+}
+/*html查看、下载*/
+.detail-list .opts {
+    height: 80px;
+    padding: 19px 0;
+    text-align: right;
+    line-height: 20px;
+}
+
+.detail-list .opts-count {
+    float: left;
+    color: #999;
+}
+
+    .detail-list .opts-count li {
+        float: left;
+        height: 20px;
+        margin-right: 30px;
+    }
+
+    .detail-list .opts-count em {
+        margin-right: 5px;
+        color: #dd913f;
+        font-weight: bold;
+        font-family: Arial;
+    }
+
+    .detail-list .opts-count li + .date {
+        padding-left: 15px;
+        border-left: 1px solid #ddd;
+    }
+
+.detail-list .opts-btn {
+    display: inline-block;
+}
+
+    .detail-list .opts-btn li {
+        display: inline-block;
+        vertical-align: top;
+        margin-right: 15px;
+        line-height: 22px;
+    }
+
+        .detail-list .opts-btn li + li {
+            padding-left: 12px;
+            border-left: 1px solid #ddd;
+        }
+
+    .detail-list .opts-btn li {
+        *display: inline;
+    }
+
+
+
+
+
+
+
+.opts-btn a,
+.opts-btn b {
+    color: #666;
+    font-weight: normal;
+}
+
+    .opts-btn a:hover,
+    .opts-btn a:hover b {
+        color: #53a2e3;
+    }
+
+.opts-btn i {
+    display: inline-block;
+    vertical-align: middle;
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    background: url(../img/icon-sprite.png) no-repeat;
+    *height: 17px;
+}
+
+/*点赞*/
+
+.opts-btn .icon-zan i {
+    background-position: -0px -0px;
+}
+/*已点赞*/
+.opts-btn .icon-zan_ i {
+    background-position: -0px -20px;
+}
+
+/***收藏****/
+.opts-btn .icon-collect i {
+    background-position: -60px -40px; /*收藏*/
+    -o-transition: .5s;
+    -ms-transition: .5s;
+    -moz-transition: .5s;
+    -webkit-transition: .5s;
+    transition: .5s;
+}
+
+/*已收藏*/
+.opts-btn .icon-collect_ i {
+    background-position: -80px -40px;
+}
+
+
+
+/*收藏*/
+.opts-btn .hascollected .icon-collect i {
+    background-position: -0px -140px;
+}
+
+
+
+
+
+
+
+.opts-btn .icon-quote i {
+    background-position: -140px -136px;
+}
+
+
+.opts-btn .icon-read i {
+    background-position: -20px -140px;
+}
+/*在线阅读*/
+.opts-btn .icon-html i {
+    background-position: -40px -142px;
+}
+/*html阅读*/
+.opts-btn .icon-download i {
+    background-position: 0 -140px;
+}
+/*caj下载 已登录 有下载权限 蓝*/
+.opts-btn .icon-nodownperm i {
+    background-position: -120px -121px;
+}
+/*已登录 无下载权限 锁*/
+.opts-btn .icon-notlogged i {
+    background-position: -140px -122px;
+}
+
+/*已登录 无下载权限 锁*/
+.opts-btn .icon-notlogged_ i {
+    background-position: -0px -140px;
+}
+
+/*未登录 黄*/
+.opts-btn .icon-textlink i {
+    background-position: -60px -140px;
+}
+/*原文链接*/
+.opts-btn .icon-play i {
+    background-position: -120px -139px;
+}
+/*播放*/
+.opts-btn .icon-fulltext i {
+    background-position: -100px -157px;
+}
+/*全文不上网*/
+/*=============详情列表 end=============*/
+
+
+
+/**************** 论文列表 中 日期 统计字体调整 *******************/
+.PaperFont {
+
+font-size:10px;
+}
+
+
+
+/**************** 论文详细 评论开始 *******************/
+.commentguest {
+    width: 2em;
+    height: 2em;
+    top: 2.2em;
+    position: relative;
+}
+
+    .commentguest img {
+        width: 100%;
+        height: auto;
+    }
+
+.comment-input {
+    transition: all 0.5s ease 0s;
+    font-family: "微软雅黑";
+    font-size: 1.1em;
+    position: relative;
+    /*left: 3.1em;*/
+}
+
+.commentarea {
+    position: absolute;
+    padding: 0.6em 1em;
+    /*border: 0.1em solid black;*/
+    background: #fff none repeat scroll 0 0;
+    /*width: 34em;*/
+    z-index: 2;
+}
+
+    .commentarea textarea {
+        border: 0 none;
+        display: block;
+        outline: 0 none;
+        resize: none;
+        /*width: 32em;*/
+        height: 2em;
+    }
+
+.comment-input:hover .commentarea {
+    height: 11.37em;
+}
+
+    .comment-input:hover .commentarea textarea {
+        height: 7em;
+    }
+
+.comment-input:hover .commentbtn {
+    top: 6em;
+    z-index: 3;
+}
+
+.commentbtn {
+    border: 0 none;
+    bottom: 2em;
+    height: 3.3em;
+    padding: 0;
+    left: 0.1em;
+    /*width: 33.9em;*/
+    position: relative;
+    transition: top 0.1s ease 0s;
+}
+
+.commentmask {
+    border: 0 none;
+    top: 2em;
+    height: 100%;
+    padding: 0;
+    right: 0;
+    width: 33.9em;
+    background-color: #f4f5f6;
+    position: relative;
+    z-index: 1;
+}
+
+.getcomment {
+    width: 6em;
+    float: right;
+    bottom: 1.2em;
+    position: relative;
+    width: 6.7em;
+    height: 100%;
+    z-index: 3;
+    background-color: #3f404c;
+    color: #fff;
+    line-height: 1.9em;
+    text-align: center;
+    font-size: 1.1em;
+}
+
+    .getcomment:hover {
+        background-color: #AC2925;
+        color: #fff;
+    }
+/**************** 论文详细评论 结束 *******************/

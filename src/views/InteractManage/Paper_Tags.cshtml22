@@ -1,0 +1,581 @@
+﻿@page
+@{
+    Layout = "~/Pages/Shared/_Layout_PC.cshtml";
+    ViewData["Title"] = "PDF论文答疑";
+}
+
+@section Styles{
+    @*<link rel="stylesheet" href="~/pdfjs2.3/web/viewer.css">*@
+    <!-- This snippet is used in production (included from viewer.html) -->
+    @*<link rel="resource" type="application/l10n" href="~/pdfjs2.3/web/locale/locale.properties">*@
+
+    <link rel="stylesheet" href="../lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="../css/site.css" />
+
+    <link rel="stylesheet" href="~/lib/Xadmin/css/font.css">
+    <link rel="stylesheet" href="~/lib/Xadmin/css/xadmin.css">
+    <link rel="stylesheet" href="~/css/comment.css">
+    <link rel="stylesheet" href="~/css/SimpleTree.css">
+
+    <link rel="stylesheet" href="~/css/public.css" />
+
+
+
+
+    <style>
+        li {
+            line-height: 30px;
+        }
+
+        .info {
+            margin-top: 10px;
+            border-bottom: solid 0px #dbdcde;
+        }
+
+        #list_Tags {
+            border-radius: 5px;
+            margin: 10px 10px 10px 10px;
+            background-color: #fff;
+            min-height: 400px;
+            /*height: 400px;*/
+            width: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .div_Questions {
+            /*border-radius: 15px;*/
+            /*margin-top: 15px;*/
+            /*height: 350px;*/
+        }
+
+        #div_qa_Questions {
+            border-radius: 5px;
+            margin: 10px 10px 10px 10px;
+            background-color: #fff;
+            height: 400px;
+            width: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            /*overflow-x: scroll;*/
+        }
+
+
+
+        .div_Answer {
+            margin-top: 5px;
+            /*position: fixed;
+            bottom: 1px;
+            right: 0px;*/
+        }
+
+        #div_qa_Welcome {
+            border-radius: 5px;
+            background-color: beige;
+            margin: 10px 10px 10px 10px;
+            padding: 20px 20px 20px 20px;
+        }
+
+
+
+        .artlist li {
+            line-height: 35px;
+        }
+
+        .rowtit {
+            font-size: 16px;
+        }
+
+
+        #divEditTagsRegion {
+            width: 100%;
+            min-height: 450px;
+            margin: 10px 10px 10px 10px;
+            padding: 10px 10px 10px 10px;
+            border-radius: 5px;
+            background-color: #fff;
+            display: none;
+        }
+
+
+
+
+        #div_qa_Answer {
+            border-radius: 5px;
+            background-color: #fff;
+            margin: 10px 10px 10px 10px;
+            padding: 10px 10px 10px 10px;
+            display: none;
+            min-height: 450px;
+        }
+
+
+
+        #divEditAnswerRegion {
+            width: 100%;
+            min-height: 450px;
+            margin: 10px 10px 10px 10px;
+            padding: 10px 10px 10px 10px;
+            border-radius: 5px;
+            background-color: #fff;
+            display: none;
+        }
+
+
+        /*pdf高亮*/
+        .text-span {
+            background-color: crimson;
+            /*color: red;*/
+        }
+
+        .liRowsColor {
+            border: 1px solid #ddd;
+            background-color: aliceblue;
+            color: #fff;
+        }
+
+        /*批注提示图标样式*/
+        .tipsIcon1 {
+            opacity: 0.80;
+            z-index: 1;
+            filter: alpha(opacity=80);
+        }
+
+        .tipsIcon2 {
+            opacity: 0.80;
+            z-index: 1;
+            filter: alpha(opacity=80);
+        }
+    </style>
+
+}
+@section Scripts{
+    @*<script src="~/pdfjs2.3/build/pdf.js"></script>
+        <script src="~/pdfjs2.3/web/viewer.js"></script>*@
+    <script src="../lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/Xadmin/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="~/lib/Xadmin/js/xadmin.js"></script>
+    <script src="../lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="../lib/require/require.js" data-main="../js/src/config"></script>
+}
+
+
+
+<script>
+
+
+    window.onload = function () {
+        $('#hidOrderbyId').val("1");
+        Getqa_PaperId();
+        require(["../js/InteractManage/Paper_Tags.js"], function (pdf_qa) {
+            var objPage = new pdf_qa.Paper_Tags();
+            objPage.Page_Load();
+        });
+    }
+
+    function GetRequest() {
+        var url = location.search; //获取url中"?"符后的字串
+        var theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1);
+            strs = str.split("&");
+            for (var i = 0; i < strs.length; i++) {
+                theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+            }
+        }
+        return theRequest;
+    }
+
+
+    function Getqa_PaperId() {
+        var Request = new Object();
+        Request = GetRequest();
+        var strid_CurrEduCls = Request['id_CurrEduCls'];
+        //var strqa_PaperId = Request['qa_PaperId'];
+        //var strQuestionsId = Request['QuestionsId'];
+        //var strPushId = Request['PushId'];
+        var strPaperId = Request['PaperId'];
+        //var strTopicId = Request['TopicId'];
+
+        if (strid_CurrEduCls != null) {
+            $('#hidId_CurrEduCls').val(strid_CurrEduCls);
+        }
+        //if (strqa_PaperId != null) {
+        //    $('#hidqa_PaperId').val(strqa_PaperId);
+        //}
+        if (strPaperId != null) {
+            $('#hidPaperId').val(strPaperId);
+        }
+        //if (strTopicId != null) {
+        //    $('#hidTopicId').val(strTopicId);
+
+        //}
+
+        //if (strQuestionsId != null) {
+        //    $('#hidQuestionsId').val(strQuestionsId);
+        //}
+        //if (strPushId != null) {
+        //    $('#hidPushId').val(strPushId);
+        //}
+    }
+
+
+
+
+    //锚点
+    function btnIndexesQuestions_Click(strKeyId: string) {
+        //先清除观点 和问题的 背景
+
+        //先清除背景色
+        $("#infoSubViewpoint div").removeClass("liRowsColor");
+        //添加背景色
+        $("#Q" + strKeyId).addClass("liRowsColor");
+        //$("#" + strKey).addClass("liRowsColor");
+        //window.location.href = "#Q" + strKeyId;
+    }
+
+
+    function Alert1(strMsg) {
+
+        layer.msg(strMsg, {
+            icon: 1,
+            time: 2000
+        });
+    }
+
+    function Alert2(strMsg) {
+
+        layer.msg(strMsg, {
+            icon: 2,
+            time: 2000
+        });
+    }
+
+    function Alert3(strMsg) {
+
+        layer.msg(strMsg, {
+            icon: 3,
+            time: 2000
+        });
+    }
+    function Alert4(strMsg) {
+
+        layer.msg(strMsg, {
+            icon: 4,
+            time: 2000
+        });
+    }
+
+
+    /**
+     * ******************************************************pdf标注****************************************************
+     */
+
+
+    /**显示绑定标注悬浮层 */
+    function Showdiv_PdfTags_Click() {
+        require(["../js/InteractManage/Paper_Tags.js"], function (pdf_qa) {
+            var objPage = new pdf_qa.Paper_Tags();
+            objPage.Showdiv_PdfTags();
+        });
+    }
+
+
+    /*
+    *
+ 显示对话框
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_ShowDialog)
+*/
+    function AddTags(strOp) {
+
+        if (strOp === "Add") {
+            $("#txtTagsContent").val("");
+            $('#myModalLabel').html('添加标注');
+
+            $('#btnOKUpd3').html('添加标注');
+
+            //Paper_QUDI.GetMaxStrId('#txtPaperId');
+        }
+        else if (strOp === "Update") {
+            $('#myModalLabel').html('修改标注');
+            $('#btnOKUpd3').html('修改标注');
+        }
+        else if (strOp === "Detail") {
+            $('#btnOKUpd').hide();
+            $('#myModalLabel').html('详细信息');
+        }
+        $('#divEditTagsRegion').modal('show');
+
+    }
+
+
+    /*
+     *
+  显示对话框
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_ShowDialog)
+ */
+    function ShowDialog(pstrOp: string) {
+        $("#icon").hide();
+
+        strOp = pstrOp;
+        require(['jquery', 'bootstrap'], function ($) {
+            if (strOp === "Add") {
+                $("#txtTagsContent").val("");
+                $('#myModalLabel').html('添加标注');
+
+                $('#btnOKUpd3').html('添加标注');
+
+                //Paper_QUDI.GetMaxStrId('#txtPaperId');
+            }
+            else if (strOp === "Update") {
+                $('#myModalLabel').html('修改标注');
+                $('#btnOKUpd3').html('修改标注');
+            }
+            else if (strOp === "Detail") {
+                $('#btnOKUpd').hide();
+                $('#myModalLabel').html('详细信息');
+            }
+            $('#divEditTagsRegion').modal('show');
+        });
+    }
+
+    /*
+     隐藏对话框
+    (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_HideDialog)
+    */
+    function HideDialog() {
+        require(['jquery', 'bootstrap'], function ($) {
+            $('#divEditTagsRegion').modal('hide');
+        });
+    }
+
+
+    /*标注提交编辑
+(AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_mySubmit)
+*/
+    function TagsSubmit(pstrOp: string) {
+        //    alert("提交" + strOp);
+        require(["../js/InteractManage/Paper_Tags.js"], function (pdf_qa) {
+            var objPage = new pdf_qa.Paper_Tags();
+            objPage.btnOKUpd3_Click();
+        });
+    }
+    function btnAddTags_Click() {
+
+        var pdfDiv_top = $("#iframe_qaPdf", parent.document).contents().find("#pdfDiv_top").val()
+        var pdfDiv_left = $("#iframe_qaPdf", parent.document).contents().find("#pdfDiv_left").val();
+        $('#pdfDiv_top').val(pdfDiv_top);
+        $('#pdfDiv_left').val(pdfDiv_left);
+
+
+        $("#txtTagsContent").val("");
+        $('#myModalLabel').html('添加标注');
+        $('#btnOKUpd3').html('添加标注');
+
+        $('#div_Tags').hide();
+        $('#div_qa_Welcome').hide();
+        $('#divEditTagsRegion').show();
+
+
+    }
+
+    //修改标记
+    function btnUpdateTags_Click(strKey) {
+
+        require(["../js/InteractManage/Paper_Tags.js"], function (pdf_qa) {
+            $("#txtTagsContent").val("");
+            //ShowDialog('Update');
+            $('#div_Tags').hide();
+            $('#div_qa_Welcome').hide();
+            $('#divEditTagsRegion').show();
+
+            $('#myModalLabel').html('修改标注');
+            $('#btnOKUpd3').html('修改标注');
+
+            var objPage = new pdf_qa.Paper_Tags();
+            objPage.btnUpdateTags_Click(strKey);
+        });
+    }
+
+
+    function btnCancel3_Click() {
+        $('#div_Tags').show();
+        $('#div_qa_Welcome').show();
+        $('#divEditTagsRegion').hide();
+    }
+    /*
+删除标记
+(AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_btnAddNewRecord_Click)
+*/
+    function btnDelTags_Click(strKey) {
+        require(["../js/InteractManage/Paper_Tags.js"], function (pdf_qa) {
+            var objPage = new pdf_qa.Paper_Tags();
+            objPage.btnDelTags_Click(strKey);
+        });
+    }
+
+
+    //点击标注定位pdf
+    function btnShowTags_Click(strKey, pageNum, pdfContent) {
+        $('#hidTagsId').val(strKey);
+        $('#hidPdfContent').val(pdfContent);
+
+        //先清除背景色
+        $("#infoTages div").removeClass("liRowsColor");
+        //添加背景色
+        strKey = "T" + strKey;
+        $("#" + strKey).addClass("liRowsColor");
+
+        //定位pdf页码
+        $("#iframe_qaPdf", parent.document).contents().find("#hidIsQA_Tags").val(2);
+        $("#iframe_qaPdf", parent.document)[0].contentWindow.btnLocationPdfPageNum_Click(pageNum, pdfContent);
+        ////定位pdf页码
+        //var page_Number = document.getElementById("pageNumber");
+        //page_Number.value = pageNum;
+        //PDFViewerApplication.page = pageNum;
+
+        //$('#div_qa_Welcome').hide();
+        //$('#div_qa_Answer').show();
+      
+        //$('#hidPdfContent').val(pdfContent);
+        //require(["../js/InteractManage/Paper_Tags.js"], function (pdf_qa) {
+
+        //    var objPage = new pdf_qa.Paper_Tags();
+        //    //objPage.btnShowTags_Click();
+        //    //添加高亮
+        //    objPage.btnUpdatePaperPageNum_Click(pdfContent);
+        //});
+
+    }
+
+    //锚点
+    function btnIndexesTags_Click(strKeyId: string) {
+        //先清除观点 和问题的 背景
+
+        //先清除背景色
+        $("#infoTages div").removeClass("liRowsColor");
+        //添加背景色
+        $("#T" + strKeyId).addClass("liRowsColor");
+        //$("#" + strKey).addClass("liRowsColor");
+        //window.location.href = "#T" + strKeyId;
+    }
+
+
+    //切换论文pdf
+    function btnSwitchPaper_Click(strPaperId, qa_PaperId) {
+
+        $("#hidPaperId").val(strPaperId)
+        $('#hidqa_PaperId').val(qa_PaperId);
+        require(["../js/InteractManage/Paper_Tags.js"], function (pdf_qa) {
+            var objPage = new pdf_qa.Paper_Tags();
+            objPage.BindPdf();
+        });
+
+    }
+    function btnSwitchPaper_Tags_Click(strPaperId) {
+
+        $("#hidPaperId").val(strPaperId)
+
+        require(["../js/InteractManage/Paper_Tags.js"], function (pdf_qa) {
+            var objPage = new pdf_qa.Paper_Tags();
+            objPage.BindPdf();
+        });
+
+
+
+    }
+
+
+
+</script>
+
+
+
+<div id="divLoading" class="loading">
+    <img src="~/images/CirclePoint.gif" />
+</div>
+
+<div style="width:100%; height:100%;">
+
+    @* 标注 *@
+    <div id="div_Tags" class="div_Tags">
+        <div id="list_Tags"></div>
+    </div>
+
+    @* 欢迎 *@
+    <div id="div_qa_Welcome">
+        <div style="text-align:center;"><h2>论文标记使用说明</h2></div>
+        <ul>
+            <li class="rowtit color1">选中左边的pdf文字会弹出两个图标，选中标注图标就可以添加标注了</li>
+            <li class="rowtit color2">如需要删除标记可以在右侧列表内删除</li>
+            <li class="rowtit color3">点击pdf文档内的标记图标可以定位到列表，点击列表也可以定位到pdf页码</li>
+        </ul>
+    </div>
+
+    @* 标注编辑 *@
+    <div id="divEditTagsRegion">
+        <div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">pdf标注</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                <div class="modal-body">
+                    <table id="tabEdit" style="width:100%" class="table table-bordered table-hover table td table-sm">
+                        <tr style="display:none;">
+                            <td colspan="2">
+                                <input id="txtOrderNum" name="txtOrderNum" class="form-control" style="width:50px;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <textarea id="txtTagsContent" name="txtTagsContent" placeholder="标注内容" class="layui-input" style="width:100%; height:200px;"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <select id="ddlTagsTypeId" name="ddlTagsTypeId" class="form-control" style="width:200px;" />
+                            </td>
+                        </tr>
+                        @*<tr style="display:none;">
+                                <td>
+                                    <input id="txtPdfContent2" name="txtPdfContent2" placeholder="pdf内容" class="layui-input" style="width:500px;" />
+                                    <input id="txtPdfPageNum2" name="txtPdfPageNum2" placeholder="pdf页码" class="layui-input" style="width:50px;" />
+                                </td>
+                            </tr>*@
+
+                        <tr>
+                            <td><button id="btnCancel3" type="button" class="layui-btn layui-btn-primary" style="width:100%;" onclick="btnCancel3_Click()">取消编辑</button></td>
+                            <td><button id="btnOKUpd3" type="button" class="layui-btn" style="width:100%;" onclick="TagsSubmit()">确认添加</button></td>
+                        </tr>
+                    </table>
+                </div>
+                @*<div class="modal-footer">
+                        <button id="btnCancel3" type="button" class="btn btn-default" data-dismiss="modal" onclick="btnCancel3_Click()">关闭</button>
+                        <button id="btnOKUpd3" type="button" class="btn btn-primary" onclick="TagsSubmit()">添加</button>
+                    </div>*@
+            </div>
+            <!-- /.modal-content -->
+        </div>
+    </div>
+
+</div>
+
+
+@* 论文Id *@
+<input id="hidPaperId" type="hidden" />
+
+
+@* 标注ID *@
+<input id="hidTagsId" type="hidden" />
+
+@*pdf内容*@
+<input id="hidPdfContent" type="hidden" />
+
+@* pdf选中文本top *@
+<input type="hidden" id="pdfDiv_top" name="pdfDiv_top" />
+
+@* pdf选中文本left *@
+<input type="hidden" id="pdfDiv_left" name="pdfDiv_left" />
+
+

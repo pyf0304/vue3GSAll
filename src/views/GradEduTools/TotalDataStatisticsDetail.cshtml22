@@ -1,0 +1,960 @@
+﻿@page
+@{
+    Layout = "~/Pages/Shared/_Layout_PC.cshtml";
+    ViewData["Title"] = "总数据周期统计";
+}
+@section Styles{
+    <script src="../lib/jquery/dist/jquery.js"></script>
+    @*<script type="text/javascript" src="../lib/jquery-1.6.min.js"></script>*@
+    @*<link rel="stylesheet" href="../css/Bootstrap-3.0.3.css" />*@
+    <link rel="stylesheet" href="../lib/bootstrap/dist/css/bootstrap.css" />
+    @*<link rel="stylesheet" href="../css/site.css" />*@
+
+
+    <link rel="stylesheet" href="~/lib/Xadmin/css/font.css">
+    <link rel="stylesheet" href="~/lib/Xadmin/css/xadmin.css">
+    <!-- <link rel="stylesheet" href="./css/theme5.css"> -->
+    <link rel="stylesheet" href="~/css/public.css" />
+    <link href="~/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- 树形菜单样式 。js -->
+    @*<link rel="stylesheet" href="~/css/comment.css">
+        <link rel="stylesheet" type="text/css" href="../css/SimpleTree.css">*@
+
+
+    <style>
+        
+        .title {
+            /* float: left; */
+            padding-top: 10px;
+            text-indent: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+        }
+
+
+        #chartjs-tooltip {
+            opacity: 1;
+            position: absolute;
+            background: rgba(0, 0, 0, .7);
+            color: white;
+            border-radius: 3px;
+            -webkit-transition: all .1s ease;
+            transition: all .1s ease;
+            pointer-events: none;
+            -webkit-transform: translate(-50%, 0);
+            transform: translate(-50%, 0);
+        }
+
+        .chartjs-tooltip-key {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            margin-right: 10px;
+        }
+
+        #chartjs-tooltip6 {
+            opacity: 1;
+            position: absolute;
+            background: rgba(0, 0, 0, .7);
+            color: white;
+            border-radius: 3px;
+            -webkit-transition: all .1s ease;
+            transition: all .1s ease;
+            pointer-events: none;
+            -webkit-transform: translate(-50%, 0);
+            transform: translate(-50%, 0);
+        }
+
+        .chartjs-tooltip-key6 {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            margin-right: 10px;
+        }
+
+        /*#tableList tr td{
+            border: #666 solid 1px;
+
+            text-align: center;
+            line-height: 24px;
+        }*/
+
+        /*#PaperPreview table {
+            border: 1px solid #666;
+            border-collapse: collapse;
+
+            margin: auto;
+        }
+
+            #PaperPreview table tr td {
+                border: 1px solid #666;
+            }
+
+            #PaperPreview table tr th {
+                border: 1px solid #666;
+                border-radius: 10px;
+            }*/
+        .layui-table td, .layui-table th {
+            position: relative;
+            padding: 9px 15px;
+            min-height: 20px;
+            line-height: 20px;
+            font-size: 5px;
+        }
+
+        .TablePaper {
+            border: 1px solid #666;
+            border-collapse: collapse;
+            margin: auto;
+        }
+
+            .TablePaper tr td {
+                border: 1px solid #666;
+            }
+
+            .TablePaper tr th {
+                border: 1px solid #666;
+                border-radius: 10px;
+            }
+
+        .layui-table {
+            width: 100%;
+            background-color: #fff;
+            color: #666;
+        }
+        
+
+        /*#divScoreTotalDataLst tr td {
+            border: 1px solid #666;
+        }*/
+        /*.color3 {
+            color: #e57f4c;
+            font-weight: bold;
+            font-size: 14px;
+        }*/
+
+    </style>
+    <style>
+        .nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
+            color: #0080ff;
+            background-color: #fff;
+            border-color: #dee2e6 #dee2e6 #fff;
+            font-weight: bold;
+        }
+
+        .panel-default {
+            border: none;
+            border-radius: 0px;
+            margin-bottom: 0px;
+            box-shadow: none;
+            -webkit-box-shadow: none;
+        }
+
+            .panel-default > .panel-heading {
+                color: #777;
+                background-color: #fff;
+                border-color: #e6e6e6;
+                padding: 10px 10px;
+            }
+
+            .panel-default > .panel-body {
+                padding: 10px;
+                padding-bottom: 0px;
+            }
+
+                .panel-default > .panel-body ul {
+                    overflow: hidden;
+                    padding: 0;
+                    margin: 0px;
+                    margin-top: -5px;
+                }
+
+                    .panel-default > .panel-body ul li {
+                        line-height: 27px;
+                        list-style-type: none;
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
+                    }
+
+                        .panel-default > .panel-body ul li .time {
+                            color: #a1a1a1;
+                            float: right;
+                            padding-right: 5px;
+                        }
+    </style>
+
+}
+@section Scripts{
+
+    @*<script src="../lib/jquery/dist/jquery.js"></script>*@
+    @*<script src="~/lib/jquery/dist/jquery.min.js"></script>*@
+    <script src="~/lib/Xadmin/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="~/lib/Xadmin/js/xadmin.js"></script>
+
+    <script src="../lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="~/lib/bootstrap.min.js"></script>
+
+    @*<script type="text/javascript" src="~/lib/Chart.js"></script>*@
+    <script type="text/javascript" src="~/lib/charts/Chart.min.js"></script>
+    <script type="text/javascript" src="~/lib/charts/utils.js"></script>
+
+    <!-- 导出wordjs-->
+    <script src="~/lib/FileSaver.js"></script>
+    <script src="~/lib/jquery.wordexport.js"></script>
+
+
+    <script>
+        layui.use(['laydate', 'form'],
+            function () {
+                var laydate = layui.laydate;
+
+                //日期
+                laydate.render({
+                    elem: '#txtStartDate_q' //指定元素
+                });
+
+                //日期
+                laydate.render({
+                    elem: '#txtEndDate_q' //指定元素
+                });
+
+                ////时间选择器
+                //laydate.render({
+                //    elem: '#txtTime_q'
+                //    , type: 'time'
+                //});
+            });
+    </script>
+    <script src="../lib/require/require.js" data-main="../js/src/config"></script>
+}
+
+<script>
+
+    function GetRequest() {
+        var url = location.search; //获取url中"?"符后的字串
+        var theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1);
+            strs = str.split("&");
+            for (var i = 0; i < strs.length; i++) {
+                theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+            }
+        }
+        return theRequest;
+    }
+
+    function GetCurrEduclsID() {
+        var Request = new Object();
+        Request = GetRequest();
+        var str1;
+        str1 = Request['Id_CurrEduCls'];
+        str2 = Request['UserId'];
+
+        if (str1 != null) {
+            $('#hidId_CurrEduClspara').val(str1);
+            $('#hidUserId').val(str2);
+
+
+            require(["../js/GraduateEduTools/TotalDataStatisticsDetail.js"], function (Statistics) {
+                var objPage = new Statistics.TotalDataStatisticsDetail();
+
+                objPage.Page_Load();
+            });
+
+        }
+        else {
+            require(["../js/GraduateEduTools/TotalDataStatisticsDetail.js"], function (Statistics) {
+                var objPage = new Statistics.TotalDataStatisticsDetail();
+
+                objPage.Page_Load();
+            });
+        }
+    }
+
+
+
+    window.onload = function () {
+        $('#hidTabNum').val("01");
+        GetCurrEduclsID();
+
+    }
+
+    //function ExportWord() {
+    //    var btn = document.getElementById('btn')
+    //    var Preview = $("#PaperPreview").attr("id")
+    //    if (!!window.ActiveXObject || "ActiveXObject" in window) {
+
+    //      // $("#btnExportWord").onclick = function () {
+    //            var Preview = $("#PaperPreview").attr("id")
+    //            //AllAreaWordTwo(document.getElementById('test'), '^')
+    //            AllAreaWordTwo(Preview, '^')
+    //     //   }
+    //    } else {
+    //      //  $("#btnExportWord").click(function () {
+
+    //            $("#PaperPreview").wordExport("论文预览");
+
+    //      //  });
+
+    //        //$("#btnExportWord").onclick = function () {
+    //        //    $("#PaperPreview").wordExport("论文预览");
+    //        //}
+    //    }
+    //}
+    //$(function () {
+    //    var btn = document.getElementById('btn')
+    //    var Preview = $("#PaperPreview").attr("id")
+    //    if (!!window.ActiveXObject || "ActiveXObject" in window) {
+
+    //        $("#btnExportWord").onclick = function () {
+    //            var Preview = $("#PaperPreview").attr("id")
+    //            //AllAreaWordTwo(document.getElementById('test'), '^')
+    //            AllAreaWordTwo(Preview, '^')
+    //        }
+    //    } else {
+    //        $("#btnExportWord").click(function () {
+
+    //            $("#PaperPreview").wordExport("数据统计");
+
+    //        });
+
+    //        //$("#btnExportWord").onclick = function () {
+    //        //    $("#PaperPreview").wordExport("论文预览");
+    //        //}
+    //    }
+    //})
+    jQuery(document).ready(function ($) {
+
+        var btn = document.getElementById('btn')
+        var Preview = $("#PaperPreview").attr("id")
+        if (!!window.ActiveXObject || "ActiveXObject" in window) {
+
+            $("#btnExportWord").onclick = function () {
+                var Preview = $("#PaperPreview").attr("id")
+                //AllAreaWordTwo(document.getElementById('test'), '^')
+                AllAreaWordTwo(Preview, '^')
+            }
+        } else {
+            $("#btnExportWord").click(function () {
+
+
+                $("#ExportDetail").show();
+               $("#PaperPreview").wordExport("个人成长档案");
+               $("#ExportDetail").hide();
+            });
+
+            //$("#btnExportWord").onclick = function () {
+            //    $("#PaperPreview").wordExport("论文预览");
+            //}
+        }
+    });
+
+    //  {Object} cont  要导出的html元素内容的id,注意不要加双引号@param {Object} key   分页关键字
+    function AllAreaWordTwo(cont, key) {
+        var oWD = new ActiveXObject("Word.Application");
+        //默认为页面视图
+        var oDC = oWD.Documents.Add("", 0, 0);
+        var oRange = oDC.Range(0, 1);
+        //var oRange1 = oDC.Range(0,2);
+        var sel = document.body.createTextRange();
+        //参数为html元素id
+        sel.moveToElementText(cont);
+        sel.select();
+        sel.execCommand("Copy");
+        oRange.Paste();
+        oWD.Application.Visible = true;
+        ////得到打开后word的selection对象
+        //var selection = oWD.Selection;
+        ////设置字体大小
+        //selection.Font.Size = 10;
+        ////ctrl+A 全选操作
+        //selection.WholeStory();
+        ////清除格式
+        //selection.Find.ClearFormatting();
+        ////指定查找关键字
+        //selection.Find.Text = key;
+        ////^m为手动分页符标记
+        ////向下查找
+        //selection.Find.Forward = true;
+        //selection.Find.Wrap = 1;
+        ////不区分大小写
+        //selection.Find.MatchCase = false;
+        ////不匹配整个单词
+        //selection.Find.MatchWholeWord = false;
+        ////如果找到指定字符串返回真,否则返回false
+        //while (selection.Find.Execute()) {
+        //插入分页符,分页符常量为7,具体可查word api
+        selection.InsertBreak(7);
+        //}
+    }
+
+
+
+    ///*
+    //    查询记录
+    //   (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+    //   */
+    //function btnQuery_Click() {
+    //    require(["../js/GraduateEduTools/TotalDataStatisticsDetail.js"], function (Statistics) {
+
+    //        var objPage = new Statistics.TotalDataStatisticsDetail();
+    //        objPage.liTotalDataNum_Click();
+    //    });
+    //}
+
+    /*
+ 分页修改
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_IndexPage)
+*/
+    function IndexPage(intPageIndex) {
+        console.log("跳转到" + intPageIndex + "页");
+        require(["../js/GraduateEduTools/TotalDataStatisticsDetail.js"], function (TotalDataStatisticsDetail) {
+            var objPage = new TotalDataStatisticsDetail.TotalDataStatisticsDetail();
+            objPage.IndexPage(intPageIndex);
+        });
+    }
+
+    /*
+     分页修改
+    (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_JumpToPage)
+    */
+    function JumpToPage() {
+        var intCurrPageIndex = $('#input_number').val();
+        var intPageIndex = Number(intCurrPageIndex);
+        console.log("跳转到" + intPageIndex + "页");
+        require(["../js/GraduateEduTools/TotalDataStatisticsDetail.js"], function (TotalDataStatisticsDetail) {
+            var objPage = new TotalDataStatisticsDetail.TotalDataStatisticsDetail();
+            objPage.IndexPage(intPageIndex);
+        });
+    }
+
+
+    /*
+     分页修改
+    (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_NextPage)
+    */
+    function NextPage() {
+        var intCurrPageIndex = $('#hidCurrPageIndex').val();
+        var intPageIndex = Number(intCurrPageIndex) + 1;
+        console.log("跳转到" + intPageIndex + "页");
+        require(["../js/GraduateEduTools/TotalDataStatisticsDetail.js"], function (TotalDataStatisticsDetail) {
+            var objPage = new TotalDataStatisticsDetail.TotalDataStatisticsDetail();
+            objPage.IndexPage(intPageIndex);
+        });
+    }
+
+
+    /*
+     分页修改
+    (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_PageNum)
+    */
+    function PageNum(intPageIndex) {
+        console.log("跳转到" + intPageIndex + "页");
+        require(["../js/GraduateEduTools/TotalDataStatisticsDetail.js"], function (TotalDataStatisticsDetail) {
+            var objPage = new TotalDataStatisticsDetail.TotalDataStatisticsDetail();
+            objPage.IndexPage(intPageIndex);
+        });
+    }
+
+    /*
+     分页修改
+    (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_PrevPage)
+    */
+    function PrevPage() {
+        var intCurrPageIndex = $('#hidCurrPageIndex').val();
+        var intPageIndex = Number(intCurrPageIndex) - 1;
+        console.log("跳转到" + intPageIndex + "页");
+        require(["../js/GraduateEduTools/TotalDataStatisticsDetail.js"], function (TotalDataStatisticsDetail) {
+            var objPage = new TotalDataStatisticsDetail.TotalDataStatisticsDetail();
+            objPage.IndexPage(intPageIndex);
+        });
+    }
+
+    /////////////////////////////////////////////////////////////////////tab页切换事件///////////////////////////////////////////////////////////
+    //论文
+    function li_Paper_Click(tabKeyId) {
+        $('#hidTabNum').val(tabKeyId);
+        require(["../js/GraduateEduTools/TotalDataStatisticsDetail.js"], function (viewpoint) {
+            var objPage = new viewpoint.TotalDataStatisticsDetail();
+            objPage.li_Paper_Click();
+        });
+    }
+    //论文子观点
+    function li_PaperViewpoint_Click(tabKeyId) {
+        $('#hidTabNum').val(tabKeyId);
+        require(["../js/GraduateEduTools/TotalDataStatisticsDetail.js"], function (viewpoint) {
+            var objPage = new viewpoint.TotalDataStatisticsDetail();
+            objPage.li_PaperViewpoint_Click();
+        });
+    }
+    //个人观点
+    function li_Viewpoint_Click(tabKeyId) {
+        $('#hidTabNum').val(tabKeyId);
+        require(["../js/GraduateEduTools/TotalDataStatisticsDetail.js"], function (viewpoint) {
+            var objPage = new viewpoint.TotalDataStatisticsDetail();
+            objPage.li_Viewpoint_Click();
+        });
+    }
+    //专家观点
+    function li_ExpertViewpoint_Click(tabKeyId) {
+        $('#hidTabNum').val(tabKeyId);
+        require(["../js/GraduateEduTools/TotalDataStatisticsDetail.js"], function (viewpoint) {
+            var objPage = new viewpoint.TotalDataStatisticsDetail();
+            objPage.li_ExpertViewpoint_Click();
+        });
+    }
+    //主题概念
+    function li_Concept_Click(tabKeyId) {
+        $('#hidTabNum').val(tabKeyId);
+        require(["../js/GraduateEduTools/TotalDataStatisticsDetail.js"], function (viewpoint) {
+            var objPage = new viewpoint.TotalDataStatisticsDetail();
+            objPage.li_Concept_Click();
+        });
+    }
+    //客观事实
+    function li_TopicObjective_Click(tabKeyId) {
+        $('#hidTabNum').val(tabKeyId);
+        require(["../js/GraduateEduTools/TotalDataStatisticsDetail.js"], function (viewpoint) {
+            var objPage = new viewpoint.TotalDataStatisticsDetail();
+            objPage.li_TopicObjective_Click();
+        });
+    }
+    //客观数据
+    function li_ObjectiveBasis_Click(tabKeyId) {
+        $('#hidTabNum').val(tabKeyId);
+        require(["../js/GraduateEduTools/TotalDataStatisticsDetail.js"], function (viewpoint) {
+            var objPage = new viewpoint.TotalDataStatisticsDetail();
+            objPage.li_ObjectiveBasis_Click();
+        });
+    }
+    //技能
+    function li_Skill_Click(tabKeyId) {
+        $('#hidTabNum').val(tabKeyId);
+        require(["../js/GraduateEduTools/TotalDataStatisticsDetail.js"], function (viewpoint) {
+            var objPage = new viewpoint.TotalDataStatisticsDetail();
+            objPage.li_Skill_Click();
+        });
+    }
+    //社会关系
+    function li_SysSocialRelations_Click(tabKeyId) {
+        $('#hidTabNum').val(tabKeyId);
+        require(["../js/GraduateEduTools/TotalDataStatisticsDetail.js"], function (viewpoint) {
+            var objPage = new viewpoint.TotalDataStatisticsDetail();
+            objPage.li_SysSocialRelations_Click();
+        });
+    }
+    //问题回答
+    function li_QaAnswer_Click(tabKeyId) {
+        $('#hidTabNum').val(tabKeyId);
+        require(["../js/GraduateEduTools/TotalDataStatisticsDetail.js"], function (viewpoint) {
+            var objPage = new viewpoint.TotalDataStatisticsDetail();
+            objPage.li_QaAnswer_Click();
+        });
+    }
+
+    function CloseWindow() {
+
+        try {
+
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            parent.layer.close(index); //再执行关闭
+
+
+        } catch (e) {
+            window.opener.location = "父页面地址";
+            window.opener = null;
+
+            window.close();
+        }
+    }
+</script>
+
+
+<div id="divLoading" class="loading">
+    <img src="~/images/CirclePoint.gif" />
+</div>
+
+<div id="tabLayout">
+    @*-- 标题层 --*@
+    <div class="x-nav" id="topTitle">
+        <span class="layui-breadcrumb">
+            <a href="">首页</a>
+            <a href="">个人中心</a>
+            <a>
+                <cite>各类型分数查看</cite>
+            </a>
+            <Label id="lblMsg_List" name="lblMsg_List"></Label>
+        </span>
+        <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+            <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+        </a>
+
+    </div>
+
+
+
+    @*<div id="divQuery" class="div_query">
+
+            <table id="tabQuery" name="tabQuery" style="width: 50%; " class="table table-bordered table-hover table td table-sm">
+                <tr>
+                    <td id="td_UserId" style="display:none;">
+                        <select id="ddlUserId_q" name="ddlUserId_q" class="form-control" style="width:170px;" />
+                    </td>
+                    <td id="td_TotalDataTypeId">
+                        <select id="ddlTotalDataTypeId_q" name="ddlTotalDataTypeId_q" class="form-control" style="width:200px;" />
+                    </td>
+                    <td>
+                        <button class="layui-btn" lay-submit="" lay-filter="sreach" onclick="btnQuery_Click()">
+                            <i class="layui-icon">&#xe615;</i>
+                        </button>
+                    </td>
+
+
+                </tr>
+
+            </table>
+        </div>*@
+    <div id="divQuery" class="layui-fluid">
+        <button type="button" onclick="CloseWindow()" style="float:right;" class="btn btn-outline-info btn-sm text-nowrap">返回</button>&nbsp;&nbsp;&nbsp;
+        <button class="btn btn-outline-info btn-sm text-nowrap" style="float:right;" id="btnExportWord" name="btnExportWord" title="导出word">导出word</button>
+    </div>
+       
+        @*<button class="btn btn-outline-info btn-sm text-nowrap" id="btnExportWord" name="btnExportWord" title="导出数据" onclick="ExportWord()">导出数据</button>*@
+
+    @*-- 列表层总分列表 --*@
+    @*<div id="divList" class="div_List"  id="PaperPreview">*@
+    <div id="PaperPreview" class="layui-fluid">
+        <div style="text-align:center"><h3><label id="UpWord">个人成长档案</label></h3></div>
+        <div class="layui-card-body layui-fluid">
+            @*<table class="layui-table layui-form" id="tableList">*@
+            <table class="TablePaper layui-table" id="tableList">
+                @*<table class="TablePaper" id="tableList">*@
+                <thead>
+                    <tr>
+
+                        <th width="100">用户/学年</th>
+                        <th width="180">专业/教学班</th>
+
+                        <th width="150">论文子观点<br />/名次</th>
+                        <th width="150">个人观点<br />/名次</th>
+                        <th width="150">专家观点<br />/名次</th>
+                        <th width="150">主题概念<br />/名次</th>
+                        <th width="150">客观事实<br />/名次</th>
+                        <th width="150">客观数据<br />/名次</th>
+                        <th width="150">技能<br />/名次</th>
+                        <th width="150">社会关系<br />/名次</th>
+                        <th width="150">问题回答<br />/名次</th>
+                        <th width="150">给他人评论</th>
+                        <th width="150">讨论打分</th>
+                        <th width="150">评价打分</th>
+                        <th width="150">标志打分</th>
+                        <th width="180">各观点总分</th>
+                        <th width="150">总分名次</th>
+
+                    </tr>
+                </thead>
+                <tbody id="divScoreTotalDataLst" class="x-cate"></tbody>
+            </table>
+        </div>
+
+        <hr />
+        <br />
+        @*-- 导出详细层 --*@
+        <div id="ExportDetail" class="div_List" style="display:none;">
+
+
+        </div>
+    </div>
+
+
+    @*-- 列表层 --*@
+    <div id="divList" class="div_List">
+
+        <div style="height:100%;width:100%;" class="layui-card-body ">
+
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#li_Paper" onclick="li_Paper_Click('01')">论文<span id="PaperCount" class="badge badge-pill badge-success">0</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#li_PaperViewpoint" onclick="li_PaperViewpoint_Click('03')">论文子观点<span id="PaperViewpointCount" class="badge badge-pill badge-success">0</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#li_Viewpoint" onclick="li_Viewpoint_Click('04')">个人观点<span id="ViewpointCount" class="badge badge-pill badge-success">0</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#li_ExpertViewpoint" onclick="li_ExpertViewpoint_Click('05')">专家观点<span id="ExpertViewpointCount" class="badge badge-pill badge-success">0</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#li_Concept" onclick="li_Concept_Click('06')">主题概念<span id="ConceptCount" class="badge badge-pill badge-success">0</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#li_TopicObjective" onclick="li_TopicObjective_Click('07')">客观事实<span id="TopicObjectiveCount" class="badge badge-pill badge-success">0</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#li_ObjectiveBasis" onclick="li_ObjectiveBasis_Click('08')">客观数据<span id="ObjectiveBasisCount" class="badge badge-pill badge-success">0</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#li_Skill" onclick="li_Skill_Click('09')">技能<span id="SkillCount" class="badge badge-pill badge-success">0</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#li_SysSocialRelations" onclick="li_SysSocialRelations_Click('10')">社会关系<span id="SysSocialCount" class="badge badge-pill badge-success">0</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#li_QaAnswer" onclick="li_QaAnswer_Click('11')">问题回答<span id="QaAnswerCount" class="badge badge-pill badge-success">0</span></a>
+                </li>
+            </ul>
+
+
+
+            @*<div id="myTabContent" class="layui-card-body">*@
+            @*<div id="myTabContent">*@
+            <div id="myTabContent" class="tab-content">
+
+                @*-- 论文--*@
+                <div class="tab-pane active" id="li_Paper" style="padding:5px;">
+                    @*<div id="divFunction" style="float:right;margin-right:0px;">
+                            <ul class="nav">
+                                <li class="nav-item">
+                                    <Label id="lblPaper" name="lblPaper" class="col-form-label text-info">
+
+                                    </Label>
+                                </li>
+                            </ul>
+                        </div>*@
+
+                    <div id="divli_Paper" class="div_List">
+                        <div id="divli_PaperDataLst" class="div_List">
+                        </div>
+                        @*<div id="divPagerli_Paper" class="pager" value="1">
+                               
+                            </div>*@
+                    </div>
+                </div>
+                @*-- 论文子观点--*@
+                <div class="tab-pane fade" id="li_PaperViewpoint" style="padding:5px;">
+                    @*<div id="divFunction" style="float:right;margin-right:0px;">
+                            <ul class="nav">
+                                <li class="nav-item">
+                                    <Label id="lblPaperViewpoint" name="lblPaperViewpoint" class="col-form-label text-info">
+
+                                    </Label>
+                                </li>
+                            </ul>
+                        </div>*@
+
+                    <div id="divli_PaperViewpoint" class="div_List">
+                        <div id="divli_PaperViewpointDataLst" class="div_List">
+                        </div>
+                        @*<div id="divPagerli_PaperViewpoint" class="pager" value="1">
+                               
+                            </div>*@
+                    </div>
+                </div>
+
+                @*-- 个人观点--*@
+                <div class="tab-pane fade" id="li_PaperViewpoint" style="padding:5px;">
+                    @*<div id="divFunction" style="float:right;margin-right:0px;">
+                            <ul class="nav">
+                                <li class="nav-item">
+                                    <Label id="lblViewpoint" name="lblViewpoint" class="col-form-label text-info">
+
+                                    </Label>
+                                </li>
+                            </ul>
+                        </div>*@
+
+                    <div id="divli_Viewpoint" class="div_List">
+                        <div id="divli_ViewpointDataLst" class="div_List">
+                        </div>
+                        @*<div id="divPagerli_Viewpoint" class="pager" value="1">
+                               
+                            </div>*@
+                    </div>
+                </div>
+
+                @*-- 专家观点--*@
+                <div class="tab-pane fade" id="li_ExpertViewpoint" style="padding:5px;">
+                    @*<div id="divFunction" style="float:right;margin-right:0px;">
+                            <ul class="nav">
+                                <li class="nav-item">
+                                    <Label id="lblExpertViewpoint" name="lblExpertViewpoint" class="col-form-label text-info">
+
+                                    </Label>
+                                </li>
+                            </ul>
+                        </div>*@
+
+                    <div id="divli_ExpertViewpoint" class="div_List">
+                        <div id="divli_ExpertViewpointDataLst" class="div_List">
+                        </div>
+                        @*<div id="divPagerli_ExpertViewpoint" class="pager" value="1">
+                               
+                            </div>*@
+                    </div>
+                </div>
+
+                @*-- 主题概念--*@
+                <div class="tab-pane fade" id="li_Concept" style="padding:5px;">
+                    @*<div id="divFunction" style="float:right;margin-right:0px;">
+                            <ul class="nav">
+                                <li class="nav-item">
+                                    <Label id="lblConcept" name="lblConcept" class="col-form-label text-info">
+
+                                    </Label>
+                                </li>
+                            </ul>
+                        </div>*@
+
+                    <div id="divli_Concept" class="div_List">
+                        <div id="divli_ConceptDataLst" class="div_List">
+                        </div>
+                        @*<div id="divPagerli_Concept" class="pager" value="1">
+                               
+                            </div>*@
+                    </div>
+                </div>
+
+                @*-- 客观事实--*@
+                <div class="tab-pane fade" id="li_TopicObjective" style="padding:5px;">
+                    @*<div id="divFunction" style="float:right;margin-right:0px;">
+                            <ul class="nav">
+                                <li class="nav-item">
+                                    <Label id="lblTopicObjective" name="lblTopicObjective" class="col-form-label text-info">
+
+                                    </Label>
+                                </li>
+                            </ul>
+                        </div>*@
+
+                    <div id="divli_TopicObjective" class="div_List">
+                        <div id="divli_TopicObjectiveDataLst" class="div_List">
+                        </div>
+                        @*<div id="divPagerli_TopicObjective" class="pager" value="1">
+                               
+                            </div>*@
+                    </div>
+                </div>
+
+                @*-- 客观数据--*@
+                <div class="tab-pane fade" id="li_ObjectiveBasis" style="padding:5px;">
+                    @*<div id="divFunction" style="float:right;margin-right:0px;">
+                            <ul class="nav">
+                                <li class="nav-item">
+                                    <Label id="lblObjectiveBasis" name="lblObjectiveBasis" class="col-form-label text-info">
+
+                                    </Label>
+                                </li>
+                            </ul>
+                        </div>*@
+
+                    <div id="divli_ObjectiveBasis" class="div_List">
+                        <div id="divli_ObjectiveBasisDataLst" class="div_List">
+                        </div>
+                        @*<div id="divPagerli_ObjectiveBasis" class="pager" value="1">
+                               
+                            </div>*@
+                    </div>
+                </div>
+
+                @*-- 技能--*@
+                <div class="tab-pane fade" id="li_Skill" style="padding:5px;">
+                    @*<div id="divFunction" style="float:right;margin-right:0px;">
+                            <ul class="nav">
+                                <li class="nav-item">
+                                    <Label id="lblSkill" name="lblSkill" class="col-form-label text-info">
+
+                                    </Label>
+                                </li>
+                            </ul>
+                        </div>*@
+
+                    <div id="divli_Skill" class="div_List">
+                        <div id="divli_SkillDataLst" class="div_List">
+                        </div>
+                        @*<div id="divPagerli_Skill" class="pager" value="1">
+                               
+                            </div>*@
+                    </div>
+                </div>
+
+                @*-- 社会关系--*@
+                <div class="tab-pane fade" id="li_SysSocialRelations" style="padding:5px;">
+                    @*<div id="divFunction" style="float:right;margin-right:0px;">
+                            <ul class="nav">
+                                <li class="nav-item">
+                                    <Label id="lblSysSocialRelations" name="lblSysSocialRelations" class="col-form-label text-info">
+
+                                    </Label>
+                                </li>
+                            </ul>
+                        </div>*@
+
+                    <div id="divli_SysSocialRelations" class="div_List">
+                        <div id="divli_SysSocialRelationsDataLst" class="div_List">
+                        </div>
+                        @*<div id="divPagerli_SysSocialRelations" class="pager" value="1">
+                               
+                            </div>*@
+                    </div>
+                </div>
+
+
+                @*-- 问题回答--*@
+                <div class="tab-pane fade" id="li_QaAnswer" style="padding:5px;">
+                    @*<div id="divFunction" style="float:right;margin-right:0px;">
+                            <ul class="nav">
+                                <li class="nav-item">
+                                    <Label id="lblQaAnswer" name="lblQaAnswer" class="col-form-label text-info">
+
+                                    </Label>
+                                </li>
+                            </ul>
+                        </div>*@
+
+                    <div id="divli_QaAnswer" class="div_List">
+                        <div id="divli_QaAnswerDataLst" class="div_List">
+                        </div>
+                        @*<div id="divPagerli_QaAnswer" class="pager" value="1">
+                               
+                            </div>*@
+                    </div>
+                </div>
+
+
+                <div id="divPager" class="pager" value="1">
+                   
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="divEdit"></div>
+
+</div>
+<input id="hidQueryStata" type="hidden" />
+
+<input id="hidSortTotalBy" type="hidden" value="" />
+@* 当前教学班Id *@
+<input id="hidId_CurrEduCls" type="hidden" />
+@* 教学班Id传递参数 *@
+<input id="hidId_CurrEduClspara" type="hidden" />
+@* 用户Id传递参数 *@
+<input id="hidUserId" type="hidden" />
+
+
+@* 当前教学班日期范围Id *@
+<input id="hidgs_DateId" type="hidden" />
+<input id="hidStartDate" type="hidden" />
+<input id="hiEndDate" type="hidden" />
+<input id="hidCurrPageIndex" type="hidden" value="1" />
+
+@*- 存放tab页顺序 --*@
+<input id="hidTabNum" type="hidden" />
+<input id="hidSortvSysScoreSummaryBy" type="hidden" />
+

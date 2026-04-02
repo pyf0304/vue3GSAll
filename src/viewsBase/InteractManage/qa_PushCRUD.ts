@@ -1,0 +1,2117 @@
+﻿/**
+ * 类名:qa_PushCRUD(界面:qa_PushCRUD)
+ * 表名:qa_Push(01120640)
+ * 版本:2024.03.11.1(服务器:WIN-SRV103-116)
+ * 日期:2024/03/17 11:34:09
+ * 生成者:
+ 工程名称:问卷调查(0112)
+ CM工程:研究生论文学习(变量首字母小写)-全部函数集
+ * 相关数据库:103.116.76.183,9433EduHigh_Jsie
+ * PrjDataBaseId:0170
+ * 模块中文名:互动管理(InteractManage)
+ * 框架-层名:Vue_界面后台_TS(TS)(Vue_ViewScriptCS_TS)
+ * 编程语言:TypeScript
+ **/
+//import $ from "jquery";
+import {
+  vqa_Push_GetRecCountByCondAsync,
+  vqa_Push_GetObjLstAsync,
+  vqa_Push_GetObjByPushIdAsync,
+} from '@/ts/L3ForWApi/InteractManage/clsvqa_PushWApi';
+import { IsNullOrEmpty, Format } from '@/ts/PubFun/clsString';
+import { CurrEduCls_BindDdl_IdCurrEduClsByCourseIdInDivCache } from '@/ts/L3ForWApi/DailyRunning/clsCurrEduClsWApi';
+import { vPaperSimProEx_BindDdl_PaperIdByIdCurrEduClsInDivCache } from '@/ts/L3ForWApiEx/GradEduPaper/clsvPaperSimProExWApi';
+import {
+  GetCheckedKeyIdsInDivObj,
+  GetDivObjInDivObj,
+  GetSelectValueInDivObj,
+  SetSelectValueByIdInDivObj,
+  GetCheckBoxValueInDivObj,
+  SetCheckBoxValueByIdInDivObj,
+  GetInputValueInDivObj,
+  SetInputValueInDivObj,
+  SetLabelHtmlByIdInDivObj,
+  GetLabelHtmlInDivObj,
+  GetDivObjInDivObjN,
+} from '@/ts/PubFun/clsCommFunc4Ctrl';
+import {
+  qa_Push_DelRecordAsync,
+  qa_Push_GetObjLstByPushIdLstAsync,
+  qa_Push_AddNewRecordAsync,
+  qa_Push_Delqa_PushsAsync,
+} from '@/ts/L3ForWApi/InteractManage/clsqa_PushWApi';
+import { clsvqa_PushEN } from '@/ts/L0Entity/InteractManage/clsvqa_PushEN';
+import { clsvqa_PushENEx } from '@/ts/L0Entity/InteractManage/clsvqa_PushENEx';
+import {
+  BindTab_V,
+  arrSelectedKeys,
+  confirmDel,
+  GetObjKeys,
+  Redirect,
+  SortFun,
+} from '@/ts/PubFun/clsCommFunc4Web';
+import {
+  vqa_PushEx_FuncMapByFldName,
+  vqa_PushEx_GetObjExLstByPagerAsync,
+} from '@/ts/L3ForWApiEx/InteractManage/clsvqa_PushExWApi';
+import { clsqa_PushEN } from '@/ts/L0Entity/InteractManage/clsqa_PushEN';
+import { clsPager } from '@/ts/PubFun/clsPager';
+import { enumDivType } from '@/ts/PubFun/enumDivType';
+import { stuPagerPara } from '@/ts/PubFun/stuPagerPara';
+import { clsDataColumn } from '@/ts/PubFun/clsDataColumn';
+import {
+  clsOperateList,
+  ShowEmptyRecNumInfoByDiv,
+  GetCurrPageIndex,
+  GetSortBy,
+} from '@/ts/PubFun/clsOperateList';
+/**
+ * 宣布一个用于导出Excel的函数,用于调用js端的导出Excel。
+ **/
+declare function exportSpecialExcel_pyf(arrData: any, strFileName: string): void;
+/** qa_PushCRUD 的摘要说明。其中Q代表查询,U代表修改
+ * (AutoGCLib.Vue_ViewScriptCS_TS4TypeScript:GeneCode)
+ **/
+export abstract class qa_PushCRUD implements clsOperateList {
+  public static vuebtn_Click: (strCommandName: string, strKeyId: any) => void;
+  public static GetPropValue: (strPropName: string) => string;
+  public static EditObj: any;
+  public divQuery: HTMLDivElement; //查询区的层对象
+  public divFunction: HTMLDivElement; //功能区的层对象
+  public divLayout: HTMLDivElement; //界面布局的层对象
+
+  //专门用于数据列表的界面变量,用于分页功能等
+  public currPageIndex = 0;
+  public divList: HTMLDivElement; //列表区的层对象
+  public divName4DataList = 'divDataLst'; //列表中数据区的层Id
+  public divName4Pager = 'divPager'; //列表中的分页区的层Id
+  public bolIsInitShow = false; //记录是否导入分页区的变量
+  public bolIsTableSm = true; //是否窄行的小表,即表中加样式： table-sm
+  //public mstrListDiv = "divDataLst";//列表区数据列表层id
+  public objPager: clsPager;
+
+  public static CourseIdStatic = ''; //6、定义下拉框条件变量1
+  public static IdCurrEduClsStatic = ''; //7、在查询区定义下拉框条件变量1
+  public static objPageCRUD: qa_PushCRUD;
+  public static sortFunStatic: (ascOrDesc: string) => (x: any, y: any) => number;
+  public static ascOrDesc4SortFun = 'Asc';
+  public static sortvqa_PushBy = '';
+  constructor(divLayout: HTMLDivElement) {
+    qa_PushCRUD.objPageCRUD = this;
+    this.divLayout = divLayout;
+    this.divList = GetDivObjInDivObjN(this.divLayout, 'divList');
+    this.divQuery = GetDivObjInDivObjN(this.divLayout, 'divQuery');
+    this.divFunction = GetDivObjInDivObjN(this.divLayout, 'divFunction');
+    this.objPager = new clsPager(this);
+  }
+  /**
+   * 获取当前组件的divList的层对象
+   **/
+  public get thisDivList(): HTMLDivElement {
+    return this.divList;
+  }
+  /**
+   * 获取当前组件的divLayout的层对象
+   **/
+  public get thisDivLayout(): HTMLDivElement {
+    return this.divLayout;
+  }
+  /**
+   * 获取当前界面的主表名
+   **/
+  public get thisTabName(): string {
+    return clsqa_PushEN._CurrTabName;
+  }
+  /**
+   * 每页记录数,在扩展类可以修改
+   **/
+  public get pageSize(): number {
+    return 5;
+  }
+  public recCount = 0;
+
+  /**
+   * 函数功能:初始设置，用来初始化一些变量值
+   **/
+  public abstract InitVarSet(): void;
+  /**
+   * 函数功能:初始化界面控件值，放在绑定下拉框之后
+   **/
+  public abstract InitCtlVar(): void;
+
+  /** 函数功能:页面导入,当页面开始运行时所发生的事件
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_Page_Load)
+   **/
+  public async PageLoad() {
+    const strThisFuncName = this.PageLoad.name;
+    // 在此处放置用户代码以初始化页面
+    try {
+      //初始设置，用来初始化一些变量值
+      await this.InitVarSet();
+      this.SetEventFunc();
+      // 为查询区绑定下拉框
+      await this.BindDdl4QueryRegion();
+      // 为功能区绑定下拉框
+      await this.BindDdl4FeatureRegion();
+      //初始化界面控件值，放在绑定下拉框之后
+      await this.InitCtlVar();
+      if (qa_PushCRUD.sortvqa_PushBy == '') qa_PushCRUD.sortvqa_PushBy = 'pushId Asc';
+      //2、显示无条件的表内容在GridView中
+      await this.BindGv_vqa_Push(this.divList);
+    } catch (e) {
+      const strMsg = `页面启动不成功,${e}.(in ${this.constructor.name}.${strThisFuncName}`;
+      console.error('Error: ', strMsg);
+      //console.trace();
+      alert(strMsg);
+    }
+  }
+
+  /** 函数功能:设置事件函数
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_SetEventFunc)
+   **/
+  public async SetEventFunc() {
+    const strThisFuncName = this.SetEventFunc.name;
+    // 在此处放置用户代码以初始化页面
+    try {
+      //没有定义相关事件
+    } catch (e) {
+      const strMsg = `设置事件函数不成功,${e}.(in ${this.constructor.name}.${strThisFuncName}`;
+      console.error(strMsg);
+      alert(strMsg);
+    }
+  }
+
+  /** 函数功能:页面导入,当页面开始运行时所发生的事件
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_Page_LoadCache)
+   **/
+  public async PageLoadCache() {
+    const strThisFuncName = this.PageLoadCache.name;
+    // 在此处放置用户代码以初始化页面
+    try {
+      //初始设置，用来初始化一些变量值
+      await this.InitVarSet();
+      // 为查询区绑定下拉框
+      await this.BindDdl4QueryRegion();
+      // 为功能区绑定下拉框
+      await this.BindDdl4FeatureRegion();
+      //初始化界面控件值，放在绑定下拉框之后
+      await this.InitCtlVar();
+      this.SetEventFunc();
+      if (qa_PushCRUD.sortvqa_PushBy == '') qa_PushCRUD.sortvqa_PushBy = 'pushId Asc';
+      //2、显示无条件的表内容在GridView中
+      await this.BindGv_vqa_Push(this.divList);
+    } catch (e) {
+      const strMsg = `页面启动不成功,${e}.(in ${this.constructor.name}.${strThisFuncName}`;
+      console.error('Error: ', strMsg);
+      //console.trace();
+      alert(strMsg);
+    }
+  }
+
+  /** 根据条件获取相应的对象列表
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_btnQuery_Click)
+   **/
+  public async btnQuery_Click() {
+    this.SetCurrPageIndex(1);
+    await this.BindGv_vqa_Push(this.divList);
+  }
+
+  /** 合并数据
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_CombineData)
+   **/
+  public CombineData(arrvqa_PushObjLst: Array<clsvqa_PushEN>, arrDataColumn: Array<clsDataColumn>) {
+    const intRowNum = arrvqa_PushObjLst.length;
+    const intColNum = arrDataColumn.length;
+    const arrData: Array<Array<any>> = new Array<Array<any>>();
+    const arrHead: Array<any> = new Array<any>();
+    for (let j = 0; j < intColNum; j++) {
+      arrHead.push(arrDataColumn[j].colHeader);
+    }
+    arrData.push(arrHead);
+    for (let i = 0; i < intRowNum; i++) {
+      const arrRow: Array<any> = new Array<any>();
+      const objEN: clsvqa_PushEN = arrvqa_PushObjLst[i];
+      for (let j = 0; j < intColNum; j++) {
+        arrRow.push(objEN.GetFldValue(arrDataColumn[j].fldName)); //i + "" + j;
+      }
+      arrData.push(arrRow);
+    }
+    //console.log("arrData", arrData);
+    const strFileName = Format('答疑推送({0})导出.xlsx', clsvqa_PushEN._CurrTabName);
+    exportSpecialExcel_pyf(arrData, strFileName);
+  }
+
+  /** 根据条件获取相应的对象列表
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_ExportExcel)
+   **/
+  public async ExportExcel_vqa_Push() {
+    const strThisFuncName = this.ExportExcel_vqa_Push.name;
+    if (qa_PushCRUD.sortvqa_PushBy == null) {
+      const strMsg = Format(
+        '在显示列表时,排序字段(sortvqa_PushBy)为空,请检查!(In BindGv_vqa_PushCache)',
+      );
+      console.error(strMsg);
+      alert(strMsg);
+      return;
+    }
+
+    const strWhereCond = await this.Combinevqa_PushCondition();
+    let arrvqa_PushObjLst: Array<clsvqa_PushEN> = [];
+    try {
+      this.recCount = await vqa_Push_GetRecCountByCondAsync(strWhereCond);
+      if (this.recCount == 0) {
+        const lblMsg: HTMLSpanElement = <HTMLSpanElement>document.createElement('span');
+        lblMsg.innerHTML = Format('根据条件:[{0}]获取的对象列表数为0!', strWhereCond);
+        const strMsg = Format('在绑定Gv过程中,根据条件:[{0}]获取的对象列表数为0!', strWhereCond);
+        console.error('Error: ', strMsg);
+        //console.trace();
+        alert(strMsg);
+        return;
+      }
+
+      arrvqa_PushObjLst = await vqa_Push_GetObjLstAsync(strWhereCond);
+    } catch (e) {
+      const strMsg = `绑定GridView不成功,${e}.(in ${this.constructor.name}.${strThisFuncName}`;
+      console.error(strMsg);
+      alert(strMsg);
+      return;
+    }
+    if (arrvqa_PushObjLst.length == 0) {
+      const strMsg = `在ExportExcel过程中,根据条件获取的${this.thisTabName}记录数为0!`;
+      console.error('Error: ', strMsg);
+      //console.trace();
+      alert(strMsg);
+      return;
+    }
+    try {
+      const arrDataColumn: Array<clsDataColumn> = [
+        {
+          fldName: 'questionsContent',
+          sortBy: '',
+          sortFun: SortFun,
+          getDataSource: '',
+          colHeader: '提问内容',
+          text: '',
+          tdClass: 'text-left',
+          columnType: 'Label',
+          orderNum: 3,
+          funcName: (strKey: string, strText: string) => {
+            console.log(strKey, strText);
+            return new HTMLElement();
+          },
+        },
+        {
+          fldName: 'receiveUser',
+          sortBy: '',
+          sortFun: SortFun,
+          getDataSource: '',
+          colHeader: '接收用户',
+          text: '',
+          tdClass: 'text-left',
+          columnType: 'Label',
+          orderNum: 4,
+          funcName: (strKey: string, strText: string) => {
+            console.log(strKey, strText);
+            return new HTMLElement();
+          },
+        },
+        {
+          fldName: 'receiveDate',
+          sortBy: '',
+          sortFun: SortFun,
+          getDataSource: '',
+          colHeader: '接收日期',
+          text: '',
+          tdClass: 'text-left',
+          columnType: 'Label',
+          orderNum: 5,
+          funcName: (strKey: string, strText: string) => {
+            console.log(strKey, strText);
+            return new HTMLElement();
+          },
+        },
+        {
+          fldName: 'userName',
+          sortBy: '',
+          sortFun: SortFun,
+          getDataSource: '',
+          colHeader: '用户名',
+          text: '',
+          tdClass: 'text-left',
+          columnType: 'Label',
+          orderNum: 6,
+          funcName: (strKey: string, strText: string) => {
+            console.log(strKey, strText);
+            return new HTMLElement();
+          },
+        },
+        {
+          fldName: 'isReceive',
+          sortBy: '',
+          sortFun: SortFun,
+          getDataSource: '',
+          colHeader: '是否接收',
+          text: '',
+          tdClass: 'text-left',
+          columnType: 'Label',
+          orderNum: 7,
+          funcName: (strKey: string, strText: string) => {
+            console.log(strKey, strText);
+            return new HTMLElement();
+          },
+        },
+        {
+          fldName: 'updDate',
+          sortBy: '',
+          sortFun: SortFun,
+          getDataSource: '',
+          colHeader: '修改日期',
+          text: '',
+          tdClass: 'text-left',
+          columnType: 'Label',
+          orderNum: 8,
+          funcName: (strKey: string, strText: string) => {
+            console.log(strKey, strText);
+            return new HTMLElement();
+          },
+        },
+        {
+          fldName: 'answerCount',
+          sortBy: '',
+          sortFun: SortFun,
+          getDataSource: '',
+          colHeader: '回答计数',
+          text: '',
+          tdClass: 'text-left',
+          columnType: 'Label',
+          orderNum: 9,
+          funcName: (strKey: string, strText: string) => {
+            console.log(strKey, strText);
+            return new HTMLElement();
+          },
+        },
+        {
+          fldName: 'isEnd',
+          sortBy: '',
+          sortFun: SortFun,
+          getDataSource: '',
+          colHeader: '是否结束',
+          text: '',
+          tdClass: 'text-left',
+          columnType: 'Label',
+          orderNum: 10,
+          funcName: (strKey: string, strText: string) => {
+            console.log(strKey, strText);
+            return new HTMLElement();
+          },
+        },
+        {
+          fldName: 'voteCount',
+          sortBy: '',
+          sortFun: SortFun,
+          getDataSource: '',
+          colHeader: '点赞计数',
+          text: '',
+          tdClass: 'text-left',
+          columnType: 'Label',
+          orderNum: 11,
+          funcName: (strKey: string, strText: string) => {
+            console.log(strKey, strText);
+            return new HTMLElement();
+          },
+        },
+        {
+          fldName: 'memo',
+          sortBy: '',
+          sortFun: SortFun,
+          getDataSource: '',
+          colHeader: '备注',
+          text: '',
+          tdClass: 'text-left',
+          columnType: 'Label',
+          orderNum: 12,
+          funcName: (strKey: string, strText: string) => {
+            console.log(strKey, strText);
+            return new HTMLElement();
+          },
+        },
+        {
+          fldName: 'idCurrEduCls',
+          sortBy: '',
+          sortFun: SortFun,
+          getDataSource: '',
+          colHeader: '当前教学班流水号',
+          text: '',
+          tdClass: 'text-left',
+          columnType: 'Label',
+          orderNum: 13,
+          funcName: (strKey: string, strText: string) => {
+            console.log(strKey, strText);
+            return new HTMLElement();
+          },
+        },
+        {
+          fldName: 'pdfContent',
+          sortBy: '',
+          sortFun: SortFun,
+          getDataSource: '',
+          colHeader: 'Pdf内容',
+          text: '',
+          tdClass: 'text-left',
+          columnType: 'Label',
+          orderNum: 14,
+          funcName: (strKey: string, strText: string) => {
+            console.log(strKey, strText);
+            return new HTMLElement();
+          },
+        },
+        {
+          fldName: 'isPublic',
+          sortBy: '',
+          sortFun: SortFun,
+          getDataSource: '',
+          colHeader: '是否公开',
+          text: '',
+          tdClass: 'text-left',
+          columnType: 'Label',
+          orderNum: 16,
+          funcName: (strKey: string, strText: string) => {
+            console.log(strKey, strText);
+            return new HTMLElement();
+          },
+        },
+        {
+          fldName: 'paperTitle',
+          sortBy: '',
+          sortFun: SortFun,
+          getDataSource: '',
+          colHeader: '论文标题',
+          text: '',
+          tdClass: 'text-left',
+          columnType: 'Label',
+          orderNum: 18,
+          funcName: (strKey: string, strText: string) => {
+            console.log(strKey, strText);
+            return new HTMLElement();
+          },
+        },
+        {
+          fldName: 'pdfPageNum',
+          sortBy: '',
+          sortFun: SortFun,
+          getDataSource: '',
+          colHeader: 'Pdf页码',
+          text: '',
+          tdClass: 'text-left',
+          columnType: 'Label',
+          orderNum: 19,
+          funcName: (strKey: string, strText: string) => {
+            console.log(strKey, strText);
+            return new HTMLElement();
+          },
+        },
+        {
+          fldName: 'isReply',
+          sortBy: '',
+          sortFun: SortFun,
+          getDataSource: '',
+          colHeader: '是否回复',
+          text: '',
+          tdClass: 'text-left',
+          columnType: 'Label',
+          orderNum: 20,
+          funcName: (strKey: string, strText: string) => {
+            console.log(strKey, strText);
+            return new HTMLElement();
+          },
+        },
+        {
+          fldName: 'isRequestReply',
+          sortBy: '',
+          sortFun: SortFun,
+          getDataSource: '',
+          colHeader: '是否要求回复',
+          text: '',
+          tdClass: 'text-left',
+          columnType: 'Label',
+          orderNum: 21,
+          funcName: (strKey: string, strText: string) => {
+            console.log(strKey, strText);
+            return new HTMLElement();
+          },
+        },
+        {
+          fldName: 'replyDate',
+          sortBy: '',
+          sortFun: SortFun,
+          getDataSource: '',
+          colHeader: '回复日期',
+          text: '',
+          tdClass: 'text-left',
+          columnType: 'Label',
+          orderNum: 22,
+          funcName: (strKey: string, strText: string) => {
+            console.log(strKey, strText);
+            return new HTMLElement();
+          },
+        },
+      ];
+      arrvqa_PushObjLst = arrvqa_PushObjLst.sort(this.SortFunExportExcel);
+      this.CombineData(arrvqa_PushObjLst, arrDataColumn);
+      //console.log("完成BindGv_vqa_Push!");
+    } catch (e) {
+      const strMsg = `绑定${this.thisTabName}对象列表不成功, ${e}.(in ${this.constructor.name}.${strThisFuncName}`;
+      console.error(strMsg);
+      alert(strMsg);
+    }
+  }
+
+  /**
+   * 设置绑定下拉框，针对字段:[IdCurrEduCls]
+   * (AGC.PureClassEx.clsASPDropDownListBLEx_Static:GC_SetBindDdl4TabFeature4QueryEdit_TS)
+   **/
+
+  public async SetDdl_IdCurrEduClsInDiv(strCourseId: string) {
+    if (IsNullOrEmpty(strCourseId) == true) {
+      const strMsg = Format('参数:[strCourseId]不能为空!(In .SetDdl_IdCurrEduClsInDiv)');
+      console.error(strMsg);
+      throw strMsg;
+    }
+    if (strCourseId.length != 8) {
+      const strMsg = Format(
+        '缓存分类变量:[strCourseId]的长度:[{0}]不正确!(.SetDdl_IdCurrEduClsInDiv)',
+        strCourseId.length,
+      );
+      console.error(strMsg);
+      throw strMsg;
+    }
+
+    if (IsNullOrEmpty(strCourseId) == true) {
+      const strMsg = Format('参数:[strCourseId]不能为空!(In .SetDdl_IdCurrEduClsInDiv)');
+      console.error(strMsg);
+      throw strMsg;
+    }
+    if (strCourseId.length != 8) {
+      const strMsg = Format(
+        '缓存分类变量:[strCourseId]的长度:[{0}]不正确!(.SetDdl_IdCurrEduClsInDiv)',
+        strCourseId.length,
+      );
+      console.error(strMsg);
+      throw strMsg;
+    }
+    await CurrEduCls_BindDdl_IdCurrEduClsByCourseIdInDivCache(
+      this.divQuery,
+      'ddlIdCurrEduCls_q',
+      strCourseId,
+    ); //
+  }
+
+  /**
+   * 设置绑定下拉框，针对字段:[PaperId]
+   * (AGC.PureClassEx.clsASPDropDownListBLEx_Static:GC_SetBindDdl4TabFeature4QueryEdit_TS)
+   **/
+
+  public async SetDdl_PaperIdInDiv(strIdCurrEduCls: string) {
+    if (IsNullOrEmpty(strIdCurrEduCls) == true) {
+      const strMsg = Format('参数:[strIdCurrEduCls]不能为空!(In .SetDdl_PaperIdInDiv)');
+      console.error(strMsg);
+      throw strMsg;
+    }
+    if (strIdCurrEduCls.length != 8) {
+      const strMsg = Format(
+        '缓存分类变量:[strIdCurrEduCls]的长度:[{0}]不正确!(.SetDdl_PaperIdInDiv)',
+        strIdCurrEduCls.length,
+      );
+      console.error(strMsg);
+      throw strMsg;
+    }
+
+    if (IsNullOrEmpty(strIdCurrEduCls) == true) {
+      const strMsg = Format('参数:[strIdCurrEduCls]不能为空!(In .SetDdl_PaperIdInDiv)');
+      console.error(strMsg);
+      throw strMsg;
+    }
+    if (strIdCurrEduCls.length != 8) {
+      const strMsg = Format(
+        '缓存分类变量:[strIdCurrEduCls]的长度:[{0}]不正确!(.SetDdl_PaperIdInDiv)',
+        strIdCurrEduCls.length,
+      );
+      console.error(strMsg);
+      throw strMsg;
+    }
+    await vPaperSimProEx_BindDdl_PaperIdByIdCurrEduClsInDivCache(
+      this.divQuery,
+      'ddlPaperId_q',
+      strIdCurrEduCls,
+    ); //
+  }
+
+  /** 函数功能:为查询区绑定下拉框
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_BindDdl4QueryRegion)
+   **/
+  public async BindDdl4QueryRegion() {
+    const CourseIdStatic = qa_PushCRUD.CourseIdStatic; //静态变量;//静态变量
+    const IdCurrEduClsStatic = qa_PushCRUD.IdCurrEduClsStatic; //静态变量;//静态变量
+
+    await this.SetDdl_IdCurrEduClsInDiv(CourseIdStatic); //查询区域
+
+    await this.SetDdl_PaperIdInDiv(IdCurrEduClsStatic); //查询区域
+  }
+
+  /** 函数功能:为功能区绑定下拉框
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_BindDdl4FeatureRegion)
+   **/
+  public async BindDdl4FeatureRegion() {}
+
+  /**
+   * 添加新记录
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_btnCopyRecord_Click)
+   **/
+  public async btnCopyRecord_Click() {
+    const strThisFuncName = this.btnCopyRecord_Click.name;
+    try {
+      const arrKeyIds = GetCheckedKeyIdsInDivObj(this.divList);
+      if (arrKeyIds.length == 0) {
+        alert(`请选择需要克隆的${this.thisTabName}记录!`);
+        return '';
+      }
+      await this.CopyRecord(arrKeyIds);
+      await this.BindGv_vqa_Push(this.divList);
+    } catch (e) {
+      const strMsg = `复制记录不成功,${e}.(in ${this.constructor.name}.${strThisFuncName}`;
+      console.error(strMsg);
+      alert(strMsg);
+    }
+  }
+
+  /**
+   * 在数据表里删除记录
+   * "lngPushId": 表关键字
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_btnDelRecordInTab_Click)
+   **/
+  public async btnDelRecordInTab_Click(strKeyId: string) {
+    const strThisFuncName = this.btnDelRecordInTab_Click.name;
+    try {
+      if (strKeyId == '') {
+        alert(`请选择需要删除的${this.thisTabName}记录!`);
+        return '';
+      }
+      if (confirmDel(0) == false) {
+        return;
+      }
+      const lngKeyId = Number(strKeyId);
+      await this.DelRecord(lngKeyId);
+      await this.BindGv_vqa_Push(this.divList);
+    } catch (e) {
+      const strMsg = `删除${this.thisTabName}记录不成功. ${e}.(in ${this.constructor.name}.${strThisFuncName}`;
+      console.error(strMsg);
+      alert(strMsg);
+    }
+  }
+
+  /**
+   * 在数据表里选择记录
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_btnSelectRecordInTab_Click)
+   **/
+  public async btnSelectRecordInTab_Click(lngPushId: number) {
+    const strThisFuncName = this.btnSelectRecordInTab_Click.name;
+    try {
+      if (lngPushId == 0) {
+        const strMsg = '请选择相关记录,请检查!';
+        console.error(strMsg);
+        alert(strMsg);
+        return;
+      }
+      if (confirmDel(0) == false) {
+        return;
+      }
+      this.SelectRecord(lngPushId);
+    } catch (e) {
+      const strMsg = `选择记录不成功. ${e}.(in ${this.constructor.name}.${strThisFuncName}`;
+      console.error(strMsg);
+      alert(strMsg);
+    }
+  }
+
+  /**
+   * 根据关键字删除记录
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_DelRecord)
+   **/
+  public async DelRecord(lngPushId: number) {
+    const strThisFuncName = this.DelRecord.name;
+    try {
+      const returnInt = await qa_Push_DelRecordAsync(lngPushId);
+      if (returnInt > 0) {
+        //qa_Push_ReFreshCache();
+        const strInfo = `删除${this.thisTabName}记录成功,共删除${returnInt}条记录!`;
+        //显示信息框
+        alert(strInfo);
+      } else {
+        const strInfo = `删除${this.thisTabName}记录不成功!`;
+        //显示信息框
+        alert(strInfo);
+      }
+      console.log('完成DelRecord!');
+    } catch (e) {
+      const strMsg = `删除${this.thisTabName}记录不成功. ${e}.(in ${this.constructor.name}.${strThisFuncName}`;
+      console.error(strMsg);
+      alert(strMsg);
+    }
+  }
+
+  /**
+   * 根据关键字选择相应的记录
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_SelectRecord)
+   * @param sender:参数列表
+   **/
+  public async SelectRecord(lngPushId: number) {
+    const strThisFuncName = this.SelectRecord.name;
+    try {
+      const objqa_PushEN = await vqa_Push_GetObjByPushIdAsync(lngPushId);
+      console.log('完成SelectRecord!', objqa_PushEN);
+      Redirect('/Index/Main_vqa_Push');
+    } catch (e) {
+      const strMsg = `根据关键字获取相应的${this.thisTabName}记录的对象不成功,${e}.(in ${this.constructor.name}.${strThisFuncName}`;
+      console.error('Error: ', strMsg);
+      //console.trace();
+      alert(strMsg);
+    }
+  }
+
+  /** 删除记录
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_btnDelRecord_Click)
+   **/
+  public async btnDelRecord_Click() {
+    const strThisFuncName = this.btnDelRecord_Click.name;
+    try {
+      const arrKeyIds = GetCheckedKeyIdsInDivObj(this.divList);
+      if (arrKeyIds.length == 0) {
+        alert(`请选择需要删除的${this.thisTabName}记录!`);
+        return '';
+      }
+      if (confirmDel(arrKeyIds.length) == false) {
+        return;
+      }
+      await this.DelMultiRecord(arrKeyIds);
+      await this.BindGv_vqa_Push(this.divList);
+    } catch (e) {
+      const strMsg = `删除${this.thisTabName}记录不成功. ${e}.(in ${this.constructor.name}.${strThisFuncName}`;
+      console.error(strMsg);
+      alert(strMsg);
+    }
+  }
+
+  /** 根据条件获取相应的对象列表
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_btnExportExcel_Click)
+   **/
+  public async btnExportExcel_Click() {
+    await this.ExportExcel_vqa_Push();
+  }
+
+  /** 把所有的查询控件内容组合成一个条件串
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_CombineCondition)
+   * @returns 条件串(strWhereCond)
+   **/
+  public async Combinevqa_PushCondition(): Promise<string> {
+    //使条件串的初值为"1 = 1",以便在该串的后面用"and "添加其他条件,
+    //例如 1 = 1 && UserName = '张三'
+    let strWhereCond = ' 1 = 1 ';
+    //如果该条件控件的内容不为空,就组成一个条件并添加到总条件串中。
+
+    try {
+      if (this.questionsId_q != '') {
+        strWhereCond += Format(
+          " And {0} like '% {1}%'",
+          clsvqa_PushEN.con_QuestionsId,
+          this.questionsId_q,
+        );
+      }
+      if (this.questionsContent_q != '') {
+        strWhereCond += Format(
+          " And {0} like '% {1}%'",
+          clsvqa_PushEN.con_QuestionsContent,
+          this.questionsContent_q,
+        );
+      }
+      if (this.receiveUser_q != '') {
+        strWhereCond += Format(
+          " And {0} like '% {1}%'",
+          clsvqa_PushEN.con_ReceiveUser,
+          this.receiveUser_q,
+        );
+      }
+      if (this.receiveDate_q != '') {
+        strWhereCond += Format(
+          " And {0} like '% {1}%'",
+          clsvqa_PushEN.con_ReceiveDate,
+          this.receiveDate_q,
+        );
+      }
+      if (this.userName_q != '') {
+        strWhereCond += Format(
+          " And {0} like '% {1}%'",
+          clsvqa_PushEN.con_UserName,
+          this.userName_q,
+        );
+      }
+      if (this.isReceive_q == true) {
+        strWhereCond += Format(" And {0} = '1'", clsvqa_PushEN.con_IsReceive);
+      } else {
+        strWhereCond += Format(" And {0} = '0'", clsvqa_PushEN.con_IsReceive);
+      }
+      if (this.isEnd_q == true) {
+        strWhereCond += Format(" And {0} = '1'", clsvqa_PushEN.con_IsEnd);
+      } else {
+        strWhereCond += Format(" And {0} = '0'", clsvqa_PushEN.con_IsEnd);
+      }
+      if (this.idCurrEduCls_q != '' && this.idCurrEduCls_q != '0') {
+        strWhereCond += Format(
+          " And {0} = '{1}'",
+          clsvqa_PushEN.con_IdCurrEduCls,
+          this.idCurrEduCls_q,
+        );
+      }
+      if (this.pdfContent_q != '') {
+        strWhereCond += Format(
+          " And {0} like '% {1}%'",
+          clsvqa_PushEN.con_PdfContent,
+          this.pdfContent_q,
+        );
+      }
+      if (this.qaPaperId_q != '') {
+        strWhereCond += Format(
+          " And {0} like '% {1}%'",
+          clsvqa_PushEN.con_QaPaperId,
+          this.qaPaperId_q,
+        );
+      }
+      if (this.isPublic_q == true) {
+        strWhereCond += Format(" And {0} = '1'", clsvqa_PushEN.con_IsPublic);
+      } else {
+        strWhereCond += Format(" And {0} = '0'", clsvqa_PushEN.con_IsPublic);
+      }
+      if (this.paperId_q != '' && this.paperId_q != '0') {
+        strWhereCond += Format(" And {0} = '{1}'", clsvqa_PushEN.con_PaperId, this.paperId_q);
+      }
+      if (this.paperTitle_q != '') {
+        strWhereCond += Format(
+          " And {0} like '% {1}%'",
+          clsvqa_PushEN.con_PaperTitle,
+          this.paperTitle_q,
+        );
+      }
+      if (this.isReply_q == true) {
+        strWhereCond += Format(" And {0} = '1'", clsvqa_PushEN.con_IsReply);
+      } else {
+        strWhereCond += Format(" And {0} = '0'", clsvqa_PushEN.con_IsReply);
+      }
+      if (this.isRequestReply_q == true) {
+        strWhereCond += Format(" And {0} = '1'", clsvqa_PushEN.con_IsRequestReply);
+      } else {
+        strWhereCond += Format(" And {0} = '0'", clsvqa_PushEN.con_IsRequestReply);
+      }
+      if (this.replyDate_q != '') {
+        strWhereCond += Format(
+          " And {0} like '% {1}%'",
+          clsvqa_PushEN.con_ReplyDate,
+          this.replyDate_q,
+        );
+      }
+    } catch (objException) {
+      const strMsg: string = Format(
+        '(errid:WiTsCs0017)在组合查询条件(Combineqa_PushCondition)时出错!请联系管理员!{0}',
+        objException,
+      );
+      throw strMsg;
+    }
+    return strWhereCond;
+  }
+
+  /**
+   * 获取div对象，根据不同的div类型
+   * (AutoGCLib.Vue_ViewScriptCS_TS4TypeScript:Gen_Vue_Ts_GetDivName)
+   **/
+  public getDivName(strDivType: enumDivType): HTMLDivElement | null {
+    const strThisFuncName = this.getDivName.name;
+    let divName;
+    let divTypeName;
+    let strMsg;
+    switch (strDivType) {
+      case enumDivType.LayOut_01:
+        divName = this.divLayout;
+        divTypeName = 'divLayout';
+        break;
+      case enumDivType.Query_02:
+        divName = this.divQuery;
+        divTypeName = 'divQuery';
+        break;
+      case enumDivType.Function_03:
+        divName = this.divFunction;
+        divTypeName = 'divFunction';
+        break;
+      case enumDivType.List_05:
+        divName = this.divList;
+        divTypeName = 'divList';
+        break;
+      default:
+        strMsg = `获取div对象时，DivType =${strDivType}没有被处理，请检查！(in ${this.constructor.name}.${strThisFuncName})`;
+        console.error(strMsg);
+        alert(strMsg);
+        return null;
+        break;
+    }
+    if (divName == null) {
+      strMsg = `当前${divTypeName}层(div)对象为空，请检查！(in ${this.constructor.name}.${strThisFuncName})`;
+      console.error(strMsg);
+      alert(strMsg);
+      return null;
+    }
+    return divName;
+  }
+
+  /** 把所有的查询控件内容组合成一个条件串
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_CombineConditionObj)
+   * @returns 条件串(strWhereCond)
+   **/
+  public async Combinevqa_PushConditionObj(): Promise<clsvqa_PushEN> {
+    //使条件串的初值为"1 = 1",以便在该串的后面用"and "添加其他条件,
+    //例如 1 = 1 && UserName = '张三'
+    let strWhereCond = ' 1 = 1 ';
+    const objvqa_PushCond = new clsvqa_PushEN();
+    //如果该条件控件的内容不为空,就组成一个条件并添加到总条件串中。
+    try {
+      if (this.questionsId_q != '') {
+        strWhereCond += Format(
+          " And {0} like '% {1}%'",
+          clsvqa_PushEN.con_QuestionsId,
+          this.questionsId_q,
+        );
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_QuestionsId, this.questionsId_q, 'like');
+      }
+      if (this.questionsContent_q != '') {
+        strWhereCond += Format(
+          " And {0} like '% {1}%'",
+          clsvqa_PushEN.con_QuestionsContent,
+          this.questionsContent_q,
+        );
+        objvqa_PushCond.SetCondFldValue(
+          clsvqa_PushEN.con_QuestionsContent,
+          this.questionsContent_q,
+          'like',
+        );
+      }
+      if (this.receiveUser_q != '') {
+        strWhereCond += Format(
+          " And {0} like '% {1}%'",
+          clsvqa_PushEN.con_ReceiveUser,
+          this.receiveUser_q,
+        );
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_ReceiveUser, this.receiveUser_q, 'like');
+      }
+      if (this.receiveDate_q != '') {
+        strWhereCond += Format(
+          " And {0} like '% {1}%'",
+          clsvqa_PushEN.con_ReceiveDate,
+          this.receiveDate_q,
+        );
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_ReceiveDate, this.receiveDate_q, 'like');
+      }
+      if (this.userName_q != '') {
+        strWhereCond += Format(
+          " And {0} like '% {1}%'",
+          clsvqa_PushEN.con_UserName,
+          this.userName_q,
+        );
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_UserName, this.userName_q, 'like');
+      }
+      if (this.isReceive_q == true) {
+        strWhereCond += Format(" And {0} = '1'", clsvqa_PushEN.con_IsReceive);
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_IsReceive, true, '=');
+      } else {
+        strWhereCond += Format(" And {0} = '0'", clsvqa_PushEN.con_IsReceive);
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_IsReceive, false, '=');
+      }
+      if (this.isEnd_q == true) {
+        strWhereCond += Format(" And {0} = '1'", clsvqa_PushEN.con_IsEnd);
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_IsEnd, true, '=');
+      } else {
+        strWhereCond += Format(" And {0} = '0'", clsvqa_PushEN.con_IsEnd);
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_IsEnd, false, '=');
+      }
+      if (this.idCurrEduCls_q != '' && this.idCurrEduCls_q != '0') {
+        strWhereCond += Format(
+          " And {0} = '{1}'",
+          clsvqa_PushEN.con_IdCurrEduCls,
+          this.idCurrEduCls_q,
+        );
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_IdCurrEduCls, this.idCurrEduCls_q, '=');
+      }
+      if (this.pdfContent_q != '') {
+        strWhereCond += Format(
+          " And {0} like '% {1}%'",
+          clsvqa_PushEN.con_PdfContent,
+          this.pdfContent_q,
+        );
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_PdfContent, this.pdfContent_q, 'like');
+      }
+      if (this.qaPaperId_q != '') {
+        strWhereCond += Format(
+          " And {0} like '% {1}%'",
+          clsvqa_PushEN.con_QaPaperId,
+          this.qaPaperId_q,
+        );
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_QaPaperId, this.qaPaperId_q, 'like');
+      }
+      if (this.isPublic_q == true) {
+        strWhereCond += Format(" And {0} = '1'", clsvqa_PushEN.con_IsPublic);
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_IsPublic, true, '=');
+      } else {
+        strWhereCond += Format(" And {0} = '0'", clsvqa_PushEN.con_IsPublic);
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_IsPublic, false, '=');
+      }
+      if (this.paperId_q != '' && this.paperId_q != '0') {
+        strWhereCond += Format(" And {0} = '{1}'", clsvqa_PushEN.con_PaperId, this.paperId_q);
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_PaperId, this.paperId_q, '=');
+      }
+      if (this.paperTitle_q != '') {
+        strWhereCond += Format(
+          " And {0} like '% {1}%'",
+          clsvqa_PushEN.con_PaperTitle,
+          this.paperTitle_q,
+        );
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_PaperTitle, this.paperTitle_q, 'like');
+      }
+      if (this.isReply_q == true) {
+        strWhereCond += Format(" And {0} = '1'", clsvqa_PushEN.con_IsReply);
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_IsReply, true, '=');
+      } else {
+        strWhereCond += Format(" And {0} = '0'", clsvqa_PushEN.con_IsReply);
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_IsReply, false, '=');
+      }
+      if (this.isRequestReply_q == true) {
+        strWhereCond += Format(" And {0} = '1'", clsvqa_PushEN.con_IsRequestReply);
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_IsRequestReply, true, '=');
+      } else {
+        strWhereCond += Format(" And {0} = '0'", clsvqa_PushEN.con_IsRequestReply);
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_IsRequestReply, false, '=');
+      }
+      if (this.replyDate_q != '') {
+        strWhereCond += Format(
+          " And {0} like '% {1}%'",
+          clsvqa_PushEN.con_ReplyDate,
+          this.replyDate_q,
+        );
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_ReplyDate, this.replyDate_q, 'like');
+      }
+    } catch (objException) {
+      const strMsg: string = Format(
+        '(errid:WiTsCs0018)在组合查询条件对象(Combineqa_PushConditionObj)时出错!请联系管理员!{0}',
+        objException,
+      );
+      throw strMsg;
+    }
+    objvqa_PushCond.whereCond = strWhereCond;
+    return objvqa_PushCond;
+  }
+
+  /** 把所有的查询控件内容组合成一个条件串
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_CombineConditionObj4ExportExcel)
+   * @returns 条件串(strWhereCond)
+   **/
+  public async Combinevqa_PushConditionObj4ExportExcel(): Promise<clsvqa_PushEN> {
+    //使条件串的初值为"1 = 1",以便在该串的后面用"and "添加其他条件,
+    //例如 1 = 1 && UserName = '张三'
+    let strWhereCond = ' 1 = 1 ';
+    const objvqa_PushCond = new clsvqa_PushENEx();
+    //如果该条件控件的内容不为空,就组成一个条件并添加到总条件串中。
+    try {
+      if (this.questionsId_q != '') {
+        strWhereCond += Format(
+          " And {0} like '% {1}%'",
+          clsvqa_PushEN.con_QuestionsId,
+          this.questionsId_q,
+        );
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_QuestionsId, this.questionsId_q, 'like');
+      }
+      if (this.questionsContent_q != '') {
+        strWhereCond += Format(
+          " And {0} like '% {1}%'",
+          clsvqa_PushEN.con_QuestionsContent,
+          this.questionsContent_q,
+        );
+        objvqa_PushCond.SetCondFldValue(
+          clsvqa_PushEN.con_QuestionsContent,
+          this.questionsContent_q,
+          'like',
+        );
+      }
+      if (this.receiveUser_q != '') {
+        strWhereCond += Format(
+          " And {0} like '% {1}%'",
+          clsvqa_PushEN.con_ReceiveUser,
+          this.receiveUser_q,
+        );
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_ReceiveUser, this.receiveUser_q, 'like');
+      }
+      if (this.receiveDate_q != '') {
+        strWhereCond += Format(
+          " And {0} like '% {1}%'",
+          clsvqa_PushEN.con_ReceiveDate,
+          this.receiveDate_q,
+        );
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_ReceiveDate, this.receiveDate_q, 'like');
+      }
+      if (this.userName_q != '') {
+        strWhereCond += Format(
+          " And {0} like '% {1}%'",
+          clsvqa_PushEN.con_UserName,
+          this.userName_q,
+        );
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_UserName, this.userName_q, 'like');
+      }
+      if (this.isReceive_q == true) {
+        strWhereCond += Format(" And {0} = '1'", clsvqa_PushEN.con_IsReceive);
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_IsReceive, true, '=');
+      } else {
+        strWhereCond += Format(" And {0} = '0'", clsvqa_PushEN.con_IsReceive);
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_IsReceive, false, '=');
+      }
+      if (this.isEnd_q == true) {
+        strWhereCond += Format(" And {0} = '1'", clsvqa_PushEN.con_IsEnd);
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_IsEnd, true, '=');
+      } else {
+        strWhereCond += Format(" And {0} = '0'", clsvqa_PushEN.con_IsEnd);
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_IsEnd, false, '=');
+      }
+      if (this.idCurrEduCls_q != '' && this.idCurrEduCls_q != '0') {
+        strWhereCond += Format(
+          " And {0} = '{1}'",
+          clsvqa_PushEN.con_IdCurrEduCls,
+          this.idCurrEduCls_q,
+        );
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_IdCurrEduCls, this.idCurrEduCls_q, '=');
+      }
+      if (this.pdfContent_q != '') {
+        strWhereCond += Format(
+          " And {0} like '% {1}%'",
+          clsvqa_PushEN.con_PdfContent,
+          this.pdfContent_q,
+        );
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_PdfContent, this.pdfContent_q, 'like');
+      }
+      if (this.qaPaperId_q != '') {
+        strWhereCond += Format(
+          " And {0} like '% {1}%'",
+          clsvqa_PushEN.con_QaPaperId,
+          this.qaPaperId_q,
+        );
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_QaPaperId, this.qaPaperId_q, 'like');
+      }
+      if (this.isPublic_q == true) {
+        strWhereCond += Format(" And {0} = '1'", clsvqa_PushEN.con_IsPublic);
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_IsPublic, true, '=');
+      } else {
+        strWhereCond += Format(" And {0} = '0'", clsvqa_PushEN.con_IsPublic);
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_IsPublic, false, '=');
+      }
+      if (this.paperId_q != '' && this.paperId_q != '0') {
+        strWhereCond += Format(" And {0} = '{1}'", clsvqa_PushEN.con_PaperId, this.paperId_q);
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_PaperId, this.paperId_q, '=');
+      }
+      if (this.paperTitle_q != '') {
+        strWhereCond += Format(
+          " And {0} like '% {1}%'",
+          clsvqa_PushEN.con_PaperTitle,
+          this.paperTitle_q,
+        );
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_PaperTitle, this.paperTitle_q, 'like');
+      }
+      if (this.isReply_q == true) {
+        strWhereCond += Format(" And {0} = '1'", clsvqa_PushEN.con_IsReply);
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_IsReply, true, '=');
+      } else {
+        strWhereCond += Format(" And {0} = '0'", clsvqa_PushEN.con_IsReply);
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_IsReply, false, '=');
+      }
+      if (this.isRequestReply_q == true) {
+        strWhereCond += Format(" And {0} = '1'", clsvqa_PushEN.con_IsRequestReply);
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_IsRequestReply, true, '=');
+      } else {
+        strWhereCond += Format(" And {0} = '0'", clsvqa_PushEN.con_IsRequestReply);
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_IsRequestReply, false, '=');
+      }
+      if (this.replyDate_q != '') {
+        strWhereCond += Format(
+          " And {0} like '% {1}%'",
+          clsvqa_PushEN.con_ReplyDate,
+          this.replyDate_q,
+        );
+        objvqa_PushCond.SetCondFldValue(clsvqa_PushEN.con_ReplyDate, this.replyDate_q, 'like');
+      }
+    } catch (objException) {
+      const strMsg: string = Format(
+        '(errid:WiTsCs0019)在组合导出Excel条件对象(Combineqa_PushConditionObj4ExportExcel)时出错!请联系管理员!{0}',
+        objException,
+      );
+      throw strMsg;
+    }
+    objvqa_PushCond.whereCond = strWhereCond;
+    return objvqa_PushCond;
+  }
+
+  /** 显示vqa_Push对象的所有属性值
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_BindTab)
+   * @param divContainer:显示容器，其中包括divDataLst,divPager, divDataLst显示数据, divPager显示分页
+   * @param arrqa_PushObjLst:需要绑定的对象列表
+   **/
+  public async BindTab_vqa_Push(
+    divContainer: HTMLDivElement,
+    arrvqa_PushObjLst: Array<clsvqa_PushEN>,
+  ) {
+    if (divContainer == null) {
+      alert(Format('{0}不存在!', divContainer));
+      return;
+    }
+    const divDataLst = GetDivObjInDivObj(divContainer, 'divDataLst');
+    const arrDataColumn: Array<clsDataColumn> = [
+      {
+        fldName: '',
+        sortBy: '',
+        sortFun: SortFun,
+        getDataSource: '',
+        colHeader: '',
+        text: '',
+        tdClass: 'text-left',
+        columnType: 'CheckBox',
+        orderNum: 1,
+        funcName: (strKey: string, strText: string) => {
+          console.log(strKey, strText);
+          return new HTMLElement();
+        },
+      },
+      {
+        fldName: clsvqa_PushEN.con_PushId,
+        sortBy: clsvqa_PushEN.con_PushId,
+        sortFun: SortFun,
+        getDataSource: '',
+        colHeader: '推送d',
+        text: '',
+        tdClass: 'text-left',
+        columnType: 'Label',
+        orderNum: 2,
+        funcName: (strKey: string, strText: string) => {
+          console.log(strKey, strText);
+          return new HTMLElement();
+        },
+      },
+      {
+        fldName: clsvqa_PushEN.con_QuestionsContent,
+        sortBy: clsvqa_PushEN.con_QuestionsContent,
+        sortFun: SortFun,
+        getDataSource: '',
+        colHeader: '提问内容',
+        text: '',
+        tdClass: 'text-left',
+        columnType: 'Label',
+        orderNum: 4,
+        funcName: (strKey: string, strText: string) => {
+          console.log(strKey, strText);
+          return new HTMLElement();
+        },
+      },
+      {
+        fldName: clsvqa_PushEN.con_ReceiveUser,
+        sortBy: clsvqa_PushEN.con_ReceiveUser,
+        sortFun: SortFun,
+        getDataSource: '',
+        colHeader: '接收用户',
+        text: '',
+        tdClass: 'text-left',
+        columnType: 'Label',
+        orderNum: 5,
+        funcName: (strKey: string, strText: string) => {
+          console.log(strKey, strText);
+          return new HTMLElement();
+        },
+      },
+      {
+        fldName: clsvqa_PushEN.con_ReceiveDate,
+        sortBy: clsvqa_PushEN.con_ReceiveDate,
+        sortFun: SortFun,
+        getDataSource: '',
+        colHeader: '接收日期',
+        text: '',
+        tdClass: 'text-left',
+        columnType: 'Label',
+        orderNum: 6,
+        funcName: (strKey: string, strText: string) => {
+          console.log(strKey, strText);
+          return new HTMLElement();
+        },
+      },
+      {
+        fldName: clsvqa_PushEN.con_UserName,
+        sortBy: clsvqa_PushEN.con_UserName,
+        sortFun: SortFun,
+        getDataSource: '',
+        colHeader: '用户名',
+        text: '',
+        tdClass: 'text-left',
+        columnType: 'Label',
+        orderNum: 7,
+        funcName: (strKey: string, strText: string) => {
+          console.log(strKey, strText);
+          return new HTMLElement();
+        },
+      },
+      {
+        fldName: clsvqa_PushEN.con_IsReceive,
+        sortBy: clsvqa_PushEN.con_IsReceive,
+        sortFun: SortFun,
+        getDataSource: '',
+        colHeader: '是否接收',
+        text: '',
+        tdClass: 'text-left',
+        columnType: 'Label',
+        orderNum: 8,
+        funcName: (strKey: string, strText: string) => {
+          console.log(strKey, strText);
+          return new HTMLElement();
+        },
+      },
+      {
+        fldName: clsvqa_PushEN.con_UpdDate,
+        sortBy: clsvqa_PushEN.con_UpdDate,
+        sortFun: SortFun,
+        getDataSource: '',
+        colHeader: '修改日期',
+        text: '',
+        tdClass: 'text-left',
+        columnType: 'Label',
+        orderNum: 9,
+        funcName: (strKey: string, strText: string) => {
+          console.log(strKey, strText);
+          return new HTMLElement();
+        },
+      },
+      {
+        fldName: clsvqa_PushEN.con_AnswerCount,
+        sortBy: clsvqa_PushEN.con_AnswerCount,
+        sortFun: SortFun,
+        getDataSource: '',
+        colHeader: '回答计数',
+        text: '',
+        tdClass: 'text-left',
+        columnType: 'Label',
+        orderNum: 10,
+        funcName: (strKey: string, strText: string) => {
+          console.log(strKey, strText);
+          return new HTMLElement();
+        },
+      },
+      {
+        fldName: clsvqa_PushEN.con_IsEnd,
+        sortBy: clsvqa_PushEN.con_IsEnd,
+        sortFun: SortFun,
+        getDataSource: '',
+        colHeader: '是否结束',
+        text: '',
+        tdClass: 'text-left',
+        columnType: 'Label',
+        orderNum: 11,
+        funcName: (strKey: string, strText: string) => {
+          console.log(strKey, strText);
+          return new HTMLElement();
+        },
+      },
+      {
+        fldName: clsvqa_PushEN.con_VoteCount,
+        sortBy: clsvqa_PushEN.con_VoteCount,
+        sortFun: SortFun,
+        getDataSource: '',
+        colHeader: '点赞计数',
+        text: '',
+        tdClass: 'text-left',
+        columnType: 'Label',
+        orderNum: 12,
+        funcName: (strKey: string, strText: string) => {
+          console.log(strKey, strText);
+          return new HTMLElement();
+        },
+      },
+      {
+        fldName: clsvqa_PushEN.con_Memo,
+        sortBy: clsvqa_PushEN.con_Memo,
+        sortFun: SortFun,
+        getDataSource: '',
+        colHeader: '备注',
+        text: '',
+        tdClass: 'text-left',
+        columnType: 'Label',
+        orderNum: 13,
+        funcName: (strKey: string, strText: string) => {
+          console.log(strKey, strText);
+          return new HTMLElement();
+        },
+      },
+      {
+        fldName: clsvqa_PushEN.con_IdCurrEduCls,
+        sortBy: clsvqa_PushEN.con_IdCurrEduCls,
+        sortFun: SortFun,
+        getDataSource: '',
+        colHeader: '当前教学班流水号',
+        text: '',
+        tdClass: 'text-left',
+        columnType: 'Label',
+        orderNum: 14,
+        funcName: (strKey: string, strText: string) => {
+          console.log(strKey, strText);
+          return new HTMLElement();
+        },
+      },
+      {
+        fldName: clsvqa_PushEN.con_PdfContent,
+        sortBy: clsvqa_PushEN.con_PdfContent,
+        sortFun: SortFun,
+        getDataSource: '',
+        colHeader: 'Pdf内容',
+        text: '',
+        tdClass: 'text-left',
+        columnType: 'Label',
+        orderNum: 15,
+        funcName: (strKey: string, strText: string) => {
+          console.log(strKey, strText);
+          return new HTMLElement();
+        },
+      },
+      {
+        fldName: clsvqa_PushEN.con_IsPublic,
+        sortBy: clsvqa_PushEN.con_IsPublic,
+        sortFun: SortFun,
+        getDataSource: '',
+        colHeader: '是否公开',
+        text: '',
+        tdClass: 'text-left',
+        columnType: 'Label',
+        orderNum: 17,
+        funcName: (strKey: string, strText: string) => {
+          console.log(strKey, strText);
+          return new HTMLElement();
+        },
+      },
+      {
+        fldName: clsvqa_PushEN.con_PaperTitle,
+        sortBy: clsvqa_PushEN.con_PaperTitle,
+        sortFun: SortFun,
+        getDataSource: '',
+        colHeader: '论文标题',
+        text: '',
+        tdClass: 'text-left',
+        columnType: 'Label',
+        orderNum: 19,
+        funcName: (strKey: string, strText: string) => {
+          console.log(strKey, strText);
+          return new HTMLElement();
+        },
+      },
+      {
+        fldName: clsvqa_PushEN.con_PdfPageNum,
+        sortBy: clsvqa_PushEN.con_PdfPageNum,
+        sortFun: SortFun,
+        getDataSource: '',
+        colHeader: 'Pdf页码',
+        text: '',
+        tdClass: 'text-left',
+        columnType: 'Label',
+        orderNum: 20,
+        funcName: (strKey: string, strText: string) => {
+          console.log(strKey, strText);
+          return new HTMLElement();
+        },
+      },
+      {
+        fldName: clsvqa_PushEN.con_IsReply,
+        sortBy: clsvqa_PushEN.con_IsReply,
+        sortFun: SortFun,
+        getDataSource: '',
+        colHeader: '是否回复',
+        text: '',
+        tdClass: 'text-left',
+        columnType: 'Label',
+        orderNum: 21,
+        funcName: (strKey: string, strText: string) => {
+          console.log(strKey, strText);
+          return new HTMLElement();
+        },
+      },
+      {
+        fldName: clsvqa_PushEN.con_IsRequestReply,
+        sortBy: clsvqa_PushEN.con_IsRequestReply,
+        sortFun: SortFun,
+        getDataSource: '',
+        colHeader: '是否要求回复',
+        text: '',
+        tdClass: 'text-left',
+        columnType: 'Label',
+        orderNum: 22,
+        funcName: (strKey: string, strText: string) => {
+          console.log(strKey, strText);
+          return new HTMLElement();
+        },
+      },
+      {
+        fldName: clsvqa_PushEN.con_ReplyDate,
+        sortBy: clsvqa_PushEN.con_ReplyDate,
+        sortFun: SortFun,
+        getDataSource: '',
+        colHeader: '回复日期',
+        text: '',
+        tdClass: 'text-left',
+        columnType: 'Label',
+        orderNum: 23,
+        funcName: (strKey: string, strText: string) => {
+          console.log(strKey, strText);
+          return new HTMLElement();
+        },
+      },
+    ];
+    await BindTab_V(divDataLst, arrvqa_PushObjLst, arrDataColumn, clsvqa_PushEN.con_PushId, this);
+    if (this.objPager.IsInit(divContainer, this.divName4Pager) == false)
+      this.objPager.InitShow(divContainer, this.divName4Pager);
+    this.objPager.recCount = this.recCount;
+    this.objPager.pageSize = this.pageSize;
+    this.objPager.ShowPagerV2(divContainer, this, this.divName4Pager);
+  }
+
+  /** 扩展字段值的函数映射
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_ExtendFldFuncMap)
+   * @param arrvqa_PushExObjLst:需要映射的对象列表
+   * @param arrDataColumn:用于绑定表的数据列信息
+   **/
+  public async ExtendFldFuncMap(
+    arrvqa_PushExObjLst: Array<clsvqa_PushENEx>,
+    arrDataColumn: Array<clsDataColumn>,
+  ) {
+    const arrFldName = clsvqa_PushEN.AttributeName;
+    for (const objDataColumn of arrDataColumn) {
+      if (IsNullOrEmpty(objDataColumn.fldName) == true) continue;
+      if (arrFldName.indexOf(objDataColumn.fldName) > -1) continue;
+      for (const objInFor of arrvqa_PushExObjLst) {
+        await vqa_PushEx_FuncMapByFldName(objDataColumn.fldName, objInFor);
+      }
+    }
+  }
+
+  /** 函数功能:在数据 列表中跳转到某一页
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_IndexPage)
+   * @param intPageIndex:页序号
+   **/
+  public async IndexPage(intPageIndex: number) {
+    if (intPageIndex == 0) {
+      intPageIndex = this.objPager.pageCount;
+    }
+    //console.log("跳转到" + intPageIndex + "页");
+    this.SetCurrPageIndex(intPageIndex);
+    await this.BindGv_vqa_Push(this.divList);
+  }
+
+  /** 函数功能:在数据列表中跳转到下一页
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_NextPage)
+   **/
+  public async NextPage() {
+    const intCurrPageIndex = this.objPager.currPageIndex;
+    const intPageIndex = Number(intCurrPageIndex) + 1;
+    //console.log("跳转到" + intPageIndex + "页");
+    this.IndexPage(intPageIndex);
+  }
+
+  /** 函数功能:在数据列表中跳转到前一页
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_PrevPage)
+   **/
+  public async PrevPage() {
+    const intCurrPageIndex = this.objPager.currPageIndex;
+    const intPageIndex = Number(intCurrPageIndex) - 1;
+    //console.log("跳转到" + intPageIndex + "页");
+    this.IndexPage(intPageIndex);
+  }
+
+  /** 根据条件获取相应的对象列表
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_BindGv)
+   **/
+  public async BindGv_vqa_Push(divList: HTMLDivElement) {
+    const strThisFuncName = this.BindGv_vqa_Push.name;
+    if (qa_PushCRUD.sortvqa_PushBy == null) {
+      const strMsg = Format(
+        '在显示列表时,排序字段(sortvqa_PushBy)为空,请检查!(In BindGv_vqa_Push)',
+      );
+      console.error(strMsg);
+      alert(strMsg);
+      return;
+    }
+    const divDataLst = GetDivObjInDivObj(divList, 'divDataLst');
+
+    const strWhereCond = await this.Combinevqa_PushCondition();
+    let intCurrPageIndex = GetCurrPageIndex(this.objPager.currPageIndex); //获取当前页
+    let arrvqa_PushExObjLst: Array<clsvqa_PushENEx> = [];
+    try {
+      this.recCount = await vqa_Push_GetRecCountByCondAsync(strWhereCond);
+      if (this.recCount == 0) {
+        const lblMsg: HTMLSpanElement = <HTMLSpanElement>document.createElement('span');
+        lblMsg.innerHTML = Format('根据条件:[{0}]获取的对象列表数为0!', strWhereCond);
+        if (divDataLst != null) {
+          divDataLst.innerText = '';
+          divDataLst.appendChild(lblMsg);
+        }
+        const strMsg = Format('在绑定Gv过程中,根据条件:[{0}]获取的对象列表数为0!', strWhereCond);
+        console.error('Error: ', strMsg);
+        //console.trace();
+        alert(strMsg);
+        return;
+      }
+      const intPageCount = this.objPager.GetPageCount(this.recCount, this.pageSize);
+      if (intCurrPageIndex == 0) {
+        if (intPageCount > 1) intCurrPageIndex = intPageCount;
+        else intCurrPageIndex = 1;
+        this.SetCurrPageIndex(intCurrPageIndex);
+      } else if (intCurrPageIndex > intPageCount) {
+        intCurrPageIndex = intPageCount;
+        this.SetCurrPageIndex(intCurrPageIndex);
+      }
+
+      const objPagerPara: stuPagerPara = {
+        pageIndex: intCurrPageIndex,
+        pageSize: this.pageSize,
+        whereCond: strWhereCond,
+        orderBy: qa_PushCRUD.sortvqa_PushBy, //如果该字段为空,就使用下面的排序函数
+        sortFun: (x, y) => {
+          console.log(x, y);
+          return 0;
+        },
+      };
+      arrvqa_PushExObjLst = await vqa_PushEx_GetObjExLstByPagerAsync(objPagerPara);
+    } catch (e) {
+      const strMsg = `绑定GridView不成功,${e}.(in ${this.constructor.name}.${strThisFuncName}`;
+      console.error('Error: ', strMsg);
+      //console.trace();
+      alert(strMsg);
+    }
+    const divPager: HTMLDivElement = <HTMLDivElement>document.getElementById('divPager');
+    if (this.recCount <= this.pageSize) {
+      if (divPager != null) {
+        divPager.style.display = 'none';
+      }
+    } else {
+      if (divPager != null) {
+        divPager.style.display = 'block';
+      }
+    }
+    if (arrvqa_PushExObjLst.length == 0) {
+      const lblMsg: HTMLSpanElement = <HTMLSpanElement>document.createElement('span');
+      lblMsg.innerHTML = '根据条件获取的对象列表数为0!';
+      if (divDataLst != null) {
+        divDataLst.innerText = '';
+        divDataLst.appendChild(lblMsg);
+      }
+      const strMsg = Format('根据条件获取的${this.thisTabName}记录数为0!');
+      console.error('Error: ', strMsg);
+      //console.trace();
+      ShowEmptyRecNumInfoByDiv(divDataLst, strMsg);
+      this.objPager.Hide(divList, this.divName4Pager);
+      return;
+    }
+    try {
+      await this.BindTab_vqa_Push(divList, arrvqa_PushExObjLst);
+      //console.log("完成BindGv_vqa_Push!");
+    } catch (e) {
+      //console.trace();
+      const strMsg = `绑定${this.thisTabName}对象列表不成功, ${e}.(in ${this.constructor.name}.${strThisFuncName}`;
+      console.error(strMsg);
+      alert(strMsg);
+    }
+  }
+
+  /**
+   * 排序函数。根据表对象中随机两个字段的值进行比较,正常使用时,需用该类的扩展类的同名函数
+   * 作者:pyf
+   * 日期:
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_SortFunExportExcel)
+   * @param a:比较的第1个对象
+   * @param b:比较的第1个对象
+   * @returns 返回两个对象比较的结果
+   **/
+  public SortFunExportExcel(a: clsvqa_PushEN, b: clsvqa_PushEN): number {
+    if (a.memo == b.memo) return a.memo.localeCompare(b.memo);
+    else return a.updDate.localeCompare(b.updDate);
+  }
+
+  /** 函数功能:从界面列表中根据某一个字段排序
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_SortBy)
+   * @param objAnchorElement:带有排序字段的Anchors
+   **/
+  public async SortBy(objAnchorElement: any) {
+    //console.log("objAnchorElement(In SetAllCkechedKeysV2):", objAnchorElement);
+    let strSortExpress = '';
+    //event = window.event || event;
+    if (typeof objAnchorElement != 'function') {
+      const thisEventObj: HTMLInputElement = objAnchorElement;
+      strSortExpress = thisEventObj.getAttribute('FldName') as string;
+    }
+    const { sortFun, ascOrDesc4SortFun, sortBy } = GetSortBy(
+      objAnchorElement,
+      qa_PushCRUD.ascOrDesc4SortFun,
+      qa_PushCRUD.sortvqa_PushBy,
+      strSortExpress,
+    );
+    qa_PushCRUD.sortvqa_PushBy = sortBy;
+    qa_PushCRUD.ascOrDesc4SortFun = ascOrDesc4SortFun;
+    qa_PushCRUD.sortFunStatic = sortFun;
+    await this.BindGv_vqa_Push(this.divList);
+  }
+
+  /** 复制记录
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_CopyRecord)
+   **/
+  public async CopyRecord(arrPushId: Array<string>) {
+    const strThisFuncName = this.CopyRecord.name;
+    try {
+      const arrqa_PushObjLst = await qa_Push_GetObjLstByPushIdLstAsync(arrPushId);
+      //console.log('responseText=');
+      //console.log(responseText);
+      let intCount = 0;
+      for (const objInFor of arrqa_PushObjLst) {
+        const returnBool = await qa_Push_AddNewRecordAsync(objInFor);
+        //console.log('returnBool=');
+        //console.log(returnBool);
+        if (returnBool == true) {
+          //qa_Push_ReFreshCache();
+          intCount++;
+        } else {
+          const strInfo = Format('克隆记录不成功!');
+          //显示信息框
+          alert(strInfo);
+        }
+      }
+      const strInfo = Format('共克隆了{0}条记录!', intCount);
+      alert(strInfo);
+      //console.log('完成!');
+    } catch (e) {
+      const strMsg = `复制记录不成功,${e}.(in ${this.constructor.name}.${strThisFuncName}`;
+      console.error('Error: ', strMsg);
+      //console.trace();
+      alert(strMsg);
+    }
+  }
+
+  /** 根据关键字列表删除记录
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_DelMultiRecord)
+   **/
+  public async DelMultiRecord(arrPushId: Array<string>) {
+    const strThisFuncName = this.DelMultiRecord.name;
+    try {
+      const returnInt = await qa_Push_Delqa_PushsAsync(arrPushId);
+      if (returnInt > 0) {
+        for (const lngPushId of arrPushId) {
+          //qa_Push_ReFreshCache();
+        }
+        const strInfo = `删除${this.thisTabName}记录成功,共删除${returnInt}条记录!`;
+        //显示信息框
+        alert(strInfo);
+      } else {
+        const strInfo = `删除${this.thisTabName}记录不成功!`;
+        //显示信息框
+        alert(strInfo);
+      }
+      console.log('完成DelMultiRecord!');
+    } catch (e) {
+      const strMsg = `删除${this.thisTabName}记录不成功. ${e}.(in ${this.constructor.name}.${strThisFuncName}`;
+      console.error(strMsg);
+      alert(strMsg);
+    }
+  }
+
+  /** 显示{0}对象的所有属性值
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_ShowTabObj)
+   * @param divContainer:显示容器
+   * @param objqa_Push:需要显示的对象
+   **/
+  public Showqa_PushObj(divContainer: HTMLDivElement, objqa_Push: clsqa_PushEN) {
+    if (divContainer == null) {
+      alert(Format('所给div为空，divContainer为null!', divContainer));
+      return;
+    }
+    const sstrKeys = GetObjKeys(objqa_Push);
+    const ul: HTMLUListElement = document.createElement('ul');
+    for (const strKey of sstrKeys) {
+      const strValue = objqa_Push.GetFldValue(strKey);
+      const li: HTMLLIElement = document.createElement('li');
+      li.innerHTML = Format('{0}:{1}', strKey, strValue);
+      ul.appendChild(li);
+    }
+    divContainer.appendChild(ul);
+  }
+
+  /** 函数功能:从界面列表中获取第一个关键字的值
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_GetFirstKey)
+   * @param pobjqa_PushEN:表实体类对象
+   * @returns 列表的第一个关键字值
+   **/
+  public GetFirstKey(): string {
+    if (arrSelectedKeys.length == 1) {
+      return arrSelectedKeys[0];
+    } else {
+      alert(`请选择一个关键字!目前选择了:${arrSelectedKeys.length}个关键字。`);
+      return '';
+    }
+  }
+
+  /** 函数功能:预留函数,在某一个层(div)里绑定数据
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_BindInDiv)
+   **/
+  public async BindInDiv(divBind: HTMLDivElement) {
+    console.log(divBind);
+  }
+
+  /** 函数功能:设置当前页序号
+   * (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_SetCurrPageIndex)
+   * @param value:页序号
+   * @param strDivName4Pager:当前分页所在的层(div)
+   **/
+  public SetCurrPageIndex(value: number) {
+    this.objPager.currPageIndex = value;
+  }
+
+  /**
+   * 教学班流水号 (Used In CombineCondition())
+   **/
+  public get idCurrEduCls_q(): string {
+    const strValue = GetSelectValueInDivObj(this.divQuery, 'ddlIdCurrEduCls_q');
+    if (strValue == undefined) return '';
+    else if (strValue == '0') return '';
+    else return strValue;
+  }
+  /**
+   * 教学班流水号 (Used In CombineCondition())
+   **/
+  public set idCurrEduCls_q(value: string) {
+    SetSelectValueByIdInDivObj(this.divQuery, 'ddlIdCurrEduCls_q', value);
+  }
+  /**
+   * 是否结束 (Used In CombineCondition())
+   **/
+  public get isEnd_q(): boolean {
+    const bolValue = GetCheckBoxValueInDivObj(this.divQuery, 'chkIsEnd_q');
+    return bolValue;
+  }
+  /**
+   * 是否结束 (Used In CombineCondition())
+   **/
+  public set isEnd_q(value: boolean) {
+    SetCheckBoxValueByIdInDivObj(this.divQuery, 'chkIsEnd_q', value);
+  }
+  /**
+   * 是否公开 (Used In CombineCondition())
+   **/
+  public get isPublic_q(): boolean {
+    const bolValue = GetCheckBoxValueInDivObj(this.divQuery, 'chkIsPublic_q');
+    return bolValue;
+  }
+  /**
+   * 是否公开 (Used In CombineCondition())
+   **/
+  public set isPublic_q(value: boolean) {
+    SetCheckBoxValueByIdInDivObj(this.divQuery, 'chkIsPublic_q', value);
+  }
+  /**
+   * 是否接收 (Used In CombineCondition())
+   **/
+  public get isReceive_q(): boolean {
+    const bolValue = GetCheckBoxValueInDivObj(this.divQuery, 'chkIsReceive_q');
+    return bolValue;
+  }
+  /**
+   * 是否接收 (Used In CombineCondition())
+   **/
+  public set isReceive_q(value: boolean) {
+    SetCheckBoxValueByIdInDivObj(this.divQuery, 'chkIsReceive_q', value);
+  }
+  /**
+   * 是否回复 (Used In CombineCondition())
+   **/
+  public get isReply_q(): boolean {
+    const bolValue = GetCheckBoxValueInDivObj(this.divQuery, 'chkIsReply_q');
+    return bolValue;
+  }
+  /**
+   * 是否回复 (Used In CombineCondition())
+   **/
+  public set isReply_q(value: boolean) {
+    SetCheckBoxValueByIdInDivObj(this.divQuery, 'chkIsReply_q', value);
+  }
+  /**
+   * 是否要求回复 (Used In CombineCondition())
+   **/
+  public get isRequestReply_q(): boolean {
+    const bolValue = GetCheckBoxValueInDivObj(this.divQuery, 'chkIsRequestReply_q');
+    return bolValue;
+  }
+  /**
+   * 是否要求回复 (Used In CombineCondition())
+   **/
+  public set isRequestReply_q(value: boolean) {
+    SetCheckBoxValueByIdInDivObj(this.divQuery, 'chkIsRequestReply_q', value);
+  }
+  /**
+   * 论文Id (Used In CombineCondition())
+   **/
+  public get paperId_q(): string {
+    const strValue = GetSelectValueInDivObj(this.divQuery, 'ddlPaperId_q');
+    if (strValue == undefined) return '';
+    else if (strValue == '0') return '';
+    else return strValue;
+  }
+  /**
+   * 论文Id (Used In CombineCondition())
+   **/
+  public set paperId_q(value: string) {
+    SetSelectValueByIdInDivObj(this.divQuery, 'ddlPaperId_q', value);
+  }
+  /**
+   * 论文标题 (Used In CombineCondition())
+   **/
+  public get paperTitle_q(): string {
+    const strValue = GetInputValueInDivObj(this.divQuery, 'txtPaperTitle_q');
+    if (strValue == undefined) return '';
+    else return strValue.toString();
+  }
+  /**
+   * 论文标题 (Used In CombineCondition())
+   **/
+  public set paperTitle_q(value: string) {
+    SetInputValueInDivObj(this.divQuery, 'txtPaperTitle_q', value);
+  }
+  /**
+   * Pdf内容 (Used In CombineCondition())
+   **/
+  public get pdfContent_q(): string {
+    const strValue = GetInputValueInDivObj(this.divQuery, 'txtPdfContent_q');
+    if (strValue == undefined) return '';
+    else return strValue.toString();
+  }
+  /**
+   * Pdf内容 (Used In CombineCondition())
+   **/
+  public set pdfContent_q(value: string) {
+    SetInputValueInDivObj(this.divQuery, 'txtPdfContent_q', value);
+  }
+  /**
+   * 论文答疑Id (Used In CombineCondition())
+   **/
+  public get qaPaperId_q(): string {
+    const strValue = GetInputValueInDivObj(this.divQuery, 'txtQaPaperId_q');
+    if (strValue == undefined) return '';
+    else return strValue.toString();
+  }
+  /**
+   * 论文答疑Id (Used In CombineCondition())
+   **/
+  public set qaPaperId_q(value: string) {
+    SetInputValueInDivObj(this.divQuery, 'txtQaPaperId_q', value);
+  }
+  /**
+   * 提问内容 (Used In CombineCondition())
+   **/
+  public get questionsContent_q(): string {
+    const strValue = GetInputValueInDivObj(this.divQuery, 'txtQuestionsContent_q');
+    if (strValue == undefined) return '';
+    else return strValue.toString();
+  }
+  /**
+   * 提问内容 (Used In CombineCondition())
+   **/
+  public set questionsContent_q(value: string) {
+    SetInputValueInDivObj(this.divQuery, 'txtQuestionsContent_q', value);
+  }
+  /**
+   * 提问Id (Used In CombineCondition())
+   **/
+  public get questionsId_q(): string {
+    const strValue = GetInputValueInDivObj(this.divQuery, 'txtQuestionsId_q');
+    if (strValue == undefined) return '';
+    else return strValue.toString();
+  }
+  /**
+   * 提问Id (Used In CombineCondition())
+   **/
+  public set questionsId_q(value: string) {
+    SetInputValueInDivObj(this.divQuery, 'txtQuestionsId_q', value);
+  }
+  /**
+   * 接收日期 (Used In CombineCondition())
+   **/
+  public get receiveDate_q(): string {
+    const strValue = GetInputValueInDivObj(this.divQuery, 'txtReceiveDate_q');
+    if (strValue == undefined) return '';
+    else return strValue.toString();
+  }
+  /**
+   * 接收日期 (Used In CombineCondition())
+   **/
+  public set receiveDate_q(value: string) {
+    SetInputValueInDivObj(this.divQuery, 'txtReceiveDate_q', value);
+  }
+  /**
+   * 接收用户 (Used In CombineCondition())
+   **/
+  public get receiveUser_q(): string {
+    const strValue = GetInputValueInDivObj(this.divQuery, 'txtReceiveUser_q');
+    if (strValue == undefined) return '';
+    else return strValue.toString();
+  }
+  /**
+   * 接收用户 (Used In CombineCondition())
+   **/
+  public set receiveUser_q(value: string) {
+    SetInputValueInDivObj(this.divQuery, 'txtReceiveUser_q', value);
+  }
+  /**
+   * 回复日期 (Used In CombineCondition())
+   **/
+  public get replyDate_q(): string {
+    const strValue = GetInputValueInDivObj(this.divQuery, 'txtReplyDate_q');
+    if (strValue == undefined) return '';
+    else return strValue.toString();
+  }
+  /**
+   * 回复日期 (Used In CombineCondition())
+   **/
+  public set replyDate_q(value: string) {
+    SetInputValueInDivObj(this.divQuery, 'txtReplyDate_q', value);
+  }
+  /**
+   * 用户名 (Used In CombineCondition())
+   **/
+  public get userName_q(): string {
+    const strValue = GetInputValueInDivObj(this.divQuery, 'txtUserName_q');
+    if (strValue == undefined) return '';
+    else return strValue.toString();
+  }
+  /**
+   * 用户名 (Used In CombineCondition())
+   **/
+  public set userName_q(value: string) {
+    SetInputValueInDivObj(this.divQuery, 'txtUserName_q', value);
+  }
+  /**
+   * 设置界面标题-相当使用ViewState功能
+   **/
+  public set ViewTitle(value: string) {
+    SetLabelHtmlByIdInDivObj(this.divLayout, 'lblViewTitle', value);
+  }
+  /**
+   * 设置界面标题
+   **/
+  public get ViewTitle(): string {
+    const strValue = GetLabelHtmlInDivObj(this.divLayout, 'lblViewTitle');
+    return strValue;
+  }
+}

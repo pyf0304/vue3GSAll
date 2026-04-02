@@ -1,0 +1,364 @@
+﻿@charset "utf-8";
+/*
+
+Version：SimpleTree 1.0
+*/
+.st_tree {
+  padding: 10px;
+}
+/* 超链接 */
+.st_tree a {
+  padding-left: 20px;
+  text-decoration: none;
+}
+/* 鼠标经过的超链接 */
+.st_tree a:hover {
+  color: #f33;
+  text-decoration: underline;
+}
+/* 菜单 */
+.st_tree ul {
+  padding: 0 18px;
+  margin: 0;
+}
+/* 菜单项 */
+.st_tree ul li {
+  text-align: left;
+  font-size: 13px;
+  /*width: 80%;*/
+  color: #222;
+  line-height: 25px;
+  cursor: pointer;
+  list-style: none;
+  background: url(@/assets/images/st_node.gif);
+  background-repeat: no-repeat;
+  padding: 0 0 3px 20px;
+}
+
+.st_tree ul li a {
+  padding-left: 5px;
+  /*width: 80%;*/
+}
+
+/* 子菜单 */
+/* .st_tree ul li ul {
+} */
+/* 子菜单项 */
+/* .st_tree ul li ul li {
+} */
+/* 子菜单的父节点 */
+.st_tree .folder {
+  list-style-image: url(@/assets/images/st_folder.gif);
+  background: url(@/assets/images/st_folder.gif);
+  background-repeat: no-repeat;
+  padding: 0 0 0 20px;
+}
+/* 展开的父节点 */
+.st_tree .open {
+  list-style-image: url(@/assets/images/st_folder_open.gif);
+  background: url(@/assets/images/st_folder_open.gif);
+  background-repeat: no-repeat;
+  padding: 0 0 0 20px;
+}
+
+.selected {
+  color: blue;
+}
+
+.divTree {
+  /*margin-left: 10px;*/
+  padding-top: 10px;
+  /* width: 24%; */
+  font-size: 15px;
+  min-height: 300px;
+  overflow: hidden;
+  /*overflow-y:scroll;*/
+  overflow-y: auto;
+  border-right: solid 1px #dededf;
+  border-bottom: solid 1px #dbdcde;
+  border-radius: 10px 8px 8px 4px; /* 四个半径值分别是左上角、右上角、右下角和左下角 */
+  float: left;
+  background: #fff;
+  font-family: 'Microsoft YaHei';
+}
+
+.divTree1 {
+  position: fixed;
+  top: 100px;
+  left: 10px;
+  /*bottom: 5%;*/
+  z-index: 1;
+  max-height: 700px;
+}
+
+.divTree2 {
+  position: fixed;
+  top: 158px;
+  left: 10px;
+  /*bottom: 5%;*/
+  z-index: 999;
+  max-height: 700px;
+}
+
+.divTree3 {
+  border: solid 1px #fff;
+  margin: 10px;
+  /*bottom: 5%;*/
+  z-index: 999;
+  background: whitesmoke;
+}
+.divTree4 {
+  border: solid 1px #fff;
+  /*margin: 10px;*/
+  /*bottom: 5%;*/
+  z-index: 999;
+  background: whitesmoke;
+}
+
+.MeetingTree {
+  margin-top: 10px;
+  width: 100%;
+  min-height: 200px;
+  border-radius: 10px 8px 8px 4px; /* 四个半径值分别是左上角、右上角、右下角和左下角 */
+  background-color: whitesmoke;
+}
+
+.divTree a {
+  /*line-height: 25px;*/
+  color: #666;
+  text-decoration: none;
+  display: block;
+  /*padding-left: 5px;*/
+  font-size: 15px;
+  /*font-weight: bold;*/
+}
+
+.divTree ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  margin-left: 10px; /* date:0609 */
+}
+
+.divTree .li {
+  width: 100%;
+  float: left;
+  /*margin-left: 30px;*/ /* date:0610 */
+}
+
+.divTree .main {
+  background: #007fff;
+  /*background: url(../images/st_folder.gif) no-repeat left;*/
+  background: url(@/assets/images/st_folder_open.gif) no-repeat left;
+}
+/*让子菜单消失的样式属性：*/
+.submenu {
+  display: block;
+}
+
+.submenu li {
+  /*display: block;*/
+  width: 100%;
+}
+
+.divTree .selected {
+  color: #009688;
+  font-weight: bold;
+}
+
+.divTree ul li a:hover {
+  font-weight: bold;
+  color: #f98c51;
+}
+
+.divTree ul {
+  list-style-type: none;
+  width: 100%;
+}
+
+/*右边内容区*/
+.divContent {
+  margin-right: 10px;
+  padding: 1px;
+  /* width: 74%; */
+  /* min-height: 600px; */
+  /*overflow: hidden;*/
+  border-right: solid 1px #dededf;
+  border-bottom: solid 1px #dbdcde;
+  border-radius: 10px 8px 8px 4px; /* 四个半径值分别是左上角、右上角、右下角和左下角 */
+
+  /* float: right; */
+}
+
+.divContent1 {
+  background-color: #fafafa;
+}
+
+.divContent2 {
+  background-color: #fff;
+}
+
+#divContent_menu1 {
+  position: fixed;
+  top: 50px;
+  right: 0px;
+  /*bottom: 5%;*/
+  z-index: 999;
+  width: 90px;
+  /*height: 40px;*/
+  /*display: none;*/
+}
+
+#divContent_menu2 {
+  position: fixed;
+  top: 239px;
+  right: 0px;
+  /*bottom: 5%;*/
+  z-index: 999;
+  width: 90px;
+  /*height: 40px;*/
+  /*display: none;*/
+}
+
+.info {
+  margin-bottom: 20px;
+  width: 100%;
+  background: #fff;
+  min-height: 100px;
+  border-right: solid 1px #dededf;
+  border-bottom: solid 1px #dbdcde;
+  /*border-top: solid 1px #dededf;
+        border-left: solid 1px #dbdcde;*/
+  border-radius: 7px 4px 4px 2px; /* 四个半径值分别是左上角、右上角、右下角和左下角 */
+  float: left;
+  margin-left: 2px;
+  margin-right: 2px;
+  /*text-align: left;*/
+}
+
+.title {
+  /*float: left;*/
+  padding-top: 10px;
+  /* text-indent: 10px; */
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 24px;
+}
+
+.artlist {
+  float: left;
+  padding-left: 19px;
+  margin-top: 10px;
+  width: 99%;
+}
+
+.artlist li {
+  /*width: 320px;*/
+  line-height: 30px;
+  /*height: 30px;*/
+  background-position: 0 9px;
+  margin-left: 10px;
+  /*background-image: url(artlist.gif);
+            background-repeat: no-repeat;
+            background-position: 0 9px;
+            text-indent: 11px;*/
+}
+
+.artlist li .rowtit {
+  /*color: #007f7f;*/
+  font-weight: bold;
+}
+
+.artlist li .abstract-text {
+  font-weight: normal;
+  color: #666;
+}
+
+.artlist tr .rowtit {
+  /*color: #007f7f;*/
+  font-weight: bold;
+}
+
+.artlist tr .spacer {
+  /*color: #007f7f;*/
+  height: 10px; /* 设置空白行的高度为 20 像素 */
+}
+
+.artlist tr .abstract-text {
+  font-weight: normal;
+  color: #666;
+}
+/* .artlist li a {
+  /*display: block;
+                height: 25px;
+} */
+
+.zslist {
+  float: left;
+  padding-left: 19px;
+  margin-top: 10px;
+  width: 200px;
+}
+
+.zslist li {
+  /*width: 320px;*/
+  line-height: 30px;
+  height: 30px;
+  background-position: 0 9px;
+  /*background-image: url(artlist.gif);
+            background-repeat: no-repeat;
+            background-position: 0 9px;
+            text-indent: 11px;*/
+}
+/* 
+.zslist li a {
+  /*display: block;
+                height: 25px;
+} */
+
+/* */
+.layui-table td,
+.layui-table th {
+  position: relative;
+  padding: 9px 15px;
+  min-height: 20px;
+  line-height: 20px;
+  font-size: 15px;
+}
+
+#tbList img {
+  max-width: 600px;
+}
+
+.TopNameMenu {
+  width: 50%;
+  /*height: 45px;*/
+  /*background-color: #007fff;*/
+  /*background-color: #EFEEF0;*/
+}
+
+.TopNameMenu {
+  width: 50%;
+  padding-right: 15px;
+  padding-left: 1px;
+  margin-right: auto;
+  margin-left: auto;
+  float: left;
+}
+
+.layui-nav {
+  position: relative;
+  padding: 0 20px;
+  background-color: #f1f1f1;
+  /*color: #fff;*/
+  color: blue;
+  border-radius: 2px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.container a,
+.layui-nav .layui-nav-item a {
+  /*background-color: #007fff;*/
+  color: blue;
+}

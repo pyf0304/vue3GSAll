@@ -1,0 +1,3043 @@
+﻿/**
+ * 类名:clsgs_TagsTypeWApi
+ * 表名:gs_TagsType(01120715)
+ * 版本:2023.11.03.1(服务器:WIN-SRV103-116)
+ * 日期:2023/11/08 11:50:02
+ * 生成者:pyf
+ * 生成服务器IP:
+ 工程名称:问卷调查(0112)
+ CM工程:研究生论文学习(变量首字母小写)-全部函数集
+ * 相关数据库:103.116.76.183,9433EduHigh_Jsie
+ * PrjDataBaseId:0170
+ 模块中文名:研培设置(GradEduTools)
+ * 框架-层名:WA_访问层(TS)(WA_Access)
+ * 编程语言:TypeScript
+ * 注意:1、需要数据底层(PubDataBase.dll)的版本:2019.03.07.01
+   *      2、需要公共函数层(TzPubFunction.dll)的版本:2017.12.21.01
+ **/
+
+/**
+ * 标注类型(gs_TagsType)
+ * (AutoGCLib.WA_Access4TypeScript:GeneCode)
+ * Created by pyf on 2023年11月08日.
+ * 注意:该类必须与调用界面处于同一个包,否则调用不成功!
+ **/
+import axios from 'axios';
+import { ACCESS_TOKEN_KEY } from '@/enums/cacheEnum';
+import { Storage } from '@/utils/Storage';
+import { IsNullOrEmpty, GetStrLen, tzDataType, Format } from '@/ts/PubFun/clsString';
+import { enumComparisonOp } from '@/ts/PubFun/enumComparisonOp';
+import { CacheHelper } from '@/ts/PubFun/CacheHelper';
+import {
+  GetObjKeys,
+  BindDdl_ObjLstInDivObj,
+  GetExceptionStr,
+  myShowErrorMsg,
+  ObjectAssign,
+} from '@/ts/PubFun/clsCommFunc4Web';
+import { clsgs_TagsTypeEN } from '@/ts/L0Entity/GradEduTools/clsgs_TagsTypeEN';
+import { clsSysPara4WebApi, GetWebApiUrl } from '@/ts/PubConfig/clsSysPara4WebApi';
+import { stuTopPara } from '@/ts/PubFun/stuTopPara';
+import { stuRangePara } from '@/ts/PubFun/stuRangePara';
+import { stuPagerPara } from '@/ts/PubFun/stuPagerPara';
+
+export const gs_TagsType_Controller = 'gs_TagsTypeApi';
+export const gs_TagsType_ConstructorName = 'gs_TagsType';
+
+/**
+ * 根据关键字获取相应记录的对象
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_GetObjByKeyIdAsync)
+ * @param strTagsTypeId:关键字
+ * @returns 对象
+ **/
+export async function gs_TagsType_GetObjByTagsTypeIdAsync(
+  strTagsTypeId: string,
+): Promise<clsgs_TagsTypeEN | null> {
+  const strThisFuncName = 'GetObjByTagsTypeIdAsync';
+
+  if (IsNullOrEmpty(strTagsTypeId) == true) {
+    const strMsg = Format(
+      '参数:[strTagsTypeId]不能为空!(In clsgs_TagsTypeWApi.GetObjByTagsTypeIdAsync)',
+    );
+    console.error(strMsg);
+    throw strMsg;
+  }
+  if (strTagsTypeId.length != 2) {
+    const strMsg = Format(
+      '缓存分类变量:[strTagsTypeId]的长度:[{0}]不正确!(clsgs_TagsTypeWApi.GetObjByTagsTypeIdAsync)',
+      strTagsTypeId.length,
+    );
+    console.error(strMsg);
+    throw strMsg;
+  }
+  const strAction = 'GetObjByTagsTypeId';
+  const strUrl = GetWebApiUrl(gs_TagsType_Controller, strAction);
+
+  const token = Storage.get(ACCESS_TOKEN_KEY);
+  //console.error('token:', token);
+  const config = {
+    headers: {
+      Authorization: `${token}`,
+    },
+    params: {
+      strTagsTypeId,
+    },
+  };
+  try {
+    const response = await axios.get(strUrl, config);
+    const data = response.data;
+    if (data.errorId == 0) {
+      const returnObj = data.returnObj;
+      if (returnObj == null) {
+        return null;
+      }
+      //console.log(returnObj);
+      const objgs_TagsType = gs_TagsType_GetObjFromJsonObj(returnObj);
+      return objgs_TagsType;
+    } else {
+      console.error(data.errorMsg);
+      throw data.errorMsg;
+    }
+  } catch (error: any) {
+    console.error(error);
+    if (error.statusText == undefined) {
+      throw error;
+    }
+    if (error.statusText == 'error') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}不成功!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else if (error.statusText == 'Not Found') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}可能不存在!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else {
+      throw error.statusText;
+    }
+  }
+}
+
+/**
+ * 根据关键字获取相关对象, 从缓存中获取.
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_GetObjByKeyIdCache)
+ * @param strTagsTypeId:所给的关键字
+ * @returns 对象
+ */
+export async function gs_TagsType_GetObjByTagsTypeIdCache(
+  strTagsTypeId: string,
+  bolTryAsyncOnce = true,
+) {
+  const strThisFuncName = 'GetObjByTagsTypeIdCache';
+
+  if (IsNullOrEmpty(strTagsTypeId) == true) {
+    const strMsg = Format(
+      '参数:[strTagsTypeId]不能为空!(In clsgs_TagsTypeWApi.GetObjByTagsTypeIdCache)',
+    );
+    console.error(strMsg);
+    throw strMsg;
+  }
+  if (strTagsTypeId.length != 2) {
+    const strMsg = Format(
+      '缓存分类变量:[strTagsTypeId]的长度:[{0}]不正确!(clsgs_TagsTypeWApi.GetObjByTagsTypeIdCache)',
+      strTagsTypeId.length,
+    );
+    console.error(strMsg);
+    throw strMsg;
+  }
+  const arrgs_TagsTypeObjLstCache = await gs_TagsType_GetObjLstCache();
+  try {
+    const arrgs_TagsTypeSel = arrgs_TagsTypeObjLstCache.filter(
+      (x) => x.tagsTypeId == strTagsTypeId,
+    );
+    let objgs_TagsType: clsgs_TagsTypeEN;
+    if (arrgs_TagsTypeSel.length > 0) {
+      objgs_TagsType = arrgs_TagsTypeSel[0];
+      return objgs_TagsType;
+    } else {
+      if (bolTryAsyncOnce == true) {
+        const objgs_TagsTypeConst = await gs_TagsType_GetObjByTagsTypeIdAsync(strTagsTypeId);
+        if (objgs_TagsTypeConst != null) {
+          gs_TagsType_ReFreshThisCache();
+          return objgs_TagsTypeConst;
+        }
+      }
+      return null;
+    }
+  } catch (e) {
+    const strMsg = Format(
+      '错误:[{0}]. \n根据关键字:[{1}]获取相应的对象不成功!(in {2}.{3})',
+      e,
+      strTagsTypeId,
+      gs_TagsType_ConstructorName,
+      strThisFuncName,
+    );
+    console.error(strMsg);
+  }
+  return null;
+}
+
+/**
+ * 根据关键字获取相关对象, 从localStorage缓存中获取.
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_GetObjByKeyId_localStorage)
+ * @param strTagsTypeId:所给的关键字
+ * @returns 对象
+ */
+export async function gs_TagsType_GetObjByTagsTypeIdlocalStorage(strTagsTypeId: string) {
+  const strThisFuncName = 'GetObjByTagsTypeIdlocalStorage';
+
+  if (IsNullOrEmpty(strTagsTypeId) == true) {
+    const strMsg = Format(
+      '参数:[strTagsTypeId]不能为空!(In clsgs_TagsTypeWApi.GetObjByTagsTypeIdlocalStorage)',
+    );
+    console.error(strMsg);
+    throw strMsg;
+  }
+  if (strTagsTypeId.length != 2) {
+    const strMsg = Format(
+      '缓存分类变量:[strTagsTypeId]的长度:[{0}]不正确!(clsgs_TagsTypeWApi.GetObjByTagsTypeIdlocalStorage)',
+      strTagsTypeId.length,
+    );
+    console.error(strMsg);
+    throw strMsg;
+  }
+  const strKey = Format('{0}_{1}', clsgs_TagsTypeEN._CurrTabName, strTagsTypeId);
+  if (strKey == '') {
+    console.error('关键字为空!不正确');
+    throw new Error('关键字为空!不正确');
+  }
+  if (Object.prototype.hasOwnProperty.call(localStorage, strKey)) {
+    //缓存存在,直接返回
+    const strTempObj = localStorage.getItem(strKey) as string;
+    const objgs_TagsTypeCache: clsgs_TagsTypeEN = JSON.parse(strTempObj);
+    return objgs_TagsTypeCache;
+  }
+  try {
+    const objgs_TagsType = await gs_TagsType_GetObjByTagsTypeIdAsync(strTagsTypeId);
+    if (objgs_TagsType != null) {
+      localStorage.setItem(strKey, JSON.stringify(objgs_TagsType));
+      const strInfo = Format('Key:[${ strKey}]的缓存已经建立!');
+      console.log(strInfo);
+      return objgs_TagsType;
+    }
+    return objgs_TagsType;
+  } catch (e) {
+    const strMsg = Format(
+      '错误:[{0}]. \n根据关键字:[{1}]获取相应的对象不成功!(in {2}.{3})',
+      e,
+      strTagsTypeId,
+      gs_TagsType_ConstructorName,
+      strThisFuncName,
+    );
+    console.error(strMsg);
+    alert(strMsg);
+    return;
+  }
+}
+
+/**
+ * 修改在缓存对象列表中的对象, 与后台数据库无关.
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_UpdateObjInLstCache)
+ * @param objgs_TagsType:所给的对象
+ * @returns 对象
+ */
+export async function gs_TagsType_UpdateObjInLstCache(objgs_TagsType: clsgs_TagsTypeEN) {
+  const strThisFuncName = 'UpdateObjInLstCache';
+  try {
+    const arrgs_TagsTypeObjLstCache = await gs_TagsType_GetObjLstCache();
+    const obj = arrgs_TagsTypeObjLstCache.find(
+      (x) =>
+        x.tagsTypeId == objgs_TagsType.tagsTypeId && x.tagsTypeName == objgs_TagsType.tagsTypeName,
+    );
+    if (obj != null) {
+      objgs_TagsType.tagsTypeId = obj.tagsTypeId;
+      ObjectAssign(obj, objgs_TagsType);
+    } else {
+      arrgs_TagsTypeObjLstCache.push(objgs_TagsType);
+    }
+  } catch (e) {
+    const strMsg = Format(
+      '错误:[{0}]. \n在列表中修改对象不成功!(in {1}.{2})',
+      e,
+      gs_TagsType_ConstructorName,
+      strThisFuncName,
+    );
+    console.error(strMsg);
+    alert(strMsg);
+  }
+}
+
+/**
+ * 根据关键字获取相关对象的名称属性, 从缓存中获取.
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_GetNameByKeyIdCache)
+ * @param strTagsTypeId:所给的关键字
+ * @returns 对象
+ */
+export async function gs_TagsType_GetNameByTagsTypeIdCache(strTagsTypeId: string) {
+  if (IsNullOrEmpty(strTagsTypeId) == true) {
+    const strMsg = Format(
+      '参数:[strTagsTypeId]不能为空!(In clsgs_TagsTypeWApi.GetNameByTagsTypeIdCache)',
+    );
+    console.error(strMsg);
+    throw strMsg;
+  }
+  if (strTagsTypeId.length != 2) {
+    const strMsg = Format(
+      '缓存分类变量:[strTagsTypeId]的长度:[{0}]不正确!(clsgs_TagsTypeWApi.GetNameByTagsTypeIdCache)',
+      strTagsTypeId.length,
+    );
+    console.error(strMsg);
+    throw strMsg;
+  }
+  const arrgs_TagsTypeObjLstCache = await gs_TagsType_GetObjLstCache();
+  if (arrgs_TagsTypeObjLstCache == null) return '';
+  try {
+    const arrgs_TagsTypeSel = arrgs_TagsTypeObjLstCache.filter(
+      (x) => x.tagsTypeId == strTagsTypeId,
+    );
+    let objgs_TagsType: clsgs_TagsTypeEN;
+    if (arrgs_TagsTypeSel.length > 0) {
+      objgs_TagsType = arrgs_TagsTypeSel[0];
+      return objgs_TagsType.tagsTypeName;
+    } else {
+      return '';
+    }
+  } catch (e) {
+    const strMsg = Format(
+      '错误:[{0}]. \n根据关键字:[{1}]获取相应的对象名称属性不成功!',
+      e,
+      strTagsTypeId,
+    );
+    console.error(strMsg);
+    alert(strMsg);
+  }
+  return '';
+}
+
+/**
+ * 映射函数。根据表映射把输入字段值,映射成输出字段值
+ * 作者:pyf
+ * 日期:2023-11-08
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_func)
+ * @param strInFldName:输入字段名
+ * @param strOutFldName:输出字段名
+ * @param strInValue:输入字段值
+ * @returns 返回一个输出字段值
+ */
+export async function gs_TagsType_func(
+  strInFldName: string,
+  strOutFldName: string,
+  strInValue: string,
+) {
+  //const strThisFuncName = "func";
+
+  if (strInFldName != clsgs_TagsTypeEN.con_TagsTypeId) {
+    const strMsg = Format('输入字段名:[{0}]不正确!', strInFldName);
+    console.error(strMsg);
+    throw new Error(strMsg);
+  }
+  if (clsgs_TagsTypeEN.AttributeName.indexOf(strOutFldName) == -1) {
+    const strMsg = Format(
+      '输出字段名:[{0}]不正确,不在输出字段范围之内!({1})',
+      strOutFldName,
+      clsgs_TagsTypeEN.AttributeName.join(','),
+    );
+    console.error(strMsg);
+    throw new Error(strMsg);
+  }
+  const strTagsTypeId = strInValue;
+  if (IsNullOrEmpty(strInValue) == true) {
+    return '';
+  }
+  const objgs_TagsType = await gs_TagsType_GetObjByTagsTypeIdCache(strTagsTypeId);
+  if (objgs_TagsType == null) return '';
+  if (objgs_TagsType.GetFldValue(strOutFldName) == null) return '';
+  return objgs_TagsType.GetFldValue(strOutFldName).toString();
+}
+
+/**
+ * 排序函数。根据关键字字段的值进行比较
+ * 作者:pyf
+ * 日期:2023-11-08
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_SortFun)
+ * @param a:比较的第1个对象
+ * @param  b:比较的第1个对象
+ * @returns 返回两个对象比较的结果
+ */
+export function gs_TagsType_SortFunDefa(a: clsgs_TagsTypeEN, b: clsgs_TagsTypeEN): number {
+  return a.tagsTypeId.localeCompare(b.tagsTypeId);
+}
+/**
+ * 排序函数。根据表对象中随机两个字段的值进行比较
+ * 作者:pyf
+ * 日期:2023-11-08
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_SortFun)
+ * @param  a:比较的第1个对象
+ * @param  b:比较的第1个对象
+ * @returns 返回两个对象比较的结果
+ */
+export function gs_TagsType_SortFunDefa2Fld(a: clsgs_TagsTypeEN, b: clsgs_TagsTypeEN): number {
+  if (a.tagsTypeName == b.tagsTypeName) return a.memo.localeCompare(b.memo);
+  else return a.tagsTypeName.localeCompare(b.tagsTypeName);
+}
+
+/**
+ * 排序函数。根据关键字字段的值进行比较
+ * 作者:pyf
+ * 日期:2023-11-08
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_SortFunByKey)
+ * @param a:比较的第1个对象
+ * @param  b:比较的第1个对象
+ * @returns 返回两个对象比较的结果
+ */
+export function gs_TagsType_SortFunByKey(strKey: string, AscOrDesc: string) {
+  const strThisFuncName = 'SortFunByKey';
+  let strMsg = '';
+  if (AscOrDesc == 'Asc' || AscOrDesc == '') {
+    switch (strKey) {
+      case clsgs_TagsTypeEN.con_TagsTypeId:
+        return (a: clsgs_TagsTypeEN, b: clsgs_TagsTypeEN) => {
+          return a.tagsTypeId.localeCompare(b.tagsTypeId);
+        };
+      case clsgs_TagsTypeEN.con_TagsTypeName:
+        return (a: clsgs_TagsTypeEN, b: clsgs_TagsTypeEN) => {
+          if (a.tagsTypeName == null) return -1;
+          if (b.tagsTypeName == null) return 1;
+          return a.tagsTypeName.localeCompare(b.tagsTypeName);
+        };
+      case clsgs_TagsTypeEN.con_Memo:
+        return (a: clsgs_TagsTypeEN, b: clsgs_TagsTypeEN) => {
+          if (a.memo == null) return -1;
+          if (b.memo == null) return 1;
+          return a.memo.localeCompare(b.memo);
+        };
+      default:
+        strMsg = `字段名:[${strKey}]在表对象:[gs_TagsType]中不存在!(in ${gs_TagsType_ConstructorName}.${strThisFuncName})`;
+        console.error(strMsg);
+        break;
+    }
+  } else {
+    switch (strKey) {
+      case clsgs_TagsTypeEN.con_TagsTypeId:
+        return (a: clsgs_TagsTypeEN, b: clsgs_TagsTypeEN) => {
+          return b.tagsTypeId.localeCompare(a.tagsTypeId);
+        };
+      case clsgs_TagsTypeEN.con_TagsTypeName:
+        return (a: clsgs_TagsTypeEN, b: clsgs_TagsTypeEN) => {
+          if (b.tagsTypeName == null) return -1;
+          if (a.tagsTypeName == null) return 1;
+          return b.tagsTypeName.localeCompare(a.tagsTypeName);
+        };
+      case clsgs_TagsTypeEN.con_Memo:
+        return (a: clsgs_TagsTypeEN, b: clsgs_TagsTypeEN) => {
+          if (b.memo == null) return -1;
+          if (a.memo == null) return 1;
+          return b.memo.localeCompare(a.memo);
+        };
+      default:
+        strMsg = `字段名:[${strKey}]在表对象:[gs_TagsType]中不存在!(in ${gs_TagsType_ConstructorName}.${strThisFuncName})`;
+        console.error(strMsg);
+        break;
+    }
+  }
+}
+
+/**
+ * 过滤函数。根据关键字字段的值与给定值进行比较,返回是否相等
+ * 作者:pyf
+ * 日期:2023-11-08
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_FilterFunByKey)
+ * @param strKey:比较的关键字段名称
+ * @param value:给定值
+ * @returns 返回对象的字段值是否等于给定值
+ */
+export async function gs_TagsType_FilterFunByKey(strKey: string, value: any) {
+  const strThisFuncName = 'FilterFunByKey';
+  let strMsg = '';
+  switch (strKey) {
+    case clsgs_TagsTypeEN.con_TagsTypeId:
+      return (obj: clsgs_TagsTypeEN) => {
+        return obj.tagsTypeId === value;
+      };
+    case clsgs_TagsTypeEN.con_TagsTypeName:
+      return (obj: clsgs_TagsTypeEN) => {
+        return obj.tagsTypeName === value;
+      };
+    case clsgs_TagsTypeEN.con_Memo:
+      return (obj: clsgs_TagsTypeEN) => {
+        return obj.memo === value;
+      };
+    default:
+      strMsg = `字段名:[${strKey}]在表对象:[gs_TagsType]中不存在!(in ${gs_TagsType_ConstructorName}.${strThisFuncName})`;
+      console.error(strMsg);
+      break;
+  }
+}
+
+/**
+ * 映射函数。根据表映射把输入字段值,映射成输出字段值
+ * 作者:pyf
+ * 日期:2023-11-08
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_funcKey)
+ * @param strInFldName:输入字段名
+ * @param strInValue:输入字段值
+ * @param strComparisonOp:比较操作符
+ * @returns 返回一个关键字值列表
+ */
+export async function gs_TagsType_funcKey(
+  strInFldName: string,
+  strInValue: any,
+  strComparisonOp: string,
+): Promise<Array<string>> {
+  //const strThisFuncName = "funcKey";
+
+  if (strInFldName == clsgs_TagsTypeEN.con_TagsTypeId) {
+    const strMsg = Format('输入字段名:[{0}]不正确, 不能为关键字段!', strInFldName);
+    console.error(strMsg);
+    throw new Error(strMsg);
+  }
+  if (IsNullOrEmpty(strInValue) == true) {
+    return [];
+  }
+  const arrgs_TagsType = await gs_TagsType_GetObjLstCache();
+  if (arrgs_TagsType == null) return [];
+  let arrgs_TagsTypeSel = arrgs_TagsType;
+  const strType = typeof strInValue;
+  let arrValues: string[];
+  switch (strType) {
+    case 'string':
+      switch (strComparisonOp) {
+        case enumComparisonOp.Equal_01: // " = "
+          arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+            (x) => x.GetFldValue(strInFldName).toString() == strInValue.toString(),
+          );
+          break;
+        case enumComparisonOp.Like_03:
+          arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+            (x) => x.GetFldValue(strInFldName).toString().indexOf(strInValue.toString()) != -1,
+          );
+          break;
+        case enumComparisonOp.In_04:
+          arrValues = strInValue.split(',');
+          arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+            (x) => arrValues.indexOf(x.GetFldValue(strInFldName).toString()) != -1,
+          );
+          break;
+      }
+      break;
+    case 'boolean':
+      if (strInValue == null) return [];
+      if (strComparisonOp == enumComparisonOp.Equal_01) {
+        arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+          (x) => x.GetFldValue(strInFldName) == strInValue,
+        );
+      }
+      break;
+    case 'number':
+      if (Number(strInValue) == 0) return [];
+      switch (strComparisonOp) {
+        case enumComparisonOp.Equal_01:
+          arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+            (x) => x.GetFldValue(strInFldName) == strInValue,
+          );
+          break;
+        case enumComparisonOp.NotEqual_02:
+          arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+            (x) => x.GetFldValue(strInFldName) != strInValue,
+          );
+          break;
+        case enumComparisonOp.NotLessThan_05: //" >= ":
+          arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+            (x) => x.GetFldValue(strInFldName) >= strInValue,
+          );
+          break;
+        case enumComparisonOp.NotGreaterThan_06: //" <= ":
+          arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+            (x) => x.GetFldValue(strInFldName) <= strInValue,
+          );
+          break;
+        case enumComparisonOp.GreaterThan_07: //" > ":
+          arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+            (x) => x.GetFldValue(strInFldName) > strInValue,
+          );
+          break;
+        case enumComparisonOp.LessThan_08: //" < ":
+          arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+            (x) => x.GetFldValue(strInFldName) <= strInValue,
+          );
+          break;
+      }
+      break;
+  }
+  if (arrgs_TagsTypeSel.length == 0) return [];
+  return arrgs_TagsTypeSel.map((x) => x.tagsTypeId);
+}
+
+/**
+ * 根据条件获取满足条件的第一条记录
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_GetFirstIdAsync)
+ * @param strWhereCond:条件
+ * @returns 返回的第一条记录的关键字值
+ **/
+export async function gs_TagsType_GetFirstIDAsync(strWhereCond: string): Promise<string> {
+  const strThisFuncName = 'GetFirstIDAsync';
+  const strAction = 'GetFirstID';
+  const strUrl = GetWebApiUrl(gs_TagsType_Controller, strAction);
+
+  const token = Storage.get(ACCESS_TOKEN_KEY);
+  //console.error('token:', token);
+  const config = {
+    headers: {
+      Authorization: `${token}`,
+    },
+    params: {
+      strWhereCond,
+    },
+  };
+  try {
+    const response = await axios.get(strUrl, config);
+    const data = response.data;
+    if (data.errorId == 0) {
+      return data.returnStr;
+    } else {
+      console.error(data.errorMsg);
+      throw data.errorMsg;
+    }
+  } catch (error: any) {
+    console.error(error);
+    if (error.statusText == undefined) {
+      throw error;
+    }
+    if (error.statusText == 'error') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}不成功!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else if (error.statusText == 'Not Found') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}可能不存在!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else {
+      throw error.statusText;
+    }
+  }
+}
+
+/**
+ * 根据条件获取相应的记录对象列表
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_GetFirstId)
+ * @param strWhereCond:条件
+ * @returns 返回的第一条记录的关键字值
+ */
+export async function gs_TagsType_GetFirstID(strWhereCond: string) {
+  const strThisFuncName = 'GetFirstID';
+  const strAction = 'GetFirstID';
+  const strUrl = GetWebApiUrl(gs_TagsType_Controller, strAction);
+
+  const token = Storage.get(ACCESS_TOKEN_KEY);
+  //console.error('token:', token);
+  const config = {
+    headers: {
+      Authorization: `${token}`,
+    },
+    params: {
+      strWhereCond,
+    },
+  };
+  try {
+    const response = await axios.get(strUrl, config);
+    const data = response.data;
+    if (data.errorId == 0) {
+      return data.returnStr;
+    } else {
+      console.error(data.errorMsg);
+      throw data.errorMsg;
+    }
+  } catch (error: any) {
+    console.error(error);
+    if (error.statusText == undefined) {
+      throw error;
+    }
+    if (error.statusText == 'error') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}不成功!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else if (error.statusText == 'Not Found') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}可能不存在!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else {
+      throw error.statusText;
+    }
+  }
+}
+
+/**
+ * 根据条件获取满足条件的第一条记录对象
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_GetFirstObjAsync)
+ * @param strWhereCond:条件
+ * @returns 第一条记录对象
+ **/
+export async function gs_TagsType_GetFirstObjAsync(
+  strWhereCond: string,
+): Promise<clsgs_TagsTypeEN | null> {
+  const strThisFuncName = 'GetFirstObjAsync';
+  const strAction = 'GetFirstObj';
+  const strUrl = GetWebApiUrl(gs_TagsType_Controller, strAction);
+
+  const token = Storage.get(ACCESS_TOKEN_KEY);
+  //console.error('token:', token);
+  const config = {
+    headers: {
+      Authorization: `${token}`,
+    },
+    params: {
+      strWhereCond,
+    },
+  };
+  try {
+    const response = await axios.get(strUrl, config);
+    const data = response.data;
+    if (data.errorId == 0) {
+      const returnObj = data.returnObj;
+      if (returnObj == null) {
+        return null;
+      }
+      //console.log(returnObj);
+      const objgs_TagsType = gs_TagsType_GetObjFromJsonObj(returnObj);
+      return objgs_TagsType;
+    } else {
+      console.error(data.errorMsg);
+      throw data.errorMsg;
+    }
+  } catch (error: any) {
+    console.error(error);
+    if (error.statusText == undefined) {
+      throw error;
+    }
+    if (error.statusText == 'error') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}不成功!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else if (error.statusText == 'Not Found') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}可能不存在!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else {
+      throw error.statusText;
+    }
+  }
+}
+
+/**
+ * 获取本地缓存中的对象列表,是整个表中的全部记录,也可是表中某缓存分类的全部记录.
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_GetObjLst_ClientCache)
+ * @returns 从本地缓存中获取的对象列表
+ **/
+export async function gs_TagsType_GetObjLstClientCache() {
+  const strThisFuncName = 'GetObjLstClientCache';
+  //初始化列表缓存
+  let strWhereCond = '1=1';
+  const strKey = clsgs_TagsTypeEN._CurrTabName;
+  if (IsNullOrEmpty(clsgs_TagsTypeEN.CacheAddiCondition) == false) {
+    strWhereCond += Format(' and {0}', clsgs_TagsTypeEN.CacheAddiCondition);
+  }
+  if (strKey == '') {
+    console.error('关键字为空!不正确');
+    throw new Error('关键字为空!不正确');
+  }
+  if (CacheHelper.Exsits(strKey)) {
+    //缓存存在,直接返回
+    const arrgs_TagsTypeExObjLstCache: Array<clsgs_TagsTypeEN> = CacheHelper.Get(strKey);
+    const arrgs_TagsTypeObjLstT = gs_TagsType_GetObjLstByJSONObjLst(arrgs_TagsTypeExObjLstCache);
+    return arrgs_TagsTypeObjLstT;
+  }
+  try {
+    const arrgs_TagsTypeExObjLst = await gs_TagsType_GetObjLstAsync(strWhereCond);
+    CacheHelper.Add(strKey, arrgs_TagsTypeExObjLst);
+    const strInfo = Format(
+      '[ClientCache]Key:[{0}]的缓存已经建立,对象列表数：{1}!',
+      strKey,
+      arrgs_TagsTypeExObjLst.length,
+    );
+    console.log(strInfo);
+    return arrgs_TagsTypeExObjLst;
+  } catch (e) {
+    const strMsg = Format(
+      '从本地缓存中获取所有对象列表出错. \n服务器错误：{0}.(in {1}.{2})',
+      e,
+      gs_TagsType_ConstructorName,
+      strThisFuncName,
+    );
+    console.error(strMsg);
+    throw strMsg;
+  }
+}
+
+/**
+ * 获取本地缓存中的对象列表,是整个表中的全部记录,也可是表中某缓存分类的全部记录.
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_GetObjLst_localStorage)
+ * @returns 从本地缓存中获取的对象列表
+ **/
+export async function gs_TagsType_GetObjLstlocalStorage() {
+  const strThisFuncName = 'GetObjLstlocalStorage';
+  //初始化列表缓存
+  let strWhereCond = '1=1';
+  const strKey = clsgs_TagsTypeEN._CurrTabName;
+  if (IsNullOrEmpty(clsgs_TagsTypeEN.CacheAddiCondition) == false) {
+    strWhereCond += Format(' and {0}', clsgs_TagsTypeEN.CacheAddiCondition);
+  }
+  if (strKey == '') {
+    console.error('关键字为空!不正确');
+    throw new Error('关键字为空!不正确');
+  }
+  if (Object.prototype.hasOwnProperty.call(localStorage, strKey)) {
+    //缓存存在,直接返回
+    const strTempObjLst: string = localStorage.getItem(strKey) as string;
+    const arrgs_TagsTypeExObjLstCache: Array<clsgs_TagsTypeEN> = JSON.parse(strTempObjLst);
+    const arrgs_TagsTypeObjLstT = gs_TagsType_GetObjLstByJSONObjLst(arrgs_TagsTypeExObjLstCache);
+    return arrgs_TagsTypeObjLstT;
+  }
+  try {
+    const arrgs_TagsTypeExObjLst = await gs_TagsType_GetObjLstAsync(strWhereCond);
+    localStorage.setItem(strKey, JSON.stringify(arrgs_TagsTypeExObjLst));
+    const strInfo = Format(
+      '[localStorage]Key:[{0}]的缓存已经建立,对象列表数：{1}!',
+      strKey,
+      arrgs_TagsTypeExObjLst.length,
+    );
+    console.log(strInfo);
+    return arrgs_TagsTypeExObjLst;
+  } catch (e) {
+    const strMsg = Format(
+      '从本地缓存中获取所有对象列表出错. \n服务器错误：{0}.(in {1}.{2})',
+      e,
+      gs_TagsType_ConstructorName,
+      strThisFuncName,
+    );
+    console.error(strMsg);
+    throw strMsg;
+  }
+}
+
+/**
+ * 获取本地缓存中的对象列表,是整个表中的全部记录,也可是表中某缓存分类的全部记录.如果本地不存在就返回null,不会去访问WebApi获取数据。
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_GetObjLst_localStorage_PureCache)
+ * @returns 从本地缓存中获取的对象列表
+ **/
+export async function gs_TagsType_GetObjLstlocalStoragePureCache() {
+  //初始化列表缓存
+  const strKey = clsgs_TagsTypeEN._CurrTabName;
+  if (strKey == '') {
+    console.error('关键字为空!不正确');
+    throw new Error('关键字为空!不正确');
+  }
+  if (Object.prototype.hasOwnProperty.call(localStorage, strKey)) {
+    //缓存存在,直接返回
+    const strTempObjLst: string = localStorage.getItem(strKey) as string;
+    const arrgs_TagsTypeObjLstCache: Array<clsgs_TagsTypeEN> = JSON.parse(strTempObjLst);
+    return arrgs_TagsTypeObjLstCache;
+  } else return null;
+}
+
+/**
+ * 根据条件获取相应的记录对象列表
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_GetObjLstAsync)
+ * @param strWhereCond:条件
+ * @returns 获取的相应对象列表
+ **/
+export async function gs_TagsType_GetObjLstAsync(
+  strWhereCond: string,
+): Promise<Array<clsgs_TagsTypeEN>> {
+  const strThisFuncName = 'GetObjLstAsync';
+  const strAction = 'GetObjLst';
+  const strUrl = GetWebApiUrl(gs_TagsType_Controller, strAction);
+
+  const token = Storage.get(ACCESS_TOKEN_KEY);
+  //console.error('token:', token);
+  const config = {
+    headers: {
+      Authorization: `${token}`,
+    },
+    params: {
+      strWhereCond,
+    },
+  };
+  try {
+    const response = await axios.get(strUrl, config);
+    const data = response.data;
+    if (data.errorId == 0) {
+      const returnObjLst = data.returnObjLst;
+      if (returnObjLst == null) {
+        const strNullInfo = Format(
+          '获取数据为null, 请注意!(in {0}.{1})',
+          gs_TagsType_ConstructorName,
+          strThisFuncName,
+        );
+        console.error(strNullInfo);
+        throw strNullInfo;
+      }
+      //console.log(returnObjLst);
+      const arrObjLst = gs_TagsType_GetObjLstByJSONObjLst(returnObjLst);
+      return arrObjLst;
+    } else {
+      console.error(data.errorMsg);
+      throw data.errorMsg;
+    }
+  } catch (error: any) {
+    console.error(error);
+    if (error.statusText == undefined) {
+      throw error;
+    }
+    if (error.statusText == 'error') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}不成功!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else if (error.statusText == 'Not Found') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}可能不存在!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else {
+      throw error.statusText;
+    }
+  }
+}
+
+/**
+ * 获取本地sessionStorage缓存中的对象列表,是整个表中的全部记录,也可是表中某缓存分类的全部记录.
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_GetObjLst_sessionStorage)
+ * @returns 从本地缓存中获取的对象列表
+ **/
+export async function gs_TagsType_GetObjLstsessionStorage() {
+  const strThisFuncName = 'GetObjLstsessionStorage';
+  //初始化列表缓存
+  let strWhereCond = '1=1';
+  const strKey = clsgs_TagsTypeEN._CurrTabName;
+  if (IsNullOrEmpty(clsgs_TagsTypeEN.CacheAddiCondition) == false) {
+    strWhereCond += Format(' and {0}', clsgs_TagsTypeEN.CacheAddiCondition);
+  }
+  if (strKey == '') {
+    console.error('关键字为空!不正确');
+    throw new Error('关键字为空!不正确');
+  }
+  if (Object.prototype.hasOwnProperty.call(sessionStorage, strKey)) {
+    //缓存存在,直接返回
+    const strTempObjLst: string = sessionStorage.getItem(strKey) as string;
+    const arrgs_TagsTypeExObjLstCache: Array<clsgs_TagsTypeEN> = JSON.parse(strTempObjLst);
+    const arrgs_TagsTypeObjLstT = gs_TagsType_GetObjLstByJSONObjLst(arrgs_TagsTypeExObjLstCache);
+    return arrgs_TagsTypeObjLstT;
+  }
+  try {
+    const arrgs_TagsTypeExObjLst = await gs_TagsType_GetObjLstAsync(strWhereCond);
+    sessionStorage.setItem(strKey, JSON.stringify(arrgs_TagsTypeExObjLst));
+    const strInfo = Format(
+      '[sessionStorage]Key:[{0}]的缓存已经建立,对象列表数：{1}!',
+      strKey,
+      arrgs_TagsTypeExObjLst.length,
+    );
+    console.log(strInfo);
+    return arrgs_TagsTypeExObjLst;
+  } catch (e) {
+    const strMsg = Format(
+      '从缓存中获取所有对象列表出错. \n服务器错误：{0}.(in {1}.{2})',
+      e,
+      gs_TagsType_ConstructorName,
+      strThisFuncName,
+    );
+    console.error(strMsg);
+    throw strMsg;
+  }
+}
+
+/**
+ * 获取本地缓存中的对象列表,是整个表中的全部记录,也可是表中某缓存分类的全部记录.
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_GetObjLst_sessionStorage_PureCache)
+ * @returns 从本地缓存中获取的对象列表
+ **/
+export async function gs_TagsType_GetObjLstsessionStoragePureCache() {
+  //初始化列表缓存
+  const strKey = clsgs_TagsTypeEN._CurrTabName;
+  if (strKey == '') {
+    console.error('关键字为空!不正确');
+    throw new Error('关键字为空!不正确');
+  }
+  if (Object.prototype.hasOwnProperty.call(sessionStorage, strKey)) {
+    //缓存存在,直接返回
+    const strTempObjLst: string = sessionStorage.getItem(strKey) as string;
+    const arrgs_TagsTypeObjLstCache: Array<clsgs_TagsTypeEN> = JSON.parse(strTempObjLst);
+    return arrgs_TagsTypeObjLstCache;
+  } else return null;
+}
+
+/**
+ * 获取本地缓存中的对象列表,是整个表中的全部记录,也可是表中某缓存分类的全部记录.
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_GetObjLstCacheAsync)
+ * @returns 从本地缓存中获取的对象列表
+ **/
+export async function gs_TagsType_GetObjLstCache(): Promise<Array<clsgs_TagsTypeEN>> {
+  //const strThisFuncName = "GetObjLst_Cache";
+
+  let arrgs_TagsTypeObjLstCache;
+  switch (clsgs_TagsTypeEN.CacheModeId) {
+    case '04': //sessionStorage
+      arrgs_TagsTypeObjLstCache = await gs_TagsType_GetObjLstsessionStorage();
+      break;
+    case '03': //localStorage
+      arrgs_TagsTypeObjLstCache = await gs_TagsType_GetObjLstlocalStorage();
+      break;
+    case '02': //ClientCache
+      arrgs_TagsTypeObjLstCache = await gs_TagsType_GetObjLstClientCache();
+      break;
+    default:
+      arrgs_TagsTypeObjLstCache = await gs_TagsType_GetObjLstClientCache();
+      break;
+  }
+  return arrgs_TagsTypeObjLstCache;
+}
+
+/**
+ * 获取本地缓存中的对象列表,是整个表中的全部记录,也可是表中某缓存分类的全部记录.
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_GetObjLst_PureCacheAsync)
+ * @returns 从本地缓存中获取的对象列表
+ **/
+export async function gs_TagsType_GetObjLstPureCache() {
+  //const strThisFuncName = "GetObjLstPureCache";
+  let arrgs_TagsTypeObjLstCache;
+  switch (clsgs_TagsTypeEN.CacheModeId) {
+    case '04': //sessionStorage
+      arrgs_TagsTypeObjLstCache = await gs_TagsType_GetObjLstsessionStoragePureCache();
+      break;
+    case '03': //localStorage
+      arrgs_TagsTypeObjLstCache = await gs_TagsType_GetObjLstlocalStoragePureCache();
+      break;
+    case '02': //ClientCache
+      arrgs_TagsTypeObjLstCache = null;
+      break;
+    default:
+      arrgs_TagsTypeObjLstCache = null;
+      break;
+  }
+  return arrgs_TagsTypeObjLstCache;
+}
+
+/**
+ * 根据条件对象, 从缓存的对象列表中获取子集.
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_GetSubObjLstCache)
+ * @param objstrTagsTypeIdCond:条件对象
+ * @returns 对象列表子集
+ */
+export async function gs_TagsType_GetSubObjLstCache(objgs_TagsTypeCond: clsgs_TagsTypeEN) {
+  const strThisFuncName = 'GetSubObjLstCache';
+  const arrgs_TagsTypeObjLstCache = await gs_TagsType_GetObjLstCache();
+  let arrgs_TagsTypeSel = arrgs_TagsTypeObjLstCache;
+  if (objgs_TagsTypeCond.sfFldComparisonOp == null || objgs_TagsTypeCond.sfFldComparisonOp == '')
+    return arrgs_TagsTypeSel;
+  const dicFldComparisonOp: { [index: string]: string } = JSON.parse(
+    objgs_TagsTypeCond.sfFldComparisonOp,
+  );
+  //console.log("clsgs_TagsTypeWApi->GetSubObjLstCache->dicFldComparisonOp:");
+  //console.log(dicFldComparisonOp);
+  try {
+    const sstrKeys = GetObjKeys(objgs_TagsTypeCond);
+    //console.log(sstrKeys);
+    for (const strKey of sstrKeys) {
+      if (Object.prototype.hasOwnProperty.call(dicFldComparisonOp, strKey) == false) continue;
+      arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter((x) => x.GetFldValue(strKey) != null);
+      const strComparisonOp = dicFldComparisonOp[strKey];
+      const strValue = objgs_TagsTypeCond.GetFldValue(strKey);
+      const strType = typeof strValue;
+      switch (strType) {
+        case 'string':
+          if (strValue == null) continue;
+          if (strValue == '') continue;
+          if (strComparisonOp == '=') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+              (x) => x.GetFldValue(strKey).toString() == strValue.toString(),
+            );
+          } else if (strComparisonOp == 'like') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+              (x) => x.GetFldValue(strKey).toString().indexOf(strValue.toString()) != -1,
+            );
+          } else if (strComparisonOp == 'length greater') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+              (x) => x.GetFldValue(strKey).toString().length > Number(strValue.toString()),
+            );
+          } else if (strComparisonOp == 'length not greater') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+              (x) => x.GetFldValue(strKey).toString().length <= Number(strValue.toString()),
+            );
+          } else if (strComparisonOp == 'length not less') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+              (x) => x.GetFldValue(strKey).toString().length >= Number(strValue.toString()),
+            );
+          } else if (strComparisonOp == 'length less') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+              (x) => x.GetFldValue(strKey).toString().length < Number(strValue.toString()),
+            );
+          } else if (strComparisonOp == 'length equal') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+              (x) => x.GetFldValue(strKey).toString().length == Number(strValue.toString()),
+            );
+          }
+          break;
+        case 'boolean':
+          if (strValue == null) continue;
+          if (strComparisonOp == '=') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter((x) => x.GetFldValue(strKey) == strValue);
+          }
+          break;
+        case 'number':
+          if (Number(strValue) == 0) continue;
+          if (strComparisonOp == '=') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter((x) => x.GetFldValue(strKey) == strValue);
+          } else if (strComparisonOp == '>=') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter((x) => x.GetFldValue(strKey) >= strValue);
+          } else if (strComparisonOp == '<=') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter((x) => x.GetFldValue(strKey) <= strValue);
+          } else if (strComparisonOp == '>') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter((x) => x.GetFldValue(strKey) > strValue);
+          } else if (strComparisonOp == '<') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter((x) => x.GetFldValue(strKey) <= strValue);
+          }
+          break;
+      }
+    }
+    return arrgs_TagsTypeSel;
+  } catch (e) {
+    const strMsg = Format(
+      '错误:[{0}]. \n根据条件:[{1}]缓存对象列表中获取子集对象不成功!(in {2}.{3})',
+      e,
+      JSON.stringify(objgs_TagsTypeCond),
+      gs_TagsType_ConstructorName,
+      strThisFuncName,
+    );
+    console.error(strMsg);
+    throw new Error(strMsg);
+  }
+  return new Array<clsgs_TagsTypeEN>();
+}
+
+/**
+ * 根据关键字列表获取相关对象列表
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_GetObjLstByKeyLstAsync)
+ * @param arrTagsTypeId:关键字列表
+ * @returns 对象列表
+ **/
+export async function gs_TagsType_GetObjLstByTagsTypeIdLstAsync(
+  arrTagsTypeId: Array<string>,
+): Promise<Array<clsgs_TagsTypeEN>> {
+  const strThisFuncName = 'GetObjLstByTagsTypeIdLstAsync';
+  const strAction = 'GetObjLstByTagsTypeIdLst';
+  const strUrl = GetWebApiUrl(gs_TagsType_Controller, strAction);
+
+  const token = Storage.get(ACCESS_TOKEN_KEY);
+  //console.error('token:', token);
+  const config = {
+    headers: {
+      Authorization: `${token}`,
+    },
+  };
+  try {
+    const response = await axios.post(strUrl, arrTagsTypeId, config);
+    const data = response.data;
+    if (data.errorId == 0) {
+      const returnObjLst = data.returnObjLst;
+      if (returnObjLst == null) {
+        const strNullInfo = Format(
+          '获取数据为null, 请注意!(in {0}.{1})',
+          gs_TagsType_ConstructorName,
+          strThisFuncName,
+        );
+        console.error(strNullInfo);
+        throw strNullInfo;
+      }
+      //console.log(returnObjLst);
+      const arrObjLst = gs_TagsType_GetObjLstByJSONObjLst(returnObjLst);
+      return arrObjLst;
+    } else {
+      console.error(data.errorMsg);
+      throw data.errorMsg;
+    }
+  } catch (error: any) {
+    console.error(error);
+    if (error.statusText == undefined) {
+      throw error;
+    }
+    if (error.statusText == 'error') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}不成功!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else if (error.statusText == 'Not Found') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}可能不存在!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else {
+      throw error.statusText;
+    }
+  }
+}
+
+/**
+ * 根据关键字列表获取相关对象列表, 从缓存中获取.
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_GetObjLstByKeyLstCache)
+ * @param arrstrTagsTypeIdLst:关键字列表
+ * @returns 对象列表
+ */
+export async function gs_TagsType_GetObjLstByTagsTypeIdLstCache(arrTagsTypeIdLst: Array<string>) {
+  const strThisFuncName = 'GetObjLstByTagsTypeIdLstCache';
+  try {
+    const arrgs_TagsTypeObjLstCache = await gs_TagsType_GetObjLstCache();
+    const arrgs_TagsTypeSel = arrgs_TagsTypeObjLstCache.filter(
+      (x) => arrTagsTypeIdLst.indexOf(x.tagsTypeId) > -1,
+    );
+    return arrgs_TagsTypeSel;
+  } catch (e) {
+    const strMsg = Format(
+      '错误:[{0}]. \n根据关键字:[{1}]获取对象列表不成功!(in {2}.{3})',
+      e,
+      arrTagsTypeIdLst.join(','),
+      gs_TagsType_ConstructorName,
+      strThisFuncName,
+    );
+    console.error(strMsg);
+    throw new Error(strMsg);
+  }
+}
+
+/**
+ * 根据顶部条件获取相应的记录对象列表
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_GetTopObjLstAsync)
+ * @param objTopPara:获取顶部对象列表的参数对象
+ * @returns 获取的相应对象列表
+ **/
+export async function gs_TagsType_GetTopObjLstAsync(
+  objTopPara: stuTopPara,
+): Promise<Array<clsgs_TagsTypeEN>> {
+  const strThisFuncName = 'GetTopObjLstAsync';
+  const strAction = 'GetTopObjLst';
+  const strUrl = GetWebApiUrl(gs_TagsType_Controller, strAction);
+
+  const token = Storage.get(ACCESS_TOKEN_KEY);
+  //console.error('token:', token);
+  const config = {
+    headers: {
+      Authorization: `${token}`,
+    },
+  };
+  try {
+    const response = await axios.post(strUrl, objTopPara, config);
+    const data = response.data;
+    if (data.errorId == 0) {
+      const returnObjLst = data.returnObjLst;
+      if (returnObjLst == null) {
+        const strNullInfo = Format(
+          '获取数据为null, 请注意!(in {0}.{1})',
+          gs_TagsType_ConstructorName,
+          strThisFuncName,
+        );
+        console.error(strNullInfo);
+        throw strNullInfo;
+      }
+      //console.log(returnObjLst);
+      const arrObjLst = gs_TagsType_GetObjLstByJSONObjLst(returnObjLst);
+      return arrObjLst;
+    } else {
+      console.error(data.errorMsg);
+      throw data.errorMsg;
+    }
+  } catch (error: any) {
+    console.error(error);
+    if (error.statusText == undefined) {
+      throw error;
+    }
+    if (error.statusText == 'error') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}不成功!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else if (error.statusText == 'Not Found') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}可能不存在!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else {
+      throw error.statusText;
+    }
+  }
+}
+
+/**
+ * 根据范围条件获取相应的记录对象列表,获取某范围的记录
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_GetObjLstByRangeAsync)
+ * @param objRangePara:根据范围获取对象列表的参数对象
+ * @returns 获取的相应记录对象列表
+ **/
+export async function gs_TagsType_GetObjLstByRangeAsync(
+  objRangePara: stuRangePara,
+): Promise<Array<clsgs_TagsTypeEN>> {
+  const strThisFuncName = 'GetObjLstByRangeAsync';
+  const strAction = 'GetObjLstByRange';
+  const strUrl = GetWebApiUrl(gs_TagsType_Controller, strAction);
+
+  const token = Storage.get(ACCESS_TOKEN_KEY);
+  //console.error('token:', token);
+  const config = {
+    headers: {
+      Authorization: `${token}`,
+    },
+  };
+  try {
+    const response = await axios.post(strUrl, objRangePara, config);
+    const data = response.data;
+    if (data.errorId == 0) {
+      const returnObjLst = data.returnObjLst;
+      if (returnObjLst == null) {
+        const strNullInfo = Format(
+          '获取数据为null, 请注意!(in {0}.{1})',
+          gs_TagsType_ConstructorName,
+          strThisFuncName,
+        );
+        console.error(strNullInfo);
+        throw strNullInfo;
+      }
+      //console.log(returnObjLst);
+      const arrObjLst = gs_TagsType_GetObjLstByJSONObjLst(returnObjLst);
+      return arrObjLst;
+    } else {
+      console.error(data.errorMsg);
+      throw data.errorMsg;
+    }
+  } catch (error: any) {
+    console.error(error);
+    if (error.statusText == undefined) {
+      throw error;
+    }
+    if (error.statusText == 'error') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}不成功!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else if (error.statusText == 'Not Found') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}可能不存在!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else {
+      throw error.statusText;
+    }
+  }
+}
+
+/**
+ * 根据分页条件从缓存中获取分页对象列表,只获取一页.
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_GetObjLstByPagerCache)
+ * @param objPagerPara:分页参数结构
+ * @returns 对象列表
+ */
+export async function gs_TagsType_GetObjLstByPagerCache(objPagerPara: stuPagerPara) {
+  const strThisFuncName = 'GetObjLstByPagerCache';
+  if (objPagerPara.pageIndex == 0) return new Array<clsgs_TagsTypeEN>();
+  const arrgs_TagsTypeObjLstCache = await gs_TagsType_GetObjLstCache();
+  if (arrgs_TagsTypeObjLstCache.length == 0) return arrgs_TagsTypeObjLstCache;
+  let arrgs_TagsTypeSel = arrgs_TagsTypeObjLstCache;
+  const objCond = JSON.parse(objPagerPara.whereCond);
+  const objgs_TagsTypeCond = new clsgs_TagsTypeEN();
+  ObjectAssign(objgs_TagsTypeCond, objCond);
+  let dicFldComparisonOp: { [index: string]: string } = {};
+  if (objCond.sfFldComparisonOp != '') {
+    dicFldComparisonOp = JSON.parse(objCond.sfFldComparisonOp);
+  }
+  //console.log("clsgs_TagsTypeWApi->GetObjLstByPagerCache->dicFldComparisonOp:");
+  //console.log(dicFldComparisonOp);
+  try {
+    const sstrKeys = GetObjKeys(objCond);
+    //console.log(sstrKeys);
+    for (const strKey of sstrKeys) {
+      if (Object.prototype.hasOwnProperty.call(dicFldComparisonOp, strKey) == false) continue;
+      arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter((x) => x.GetFldValue(strKey) != null);
+      const strComparisonOp = dicFldComparisonOp[strKey];
+      const strValue = objgs_TagsTypeCond.GetFldValue(strKey);
+      const strType = typeof strValue;
+      switch (strType) {
+        case 'string':
+          if (strValue == null) continue;
+          if (strValue == '') continue;
+          if (strComparisonOp == '=') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+              (x) => x.GetFldValue(strKey).toString() == strValue.toString(),
+            );
+          } else if (strComparisonOp == 'like') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+              (x) => x.GetFldValue(strKey).toString().indexOf(strValue.toString()) != -1,
+            );
+          } else if (strComparisonOp == 'length greater') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+              (x) => x.GetFldValue(strKey).toString().length > Number(strValue.toString()),
+            );
+          } else if (strComparisonOp == 'length not greater') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+              (x) => x.GetFldValue(strKey).toString().length <= Number(strValue.toString()),
+            );
+          } else if (strComparisonOp == 'length not less') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+              (x) => x.GetFldValue(strKey).toString().length >= Number(strValue.toString()),
+            );
+          } else if (strComparisonOp == 'length less') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+              (x) => x.GetFldValue(strKey).toString().length < Number(strValue.toString()),
+            );
+          } else if (strComparisonOp == 'length equal') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+              (x) => x.GetFldValue(strKey).toString().length == Number(strValue.toString()),
+            );
+          } else if (strComparisonOp == 'in') {
+            const arrValues = strValue.toString().split(',');
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+              (x) => arrValues.indexOf(x.GetFldValue(strKey).toString()) != -1,
+            );
+          }
+          break;
+        case 'boolean':
+          if (strValue == null) continue;
+          if (strComparisonOp == '=') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter((x) => x.GetFldValue(strKey) == strValue);
+          }
+          break;
+        case 'number':
+          if (Number(strValue) == 0) continue;
+          if (strComparisonOp == '=') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter((x) => x.GetFldValue(strKey) == strValue);
+          } else if (strComparisonOp == '>=') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter((x) => x.GetFldValue(strKey) >= strValue);
+          } else if (strComparisonOp == '<=') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter((x) => x.GetFldValue(strKey) <= strValue);
+          } else if (strComparisonOp == '>') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter((x) => x.GetFldValue(strKey) > strValue);
+          } else if (strComparisonOp == '<') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter((x) => x.GetFldValue(strKey) <= strValue);
+          }
+          break;
+      }
+    }
+    if (arrgs_TagsTypeSel.length == 0) return arrgs_TagsTypeSel;
+    let intStart: number = objPagerPara.pageSize * (objPagerPara.pageIndex - 1);
+    if (intStart <= 0) intStart = 0;
+    const intEnd = intStart + objPagerPara.pageSize;
+    if (objPagerPara.orderBy != null && objPagerPara.orderBy.length > 0) {
+      const sstrSplit: string[] = objPagerPara.orderBy.split(' ');
+      let strSortType = 'asc';
+      const strSortFld = sstrSplit[0];
+      if (sstrSplit.length > 1) strSortType = sstrSplit[1];
+      arrgs_TagsTypeSel = arrgs_TagsTypeSel.sort(gs_TagsType_SortFunByKey(strSortFld, strSortType));
+    } else {
+      //如果排序字段名[OrderBy]为空,就调用排序函数
+      arrgs_TagsTypeSel = arrgs_TagsTypeSel.sort(objPagerPara.sortFun);
+    }
+    arrgs_TagsTypeSel = arrgs_TagsTypeSel.slice(intStart, intEnd);
+    return arrgs_TagsTypeSel;
+  } catch (e) {
+    const strMsg = Format(
+      '错误:[{0}]. \n根据条件:[{1}]获取分页对象列表不成功!(In {2}.{3})',
+      e,
+      objPagerPara.whereCond,
+      gs_TagsType_ConstructorName,
+      strThisFuncName,
+    );
+    console.error(strMsg);
+    throw new Error(strMsg);
+  }
+  return new Array<clsgs_TagsTypeEN>();
+}
+
+/**
+ * 根据分页条件获取相应的记录对象列表,只获取一页
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_GetObjLstByPagerAsync)
+ * @param objPagerPara:分页获取对象列表的参数对象
+ * @returns 获取的相应记录对象列表
+ **/
+export async function gs_TagsType_GetObjLstByPagerAsync(
+  objPagerPara: stuPagerPara,
+): Promise<Array<clsgs_TagsTypeEN>> {
+  const strThisFuncName = 'GetObjLstByPagerAsync';
+  if (objPagerPara.pageIndex == 0) return new Array<clsgs_TagsTypeEN>();
+  const strAction = 'GetObjLstByPager';
+  const strUrl = GetWebApiUrl(gs_TagsType_Controller, strAction);
+
+  const token = Storage.get(ACCESS_TOKEN_KEY);
+  //console.error('token:', token);
+  const config = {
+    headers: {
+      Authorization: `${token}`,
+    },
+  };
+  try {
+    const response = await axios.post(strUrl, objPagerPara, config);
+    const data = response.data;
+    if (data.errorId == 0) {
+      const returnObjLst = data.returnObjLst;
+      if (returnObjLst == null) {
+        const strNullInfo = Format(
+          '获取数据为null, 请注意!(in {0}.{1})',
+          gs_TagsType_ConstructorName,
+          strThisFuncName,
+        );
+        console.error(strNullInfo);
+        throw strNullInfo;
+      }
+      //console.log(returnObjLst);
+      const arrObjLst = gs_TagsType_GetObjLstByJSONObjLst(returnObjLst);
+      return arrObjLst;
+    } else {
+      console.error(data.errorMsg);
+      throw data.errorMsg;
+    }
+  } catch (error: any) {
+    console.error(error);
+    if (error.statusText == undefined) {
+      throw error;
+    }
+    if (error.statusText == 'error') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}不成功!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else if (error.statusText == 'Not Found') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}可能不存在!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else {
+      throw error.statusText;
+    }
+  }
+}
+
+/**
+ * 调用WebApi来删除记录,根据关键字来删除记录
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_DelRecordAsync)
+ * @param strTagsTypeId:关键字
+ * @returns 获取删除的结果
+ **/
+export async function gs_TagsType_DelRecordAsync(strTagsTypeId: string): Promise<number> {
+  const strThisFuncName = 'DelRecordAsync';
+  const strAction = 'DelRecord';
+  let strUrl = GetWebApiUrl(gs_TagsType_Controller, strAction);
+  strUrl = Format('{0}?Id={1}', strUrl, strTagsTypeId);
+
+  const token = Storage.get(ACCESS_TOKEN_KEY);
+  //console.error('token:', token);
+  const configDel = {
+    headers: {
+      Authorization: `${token}`,
+    },
+  };
+  try {
+    const response = await axios.delete(strUrl, configDel);
+    const data = response.data;
+    if (data.errorId == 0) {
+      return data.returnInt;
+    } else {
+      console.error(data.errorMsg);
+      throw data.errorMsg;
+    }
+  } catch (error: any) {
+    console.error(error);
+    if (error.statusText == undefined) {
+      throw error;
+    }
+    if (error.statusText == 'error') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}不成功!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else if (error.statusText == 'Not Found') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}可能不存在!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else {
+      throw error.statusText;
+    }
+  }
+}
+
+/**
+ * 根据关键字列表删除记录
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_DelMultiRecordAsync)
+ * @param arrTagsTypeId:关键字列表
+ * @returns 实际删除记录的个数
+ **/
+export async function gs_TagsType_Delgs_TagsTypesAsync(
+  arrTagsTypeId: Array<string>,
+): Promise<number> {
+  const strThisFuncName = 'Delgs_TagsTypesAsync';
+  const strAction = 'Delgs_TagsTypes';
+  const strUrl = GetWebApiUrl(gs_TagsType_Controller, strAction);
+
+  const token = Storage.get(ACCESS_TOKEN_KEY);
+  //console.error('token:', token);
+  const config = {
+    headers: {
+      Authorization: `${token}`,
+    },
+  };
+  try {
+    const response = await axios.post(strUrl, arrTagsTypeId, config);
+    const data = response.data;
+    if (data.errorId == 0) {
+      return data.returnInt;
+    } else {
+      console.error(data.errorMsg);
+      throw data.errorMsg;
+    }
+  } catch (error: any) {
+    console.error(error);
+    if (error.statusText == undefined) {
+      throw error;
+    }
+    if (error.statusText == 'error') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}不成功!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else if (error.statusText == 'Not Found') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}可能不存在!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else {
+      throw error.statusText;
+    }
+  }
+}
+
+/**
+ * 根据条件删除记录
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_DelMultiRecordByCondAsync)
+ * @returns 实际删除记录的个数
+ **/
+export async function gs_TagsType_Delgs_TagsTypesByCondAsync(
+  strWhereCond: string,
+): Promise<number> {
+  const strThisFuncName = 'Delgs_TagsTypesByCondAsync';
+  const strAction = 'Delgs_TagsTypesByCond';
+  const strUrl = GetWebApiUrl(gs_TagsType_Controller, strAction);
+
+  const token = Storage.get(ACCESS_TOKEN_KEY);
+  //console.error('token:', token);
+  const config = {
+    headers: {
+      Authorization: `${token}`,
+    },
+    params: {
+      strWhereCond,
+    },
+  };
+  try {
+    const response = await axios.get(strUrl, config);
+    const data = response.data;
+    if (data.errorId == 0) {
+      return data.returnInt;
+    } else {
+      console.error(data.errorMsg);
+      throw data.errorMsg;
+    }
+  } catch (error: any) {
+    console.error(error);
+    if (error.statusText == undefined) {
+      throw error;
+    }
+    if (error.statusText == 'error') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}不成功!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else if (error.statusText == 'Not Found') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}可能不存在!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else {
+      throw error.statusText;
+    }
+  }
+}
+
+/**
+ * 调用WebApi来添加记录,数据传递使用JSON串
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_AddNewRecordAsync)
+ * @param objgs_TagsTypeEN:需要添加的对象
+ * @returns 获取相应的记录的对象
+ **/
+export async function gs_TagsType_AddNewRecordAsync(
+  objgs_TagsTypeEN: clsgs_TagsTypeEN,
+): Promise<boolean> {
+  const strThisFuncName = 'AddNewRecordAsync';
+  const strAction = 'AddNewRecord';
+  //var strJSON = JSON.stringify(objgs_TagsTypeEN);
+  const strUrl = GetWebApiUrl(gs_TagsType_Controller, strAction);
+
+  const token = Storage.get(ACCESS_TOKEN_KEY);
+  //console.error('token:', token);
+  const config = {
+    headers: {
+      Authorization: `${token}`,
+    },
+  };
+  try {
+    const response = await axios.post(strUrl, objgs_TagsTypeEN, config);
+    const data = response.data;
+    if (data.errorId == 0) {
+      return data.returnBool;
+    } else {
+      console.error(data.errorMsg);
+      throw data.errorMsg;
+    }
+  } catch (error: any) {
+    console.error(error);
+    if (error.statusText == undefined) {
+      throw error;
+    }
+    if (error.statusText == 'error') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}不成功!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else if (error.statusText == 'Not Found') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}可能不存在!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else {
+      throw error.statusText;
+    }
+  }
+}
+
+/**
+ * 调用WebApi来添加记录,关键字用最大关键字,数据传递使用JSON串
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_AddNewRecordWithMaxIdAsync)
+ * @param objgs_TagsTypeEN:需要添加的对象
+ * @returns 获取相应的记录的对象
+ **/
+export async function gs_TagsType_AddNewRecordWithMaxIdAsync(
+  objgs_TagsTypeEN: clsgs_TagsTypeEN,
+): Promise<string> {
+  const strThisFuncName = 'AddNewRecordWithMaxIdAsync';
+  const strAction = 'AddNewRecordWithMaxId';
+  const strUrl = GetWebApiUrl(gs_TagsType_Controller, strAction);
+
+  const token = Storage.get(ACCESS_TOKEN_KEY);
+  //console.error('token:', token);
+  const config = {
+    headers: {
+      Authorization: `${token}`,
+    },
+  };
+  try {
+    const response = await axios.post(strUrl, objgs_TagsTypeEN, config);
+    const data = response.data;
+    if (data.errorId == 0) {
+      return data.returnStr;
+    } else {
+      console.error(data.errorMsg);
+      throw data.errorMsg;
+    }
+  } catch (error: any) {
+    console.error(error);
+    if (error.statusText == undefined) {
+      throw error;
+    }
+    if (error.statusText == 'error') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}不成功!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else if (error.statusText == 'Not Found') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}可能不存在!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else {
+      throw error.statusText;
+    }
+  }
+}
+
+/**
+ * 把表对象添加到数据库中,并且返回该记录的关键字(针对Identity关键字和自增关键字)
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_AddNewRecordWithReturnKeyAsync)
+ * @param objgs_TagsTypeEN:需要添加的表对象
+ * @returns 返回新添加记录的关键字
+ **/
+export async function gs_TagsType_AddNewRecordWithReturnKeyAsync(
+  objgs_TagsTypeEN: clsgs_TagsTypeEN,
+): Promise<string> {
+  const strThisFuncName = 'AddNewRecordWithReturnKeyAsync';
+  const strAction = 'AddNewRecordWithReturnKey';
+  const strUrl = GetWebApiUrl(gs_TagsType_Controller, strAction);
+
+  const token = Storage.get(ACCESS_TOKEN_KEY);
+  //console.error('token:', token);
+  const config = {
+    headers: {
+      Authorization: `${token}`,
+    },
+  };
+  try {
+    const response = await axios.post(strUrl, objgs_TagsTypeEN, config);
+    const data = response.data;
+    if (data.errorId == 0) {
+      return data.returnStr;
+    } else {
+      console.error(data.errorMsg);
+      throw data.errorMsg;
+    }
+  } catch (error: any) {
+    console.error(error);
+    if (error.statusText == undefined) {
+      throw error;
+    }
+    if (error.statusText == 'error') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}不成功!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else if (error.statusText == 'Not Found') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}可能不存在!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else {
+      throw error.statusText;
+    }
+  }
+}
+
+/**
+ * 调用WebApi来修改记录,数据传递使用JSON串
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_UpdateRecordAsync)
+ * @param objgs_TagsTypeEN:需要添加的对象
+ * @returns 获取修改是否成功？
+ **/
+export async function gs_TagsType_UpdateRecordAsync(
+  objgs_TagsTypeEN: clsgs_TagsTypeEN,
+): Promise<boolean> {
+  const strThisFuncName = 'UpdateRecordAsync';
+  const strAction = 'UpdateRecord';
+  if (
+    objgs_TagsTypeEN.sfUpdFldSetStr === undefined ||
+    objgs_TagsTypeEN.sfUpdFldSetStr === null ||
+    objgs_TagsTypeEN.sfUpdFldSetStr === ''
+  ) {
+    const strMsg = Format(
+      '对象(关键字: {0})的【修改字段集】为空,不能修改!',
+      objgs_TagsTypeEN.tagsTypeId,
+    );
+    throw strMsg;
+  }
+  const strUrl = GetWebApiUrl(gs_TagsType_Controller, strAction);
+
+  const token = Storage.get(ACCESS_TOKEN_KEY);
+  //console.error('token:', token);
+  const config = {
+    headers: {
+      Authorization: `${token}`,
+    },
+  };
+  try {
+    const response = await axios.post(strUrl, objgs_TagsTypeEN, config);
+    const data = response.data;
+    if (data.errorId == 0) {
+      return data.returnBool;
+    } else {
+      console.error(data.errorMsg);
+      throw data.errorMsg;
+    }
+  } catch (error: any) {
+    console.error(error);
+    if (error.statusText == undefined) {
+      throw error;
+    }
+    if (error.statusText == 'error') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}不成功!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else if (error.statusText == 'Not Found') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}可能不存在!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else {
+      throw error.statusText;
+    }
+  }
+}
+
+/**
+ * 根据条件来修改记录
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_UpdateWithConditionAsync)
+ * @param objgs_TagsTypeEN:需要修改的对象
+ * @param strWhereCond:条件串
+ * @returns 返回的第一条记录的关键字值
+ **/
+export async function gs_TagsType_UpdateWithConditionAsync(
+  objgs_TagsTypeEN: clsgs_TagsTypeEN,
+  strWhereCond: string,
+): Promise<boolean> {
+  const strThisFuncName = 'UpdateWithConditionAsync';
+  const strAction = 'UpdateWithCondition';
+  if (
+    objgs_TagsTypeEN.sfUpdFldSetStr === undefined ||
+    objgs_TagsTypeEN.sfUpdFldSetStr === null ||
+    objgs_TagsTypeEN.sfUpdFldSetStr === ''
+  ) {
+    const strMsg = Format(
+      '对象(关键字: {0})的【修改字段集】为空,不能修改!',
+      objgs_TagsTypeEN.tagsTypeId,
+    );
+    throw new Error(strMsg);
+  }
+  const strUrl = GetWebApiUrl(gs_TagsType_Controller, strAction);
+  objgs_TagsTypeEN.whereCond = strWhereCond;
+
+  const token = Storage.get(ACCESS_TOKEN_KEY);
+  //console.error('token:', token);
+  const config = {
+    headers: {
+      Authorization: `${token}`,
+    },
+  };
+  try {
+    const response = await axios.post(strUrl, objgs_TagsTypeEN, config);
+    const data = response.data;
+    if (data.errorId == 0) {
+      return data.returnBool;
+    } else {
+      console.error(data.errorMsg);
+      throw data.errorMsg;
+    }
+  } catch (error: any) {
+    console.error(error);
+    if (error.statusText == undefined) {
+      throw error;
+    }
+    if (error.statusText == 'error') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}不成功!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else if (error.statusText == 'Not Found') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}可能不存在!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else {
+      throw error.statusText;
+    }
+  }
+}
+
+/**
+ * 根据条件对象, 从缓存的对象列表中获取子集.
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_IsExistRecordCache)
+ * @param objstrTagsTypeIdCond:条件对象
+ * @returns 对象列表子集
+ */
+export async function gs_TagsType_IsExistRecordCache(objgs_TagsTypeCond: clsgs_TagsTypeEN) {
+  const strThisFuncName = 'IsExistRecordCache';
+  const arrgs_TagsTypeObjLstCache = await gs_TagsType_GetObjLstCache();
+  if (arrgs_TagsTypeObjLstCache == null) return false;
+  let arrgs_TagsTypeSel = arrgs_TagsTypeObjLstCache;
+  if (objgs_TagsTypeCond.sfFldComparisonOp == null || objgs_TagsTypeCond.sfFldComparisonOp == '')
+    return arrgs_TagsTypeSel.length > 0 ? true : false;
+  const dicFldComparisonOp: { [index: string]: string } = JSON.parse(
+    objgs_TagsTypeCond.sfFldComparisonOp,
+  );
+  //console.log("clsgs_TagsTypeWApi->GetSubObjLstCache->dicFldComparisonOp:");
+  //console.log(dicFldComparisonOp);
+  try {
+    const sstrKeys = GetObjKeys(objgs_TagsTypeCond);
+    //console.log(sstrKeys);
+    for (const strKey of sstrKeys) {
+      if (Object.prototype.hasOwnProperty.call(dicFldComparisonOp, strKey) == false) continue;
+      const strComparisonOp = dicFldComparisonOp[strKey];
+      const strValue = objgs_TagsTypeCond.GetFldValue(strKey);
+      const strType = typeof strValue;
+      switch (strType) {
+        case 'string':
+          if (strValue == null) continue;
+          if (strValue == '') continue;
+          if (strComparisonOp == '=') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+              (x) => x.GetFldValue(strKey).toString() == strValue.toString(),
+            );
+          } else if (strComparisonOp == 'like') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+              (x) => x.GetFldValue(strKey).toString().indexOf(strValue.toString()) != -1,
+            );
+          } else if (strComparisonOp == 'length greater') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+              (x) => x.GetFldValue(strKey).toString().length > Number(strValue.toString()),
+            );
+          } else if (strComparisonOp == 'length not greater') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+              (x) => x.GetFldValue(strKey).toString().length <= Number(strValue.toString()),
+            );
+          } else if (strComparisonOp == 'length not less') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+              (x) => x.GetFldValue(strKey).toString().length >= Number(strValue.toString()),
+            );
+          } else if (strComparisonOp == 'length less') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+              (x) => x.GetFldValue(strKey).toString().length < Number(strValue.toString()),
+            );
+          } else if (strComparisonOp == 'length equal') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+              (x) => x.GetFldValue(strKey).toString().length == Number(strValue.toString()),
+            );
+          }
+          break;
+        case 'boolean':
+          if (strValue == null) continue;
+          if (strComparisonOp == '=') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter((x) => x.GetFldValue(strKey) == strValue);
+          }
+          break;
+        case 'number':
+          if (Number(strValue) == 0) continue;
+          if (strComparisonOp == '=') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter((x) => x.GetFldValue(strKey) == strValue);
+          } else if (strComparisonOp == '>=') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter((x) => x.GetFldValue(strKey) >= strValue);
+          } else if (strComparisonOp == '<=') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter((x) => x.GetFldValue(strKey) <= strValue);
+          } else if (strComparisonOp == '>') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter((x) => x.GetFldValue(strKey) > strValue);
+          } else if (strComparisonOp == '<') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter((x) => x.GetFldValue(strKey) <= strValue);
+          }
+          break;
+      }
+    }
+    if (arrgs_TagsTypeSel.length > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (e) {
+    const strMsg = Format(
+      '根据条件:[{0}]判断是否存在不成功!(in {1}.{2})',
+      JSON.stringify(objgs_TagsTypeCond),
+      gs_TagsType_ConstructorName,
+      strThisFuncName,
+    );
+    console.error(strMsg);
+    throw new Error(strMsg);
+  }
+  return false;
+}
+
+/**
+ * 根据条件获取是否存在相应的记录？
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_IsExistRecordAsync)
+ * @param strWhereCond:条件
+ * @returns 是否存在记录？
+ **/
+export async function gs_TagsType_IsExistRecordAsync(strWhereCond: string): Promise<boolean> {
+  const strThisFuncName = 'IsExistRecordAsync';
+  const strAction = 'IsExistRecord';
+  const strUrl = GetWebApiUrl(gs_TagsType_Controller, strAction);
+
+  const token = Storage.get(ACCESS_TOKEN_KEY);
+  //console.error('token:', token);
+  const config = {
+    headers: {
+      Authorization: `${token}`,
+    },
+    params: {
+      strWhereCond,
+    },
+  };
+  try {
+    const response = await axios.get(strUrl, config);
+    const data = response.data;
+    if (data.errorId == 0) {
+      return data.returnBool;
+    } else {
+      console.error(data.errorMsg);
+      throw data.errorMsg;
+    }
+  } catch (error: any) {
+    console.error(error);
+    if (error.statusText == undefined) {
+      throw error;
+    }
+    if (error.statusText == 'error') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}不成功!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else if (error.statusText == 'Not Found') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}可能不存在!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else {
+      throw error.statusText;
+    }
+  }
+}
+
+/**
+ * 根据关键字判断是否存在记录, 从本地缓存中判断.
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_IsExistCache)
+ * @param strTagsTypeId:所给的关键字
+ * @returns 对象
+ */
+export async function gs_TagsType_IsExistCache(strTagsTypeId: string) {
+  const strThisFuncName = 'IsExistCache';
+  const arrgs_TagsTypeObjLstCache = await gs_TagsType_GetObjLstCache();
+  if (arrgs_TagsTypeObjLstCache == null) return false;
+  try {
+    const arrgs_TagsTypeSel = arrgs_TagsTypeObjLstCache.filter(
+      (x) => x.tagsTypeId == strTagsTypeId,
+    );
+    if (arrgs_TagsTypeSel.length > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (e) {
+    const strMsg = Format(
+      '根据关键字:[{0}]判断是否存在不成功!(in {1}.{2})',
+      strTagsTypeId,
+      gs_TagsType_ConstructorName,
+      strThisFuncName,
+    );
+    console.error(strMsg);
+    alert(strMsg);
+  }
+  return false;
+}
+
+/**
+ * 根据关键字判断是否存在记录
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_IsExistAsync)
+ * @param strTagsTypeId:关键字
+ * @returns 是否存在?存在返回True
+ **/
+export async function gs_TagsType_IsExistAsync(strTagsTypeId: string): Promise<boolean> {
+  const strThisFuncName = 'IsExistAsync';
+  //检测记录是否存在
+  const strAction = 'IsExist';
+  const strUrl = GetWebApiUrl(gs_TagsType_Controller, strAction);
+
+  const token = Storage.get(ACCESS_TOKEN_KEY);
+  //console.error('token:', token);
+  const config = {
+    headers: {
+      Authorization: `${token}`,
+    },
+    params: {
+      strTagsTypeId,
+    },
+  };
+  try {
+    const response = await axios.get(strUrl, config);
+    const data = response.data;
+    if (data.errorId == 0) {
+      return data.returnBool;
+    } else {
+      console.error(data.errorMsg);
+      throw data.errorMsg;
+    }
+  } catch (error: any) {
+    console.error(error);
+    if (error.statusText == undefined) {
+      throw error;
+    }
+    if (error.statusText == 'error') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}不成功!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else if (error.statusText == 'Not Found') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}可能不存在!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else {
+      throw error.statusText;
+    }
+  }
+}
+
+/**
+ * 获取某一条件的记录数
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_GetRecCountByCondAsync)
+ * @param strWhereCond:条件
+ * @returns 获取某一条件的记录数
+ **/
+export async function gs_TagsType_GetRecCountByCondAsync(strWhereCond: string): Promise<number> {
+  const strThisFuncName = 'GetRecCountByCondAsync';
+  const strAction = 'GetRecCountByCond';
+  const strUrl = GetWebApiUrl(gs_TagsType_Controller, strAction);
+
+  const token = Storage.get(ACCESS_TOKEN_KEY);
+  //console.error('token:', token);
+  const config = {
+    headers: {
+      Authorization: `${token}`,
+    },
+    params: {
+      strWhereCond,
+    },
+  };
+  try {
+    const response = await axios.get(strUrl, config);
+    const data = response.data;
+    if (data.errorId == 0) {
+      return data.returnInt;
+    } else {
+      console.error(data.errorMsg);
+      throw data.errorMsg;
+    }
+  } catch (error: any) {
+    console.error(error);
+    if (error.statusText == undefined) {
+      throw error;
+    }
+    if (error.statusText == 'error') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}不成功!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else if (error.statusText == 'Not Found') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}可能不存在!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else {
+      throw error.statusText;
+    }
+  }
+}
+
+/**
+ * 根据条件对象, 从缓存的对象列表中获取记录数.
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_GetRecCountByCondCache)
+ * @param objgs_TagsTypeCond:条件对象
+ * @returns 对象列表记录数
+ */
+export async function gs_TagsType_GetRecCountByCondCache(objgs_TagsTypeCond: clsgs_TagsTypeEN) {
+  const strThisFuncName = 'GetRecCountByCondCache';
+  const arrgs_TagsTypeObjLstCache = await gs_TagsType_GetObjLstCache();
+  if (arrgs_TagsTypeObjLstCache == null) return 0;
+  let arrgs_TagsTypeSel = arrgs_TagsTypeObjLstCache;
+  if (objgs_TagsTypeCond.sfFldComparisonOp == null || objgs_TagsTypeCond.sfFldComparisonOp == '')
+    return arrgs_TagsTypeSel.length;
+  const dicFldComparisonOp: { [index: string]: string } = JSON.parse(
+    objgs_TagsTypeCond.sfFldComparisonOp,
+  );
+  //console.log("clsgs_TagsTypeWApi->GetSubObjLstCache->dicFldComparisonOp:");
+  //console.log(dicFldComparisonOp);
+  try {
+    const sstrKeys = GetObjKeys(objgs_TagsTypeCond);
+    //console.log(sstrKeys);
+    for (const strKey of sstrKeys) {
+      if (Object.prototype.hasOwnProperty.call(dicFldComparisonOp, strKey) == false) continue;
+      arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter((x) => x.GetFldValue(strKey) != null);
+      const strComparisonOp = dicFldComparisonOp[strKey];
+      const strValue = objgs_TagsTypeCond.GetFldValue(strKey);
+      const strType = typeof strValue;
+      switch (strType) {
+        case 'string':
+          if (strValue == null) continue;
+          if (strValue == '') continue;
+          if (strComparisonOp == '=') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+              (x) => x.GetFldValue(strKey).toString() == strValue.toString(),
+            );
+          } else if (strComparisonOp == 'like') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+              (x) => x.GetFldValue(strKey).toString().indexOf(strValue.toString()) != -1,
+            );
+          } else if (strComparisonOp == 'length greater') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+              (x) => x.GetFldValue(strKey).toString().length > Number(strValue.toString()),
+            );
+          } else if (strComparisonOp == 'length not greater') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+              (x) => x.GetFldValue(strKey).toString().length <= Number(strValue.toString()),
+            );
+          } else if (strComparisonOp == 'length not less') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+              (x) => x.GetFldValue(strKey).toString().length >= Number(strValue.toString()),
+            );
+          } else if (strComparisonOp == 'length less') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+              (x) => x.GetFldValue(strKey).toString().length < Number(strValue.toString()),
+            );
+          } else if (strComparisonOp == 'length equal') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+              (x) => x.GetFldValue(strKey).toString().length == Number(strValue.toString()),
+            );
+          } else if (strComparisonOp == 'in') {
+            const arrValues = strValue.toString().split(',');
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter(
+              (x) => arrValues.indexOf(x.GetFldValue(strKey).toString()) != -1,
+            );
+          }
+          break;
+        case 'boolean':
+          if (strValue == null) continue;
+          if (strComparisonOp == '=') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter((x) => x.GetFldValue(strKey) == strValue);
+          }
+          break;
+        case 'number':
+          if (Number(strValue) == 0) continue;
+          if (strComparisonOp == '=') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter((x) => x.GetFldValue(strKey) == strValue);
+          } else if (strComparisonOp == '>=') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter((x) => x.GetFldValue(strKey) >= strValue);
+          } else if (strComparisonOp == '<=') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter((x) => x.GetFldValue(strKey) <= strValue);
+          } else if (strComparisonOp == '>') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter((x) => x.GetFldValue(strKey) > strValue);
+          } else if (strComparisonOp == '<') {
+            arrgs_TagsTypeSel = arrgs_TagsTypeSel.filter((x) => x.GetFldValue(strKey) <= strValue);
+          }
+          break;
+      }
+    }
+    return arrgs_TagsTypeSel.length;
+  } catch (e) {
+    const strMsg = Format(
+      '错误:[{0}]. \n根据条件:[{1}]从缓存对象列表中获取记录数不成功!(in {2}.{3})',
+      e,
+      JSON.stringify(objgs_TagsTypeCond),
+      gs_TagsType_ConstructorName,
+      strThisFuncName,
+    );
+    console.error(strMsg);
+    throw new Error(strMsg);
+  }
+  return 0;
+}
+
+/**
+ * 获取表的最大关键字
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_GetMaxStrIdAsync)
+ * @returns 获取表的最大关键字
+ **/
+export async function gs_TagsType_GetMaxStrIdAsync(): Promise<string> {
+  const strThisFuncName = 'GetMaxStrIdAsync';
+  const strAction = 'GetMaxStrId';
+  const strUrl = GetWebApiUrl(gs_TagsType_Controller, strAction);
+
+  const token = Storage.get(ACCESS_TOKEN_KEY);
+  //console.error('token:', token);
+  const config = {
+    headers: {
+      Authorization: `${token}`,
+    },
+  };
+  try {
+    const response = await axios.get(strUrl, config);
+    const data = response.data;
+    if (data.errorId == 0) {
+      return data.returnStr;
+    } else {
+      console.error(data.errorMsg);
+      throw data.errorMsg;
+    }
+  } catch (error: any) {
+    console.error(error);
+    if (error.statusText == undefined) {
+      throw error;
+    }
+    if (error.statusText == 'error') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}不成功!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else if (error.statusText == 'Not Found') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}可能不存在!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else {
+      throw error.statusText;
+    }
+  }
+}
+/*该表的关键字类型不是字符型带前缀自增,不需要生成获取最大关键字函数!*/
+
+/**
+ * 根据前缀获取当前表关键字值的最大值,再加1,避免重复
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_GetMaxStrIdByPrefix)
+ * @param mapParam:参数列表
+ * @returns 获取当前表关键字值的最大值
+ */
+export async function gs_TagsType_GetMaxStrIdByPrefix(strPrefix: string) {
+  const strThisFuncName = 'GetMaxStrIdByPrefix';
+  const strAction = 'GetMaxStrIdByPrefix';
+  const strUrl = GetWebApiUrl(gs_TagsType_Controller, strAction);
+
+  const token = Storage.get(ACCESS_TOKEN_KEY);
+  //console.error('token:', token);
+  const config = {
+    headers: {
+      Authorization: `${token}`,
+    },
+    params: {
+      strPrefix,
+    },
+  };
+  try {
+    const response = await axios.get(strUrl, config);
+    const data = response.data;
+    if (data.errorId == 0) {
+      return data.returnStr;
+    } else {
+      console.error(data.errorMsg);
+      throw data.errorMsg;
+    }
+  } catch (error: any) {
+    console.error(error);
+    if (error.statusText == undefined) {
+      throw error;
+    }
+    if (error.statusText == 'error') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}不成功!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else if (error.statusText == 'Not Found') {
+      const strInfo = Format(
+        '网络错误!访问地址:{0}可能不存在!(in {1}.{2})',
+        strUrl,
+        gs_TagsType_ConstructorName,
+        strThisFuncName,
+      );
+      console.error(strInfo);
+      throw strInfo;
+    } else {
+      throw error.statusText;
+    }
+  }
+}
+
+/**
+ * 获取WebApi的地址
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_GetWebApiUrl)
+ * @returns 返回当前文件中Web服务的地址
+ */
+export function gs_TagsType_GetWebApiUrl(strController: string, strAction: string): string {
+  let strServiceUrl: string;
+  let strCurrIPAddressAndPort = '';
+  if (clsSysPara4WebApi.bolIsLocalHost == false) {
+    strCurrIPAddressAndPort = clsSysPara4WebApi.CurrIPAddressAndPort;
+  } else {
+    strCurrIPAddressAndPort = clsSysPara4WebApi.CurrIPAddressAndPort_Local;
+  }
+  if (IsNullOrEmpty(clsSysPara4WebApi.CurrPrx) == true) {
+    strServiceUrl = Format('{0}/{1}/{2}', strCurrIPAddressAndPort, strController, strAction);
+  } else {
+    strServiceUrl = Format(
+      '{0}/{1}/{2}/{3}',
+      strCurrIPAddressAndPort,
+      clsSysPara4WebApi.CurrPrx,
+      strController,
+      strAction,
+    );
+  }
+  return strServiceUrl;
+}
+
+/**
+ * 刷新缓存.把当前表的缓存以及该表相关视图的缓存清空.
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_ReFreshCache)
+ **/
+export function gs_TagsType_ReFreshCache(): void {
+  const strMsg: string = Format('刷新缓存成功!');
+
+  // 静态的对象列表,用于清空相关缓存,针对记录较少,作为参数表可以使用
+  const strKey = clsgs_TagsTypeEN._CurrTabName;
+  switch (clsgs_TagsTypeEN.CacheModeId) {
+    case '04': //sessionStorage
+      sessionStorage.removeItem(strKey);
+      break;
+    case '03': //localStorage
+      localStorage.removeItem(strKey);
+      break;
+    case '02': //ClientCache
+      CacheHelper.Remove(strKey);
+      break;
+    default:
+      CacheHelper.Remove(strKey);
+      break;
+  }
+}
+
+/**
+ * 刷新本类中的缓存.
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_ReFreshThisCache)
+ **/
+export function gs_TagsType_ReFreshThisCache(): void {
+  if (clsSysPara4WebApi.spSetRefreshCacheOn == true) {
+    const strKey = clsgs_TagsTypeEN._CurrTabName;
+    switch (clsgs_TagsTypeEN.CacheModeId) {
+      case '04': //sessionStorage
+        sessionStorage.removeItem(strKey);
+        break;
+      case '03': //localStorage
+        localStorage.removeItem(strKey);
+        break;
+      case '02': //ClientCache
+        CacheHelper.Remove(strKey);
+        break;
+      default:
+        CacheHelper.Remove(strKey);
+        break;
+    }
+    const strMsg = Format('刷新缓存成功!');
+  } else {
+    const strMsg = Format('刷新缓存已经关闭。');
+  }
+}
+
+/**
+ * 绑定基于Web的下拉框,在某一层下的下拉框
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4WA_TabFeature_DdlBindFunctionInDiv)
+ * @param objDDL:需要绑定当前表的下拉框
+
+*/
+export async function gs_TagsType_BindDdl_TagsTypeIdInDivCache(
+  objDiv: HTMLDivElement,
+  strDdlName: string,
+) {
+  const objDdl = document.getElementById(strDdlName);
+  if (objDdl == null) {
+    const strMsg = Format('下拉框：{0} 不存在!(In BindDdl_TagsTypeIdInDiv)', strDdlName);
+    alert(strMsg);
+    console.error(strMsg);
+    throw strMsg;
+  }
+  //为数据源于表的下拉框设置内容
+  //console.log("开始：BindDdl_TagsTypeIdInDivCache");
+  const arrObjLstSel = await gs_TagsType_GetObjLstCache();
+  if (arrObjLstSel == null) return;
+  BindDdl_ObjLstInDivObj(
+    objDiv,
+    strDdlName,
+    arrObjLstSel,
+    clsgs_TagsTypeEN.con_TagsTypeId,
+    clsgs_TagsTypeEN.con_TagsTypeName,
+    '标注类型',
+  );
+}
+
+/**
+ * 检查对象字段值是否合法,1)检查是否可空;2)检查字段值长度是否超长,如果出错就抛出错误.
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4BL_Ts_CheckPropertyNew)
+ */
+export function gs_TagsType_CheckPropertyNew(pobjgs_TagsTypeEN: clsgs_TagsTypeEN) {
+  //检查字段非空, 即数据表要求非常非空的字段,不能为空!
+  //检查字段长度, 若字符型字段长度超出规定的长度,即非法!
+  if (
+    IsNullOrEmpty(pobjgs_TagsTypeEN.tagsTypeId) == false &&
+    GetStrLen(pobjgs_TagsTypeEN.tagsTypeId) > 2
+  ) {
+    throw new Error(
+      '(errid:Watl000413)字段[标注类型ID(tagsTypeId)]的长度不能超过2(In 标注类型(gs_TagsType))!值:$(pobjgs_TagsTypeEN.tagsTypeId)(clsgs_TagsTypeBL:CheckPropertyNew)',
+    );
+  }
+  if (
+    IsNullOrEmpty(pobjgs_TagsTypeEN.tagsTypeName) == false &&
+    GetStrLen(pobjgs_TagsTypeEN.tagsTypeName) > 200
+  ) {
+    throw new Error(
+      '(errid:Watl000413)字段[标注类型名称(tagsTypeName)]的长度不能超过200(In 标注类型(gs_TagsType))!值:$(pobjgs_TagsTypeEN.tagsTypeName)(clsgs_TagsTypeBL:CheckPropertyNew)',
+    );
+  }
+  if (IsNullOrEmpty(pobjgs_TagsTypeEN.memo) == false && GetStrLen(pobjgs_TagsTypeEN.memo) > 1000) {
+    throw new Error(
+      '(errid:Watl000413)字段[备注(memo)]的长度不能超过1000(In 标注类型(gs_TagsType))!值:$(pobjgs_TagsTypeEN.memo)(clsgs_TagsTypeBL:CheckPropertyNew)',
+    );
+  }
+  //检查字段的数据类型是否正确
+  if (
+    IsNullOrEmpty(pobjgs_TagsTypeEN.tagsTypeId) == false &&
+    undefined !== pobjgs_TagsTypeEN.tagsTypeId &&
+    tzDataType.isString(pobjgs_TagsTypeEN.tagsTypeId) === false
+  ) {
+    throw new Error(
+      '(errid:Watl000414)字段[标注类型ID(tagsTypeId)]的值:[$(pobjgs_TagsTypeEN.tagsTypeId)], 非法,应该为字符型(In 标注类型(gs_TagsType))!(clsgs_TagsTypeBL:CheckPropertyNew0)',
+    );
+  }
+  if (
+    IsNullOrEmpty(pobjgs_TagsTypeEN.tagsTypeName) == false &&
+    undefined !== pobjgs_TagsTypeEN.tagsTypeName &&
+    tzDataType.isString(pobjgs_TagsTypeEN.tagsTypeName) === false
+  ) {
+    throw new Error(
+      '(errid:Watl000414)字段[标注类型名称(tagsTypeName)]的值:[$(pobjgs_TagsTypeEN.tagsTypeName)], 非法,应该为字符型(In 标注类型(gs_TagsType))!(clsgs_TagsTypeBL:CheckPropertyNew0)',
+    );
+  }
+  if (
+    IsNullOrEmpty(pobjgs_TagsTypeEN.memo) == false &&
+    undefined !== pobjgs_TagsTypeEN.memo &&
+    tzDataType.isString(pobjgs_TagsTypeEN.memo) === false
+  ) {
+    throw new Error(
+      '(errid:Watl000414)字段[备注(memo)]的值:[$(pobjgs_TagsTypeEN.memo)], 非法,应该为字符型(In 标注类型(gs_TagsType))!(clsgs_TagsTypeBL:CheckPropertyNew0)',
+    );
+  }
+  //检查外键, 作为外键应该和主键的字段长度是一样的, 若不一样,即非法!
+
+  //设置说明该对象已经检查过了,后面不需要再检查,即非法!
+}
+/**
+ * 专业针对修改记录,检查对象字段值是否合法,1)检查字段值长度是否超长,如果出错就抛出错误.
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4BL_Ts_CheckPropertyNew)
+ */
+export function gs_TagsType_CheckProperty4Update(pobjgs_TagsTypeEN: clsgs_TagsTypeEN) {
+  //检查字段长度, 若字符型字段长度超出规定的长度,即非法!
+  if (
+    IsNullOrEmpty(pobjgs_TagsTypeEN.tagsTypeId) == false &&
+    GetStrLen(pobjgs_TagsTypeEN.tagsTypeId) > 2
+  ) {
+    throw new Error(
+      '(errid:Watl000416)字段[标注类型ID(tagsTypeId)]的长度不能超过2(In 标注类型(gs_TagsType))!值:$(pobjgs_TagsTypeEN.tagsTypeId)(clsgs_TagsTypeBL:CheckProperty4Update)',
+    );
+  }
+  if (
+    IsNullOrEmpty(pobjgs_TagsTypeEN.tagsTypeName) == false &&
+    GetStrLen(pobjgs_TagsTypeEN.tagsTypeName) > 200
+  ) {
+    throw new Error(
+      '(errid:Watl000416)字段[标注类型名称(tagsTypeName)]的长度不能超过200(In 标注类型(gs_TagsType))!值:$(pobjgs_TagsTypeEN.tagsTypeName)(clsgs_TagsTypeBL:CheckProperty4Update)',
+    );
+  }
+  if (IsNullOrEmpty(pobjgs_TagsTypeEN.memo) == false && GetStrLen(pobjgs_TagsTypeEN.memo) > 1000) {
+    throw new Error(
+      '(errid:Watl000416)字段[备注(memo)]的长度不能超过1000(In 标注类型(gs_TagsType))!值:$(pobjgs_TagsTypeEN.memo)(clsgs_TagsTypeBL:CheckProperty4Update)',
+    );
+  }
+  //检查字段的数据类型是否正确
+  if (
+    IsNullOrEmpty(pobjgs_TagsTypeEN.tagsTypeId) == false &&
+    undefined !== pobjgs_TagsTypeEN.tagsTypeId &&
+    tzDataType.isString(pobjgs_TagsTypeEN.tagsTypeId) === false
+  ) {
+    throw new Error(
+      '(errid:Watl000417)字段[标注类型ID(tagsTypeId)]的值:[$(pobjgs_TagsTypeEN.tagsTypeId)], 非法,应该为字符型(In 标注类型(gs_TagsType))!(clsgs_TagsTypeBL:CheckProperty4Update)',
+    );
+  }
+  if (
+    IsNullOrEmpty(pobjgs_TagsTypeEN.tagsTypeName) == false &&
+    undefined !== pobjgs_TagsTypeEN.tagsTypeName &&
+    tzDataType.isString(pobjgs_TagsTypeEN.tagsTypeName) === false
+  ) {
+    throw new Error(
+      '(errid:Watl000417)字段[标注类型名称(tagsTypeName)]的值:[$(pobjgs_TagsTypeEN.tagsTypeName)], 非法,应该为字符型(In 标注类型(gs_TagsType))!(clsgs_TagsTypeBL:CheckProperty4Update)',
+    );
+  }
+  if (
+    IsNullOrEmpty(pobjgs_TagsTypeEN.memo) == false &&
+    undefined !== pobjgs_TagsTypeEN.memo &&
+    tzDataType.isString(pobjgs_TagsTypeEN.memo) === false
+  ) {
+    throw new Error(
+      '(errid:Watl000417)字段[备注(memo)]的值:[$(pobjgs_TagsTypeEN.memo)], 非法,应该为字符型(In 标注类型(gs_TagsType))!(clsgs_TagsTypeBL:CheckProperty4Update)',
+    );
+  }
+  //检查主键是否为Null或者空!
+  //检查外键, 作为外键应该和主键的字段长度是一样的, 若不一样,即非法!
+}
+
+/**
+ * 把一个对象转化为一个JSON串
+ * 作者:pyf
+ * 日期:2023-11-08
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4BL_Ts_getJSONStrByRecObj)
+ * @param strJSON:需要转化的JSON串
+ * @returns 返回一个生成的对象
+ */
+export function gs_TagsType_GetJSONStrByObj(pobjgs_TagsTypeEN: clsgs_TagsTypeEN): string {
+  pobjgs_TagsTypeEN.sfUpdFldSetStr = pobjgs_TagsTypeEN.updFldString;
+  let strJson = '';
+  try {
+    strJson = JSON.stringify(pobjgs_TagsTypeEN);
+  } catch (objException) {
+    const strEx = GetExceptionStr(objException);
+    myShowErrorMsg(strEx);
+  }
+  if (strJson == undefined) return '';
+  else return strJson;
+}
+
+/**
+ * 把一个JSON串转化为一个对象列表
+ * 作者:pyf
+ * 日期:2023-11-08
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4BL_Ts_getObjLstByJSONStr)
+ * @param strJSON:需要转化的JSON串
+ * @returns 返回一个生成的对象列表
+ */
+export function gs_TagsType_GetObjLstByJSONStr(strJSON: string): Array<clsgs_TagsTypeEN> {
+  let arrgs_TagsTypeObjLst = new Array<clsgs_TagsTypeEN>();
+  if (strJSON === '') {
+    return arrgs_TagsTypeObjLst;
+  }
+  try {
+    arrgs_TagsTypeObjLst = JSON.parse(strJSON);
+  } catch (objException) {
+    return arrgs_TagsTypeObjLst;
+  }
+  return arrgs_TagsTypeObjLst;
+}
+
+/**
+ * 把一个JSON对象列表转化为一个实体对象列表
+ * 作者:pyf
+ * 日期:2023-11-08
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4BL_Ts_getObjLstByJSONObjLst)
+ * @param arrgs_TagsTypeObjLstS:需要转化的JSON对象列表
+ * @returns 返回一个生成的对象列表
+ */
+export function gs_TagsType_GetObjLstByJSONObjLst(
+  arrgs_TagsTypeObjLstS: Array<clsgs_TagsTypeEN>,
+): Array<clsgs_TagsTypeEN> {
+  const arrgs_TagsTypeObjLst = new Array<clsgs_TagsTypeEN>();
+  for (const objInFor of arrgs_TagsTypeObjLstS) {
+    const obj1 = gs_TagsType_GetObjFromJsonObj(objInFor);
+    if (obj1 == null) continue;
+    arrgs_TagsTypeObjLst.push(obj1);
+  }
+  return arrgs_TagsTypeObjLst;
+}
+
+/**
+ * 把一个JSON串转化为一个对象
+ * 作者:pyf
+ * 日期:2023-11-08
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4BL_Ts_getRecObjByJSONStr)
+ * @param strJSON:需要转化的JSON串
+ * @returns 返回一个生成的对象
+ */
+export function gs_TagsType_GetObjByJSONStr(strJSON: string): clsgs_TagsTypeEN {
+  let pobjgs_TagsTypeEN = new clsgs_TagsTypeEN();
+  if (strJSON === '') {
+    return pobjgs_TagsTypeEN;
+  }
+  try {
+    pobjgs_TagsTypeEN = JSON.parse(strJSON);
+  } catch (objException) {
+    return pobjgs_TagsTypeEN;
+  }
+  return pobjgs_TagsTypeEN;
+}
+
+/**
+ * 根据条件对象中的字段内容组合成一个条件串
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4BL_Ts_CombineConditionByCondObj)
+ * @returns 条件串(strWhereCond)
+ */
+export function gs_TagsType_GetCombineCondition(objgs_TagsTypeCond: clsgs_TagsTypeEN): string {
+  //使条件串的初值为"1 = 1",以便在该串的后面用"and "添加其他条件,
+  //例如 1 = 1 && UserName = '张三'
+  let strWhereCond = ' 1 = 1 ';
+  //如果该条件控件的内容不为空,就组成一个条件并添加到总条件串中。
+  if (
+    Object.prototype.hasOwnProperty.call(
+      objgs_TagsTypeCond.dicFldComparisonOp,
+      clsgs_TagsTypeEN.con_TagsTypeId,
+    ) == true
+  ) {
+    const strComparisonOpTagsTypeId: string =
+      objgs_TagsTypeCond.dicFldComparisonOp[clsgs_TagsTypeEN.con_TagsTypeId];
+    strWhereCond += Format(
+      " And {0} {2} '{1}'",
+      clsgs_TagsTypeEN.con_TagsTypeId,
+      objgs_TagsTypeCond.tagsTypeId,
+      strComparisonOpTagsTypeId,
+    );
+  }
+  if (
+    Object.prototype.hasOwnProperty.call(
+      objgs_TagsTypeCond.dicFldComparisonOp,
+      clsgs_TagsTypeEN.con_TagsTypeName,
+    ) == true
+  ) {
+    const strComparisonOpTagsTypeName: string =
+      objgs_TagsTypeCond.dicFldComparisonOp[clsgs_TagsTypeEN.con_TagsTypeName];
+    strWhereCond += Format(
+      " And {0} {2} '{1}'",
+      clsgs_TagsTypeEN.con_TagsTypeName,
+      objgs_TagsTypeCond.tagsTypeName,
+      strComparisonOpTagsTypeName,
+    );
+  }
+  if (
+    Object.prototype.hasOwnProperty.call(
+      objgs_TagsTypeCond.dicFldComparisonOp,
+      clsgs_TagsTypeEN.con_Memo,
+    ) == true
+  ) {
+    const strComparisonOpMemo: string =
+      objgs_TagsTypeCond.dicFldComparisonOp[clsgs_TagsTypeEN.con_Memo];
+    strWhereCond += Format(
+      " And {0} {2} '{1}'",
+      clsgs_TagsTypeEN.con_Memo,
+      objgs_TagsTypeCond.memo,
+      strComparisonOpMemo,
+    );
+  }
+  return strWhereCond;
+}
+
+/**
+ *获取唯一性条件串(Uniqueness)--gs_TagsType(标注类型),根据唯一约束条件来生成
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4BL_Ts_GetUniquenessConditionString)
+ * @param strTagsTypeId: 标注类型ID(要求唯一的字段)
+ * @param strTagsTypeName: 标注类型名称(要求唯一的字段)
+ * @returns 条件串(strWhereCond)
+ **/
+export function gs_TagsType_GetUniCondStr(objgs_TagsTypeEN: clsgs_TagsTypeEN): string {
+  let strWhereCond = ' 1 = 1 ';
+  strWhereCond += Format(" and TagsTypeId = '{0}'", objgs_TagsTypeEN.tagsTypeId);
+  strWhereCond += Format(" and TagsTypeName = '{0}'", objgs_TagsTypeEN.tagsTypeName);
+  return strWhereCond;
+}
+
+/**
+ *获取唯一性条件串(Uniqueness)--gs_TagsType(标注类型),根据唯一约束条件来生成
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4BL_Ts_GetUniquenessConditionString4Update)
+ * @param strTagsTypeId: 标注类型ID(要求唯一的字段)
+ * @param strTagsTypeName: 标注类型名称(要求唯一的字段)
+ * @returns 条件串(strWhereCond)
+ **/
+export function gs_TagsType_GetUniCondStr4Update(objgs_TagsTypeEN: clsgs_TagsTypeEN): string {
+  let strWhereCond = ' 1 = 1 ';
+  strWhereCond += Format(" and TagsTypeId <> '{0}'", objgs_TagsTypeEN.tagsTypeId);
+  strWhereCond += Format(" and TagsTypeId = '{0}'", objgs_TagsTypeEN.tagsTypeId);
+  strWhereCond += Format(" and TagsTypeName = '{0}'", objgs_TagsTypeEN.tagsTypeName);
+  return strWhereCond;
+}
+
+/**
+ * 把同一个类的对象,复制到另一个对象
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4BL_Ts_CopyObjTo)
+ * @param objgs_TagsTypeENS:源对象
+ * @param objgs_TagsTypeENT:目标对象
+ */
+export function gs_TagsType_CopyObjTo(
+  objgs_TagsTypeENS: clsgs_TagsTypeEN,
+  objgs_TagsTypeENT: clsgs_TagsTypeEN,
+): void {
+  objgs_TagsTypeENT.tagsTypeId = objgs_TagsTypeENS.tagsTypeId; //标注类型ID
+  objgs_TagsTypeENT.tagsTypeName = objgs_TagsTypeENS.tagsTypeName; //标注类型名称
+  objgs_TagsTypeENT.memo = objgs_TagsTypeENS.memo; //备注
+  objgs_TagsTypeENT.sfUpdFldSetStr = objgs_TagsTypeENS.updFldString; //sfUpdFldSetStr
+}
+
+/**
+ * 把一个JSON的对象,复制到另一个实体对象
+ * (AutoGCLib.WA_Access4TypeScript:Gen_4BL_Ts_GetObjFromJsonObj)
+ * @param objgs_TagsTypeENS:源对象
+ * @param objgs_TagsTypeENT:目标对象
+ */
+export function gs_TagsType_GetObjFromJsonObj(
+  objgs_TagsTypeENS: clsgs_TagsTypeEN,
+): clsgs_TagsTypeEN {
+  const objgs_TagsTypeENT: clsgs_TagsTypeEN = new clsgs_TagsTypeEN();
+  ObjectAssign(objgs_TagsTypeENT, objgs_TagsTypeENS);
+  return objgs_TagsTypeENT;
+}

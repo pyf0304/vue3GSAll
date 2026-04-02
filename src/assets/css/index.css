@@ -1,0 +1,205 @@
+﻿a,
+a:hover {
+  color: #333;
+  text-decoration: none;
+}
+
+.box1,
+.box2,
+.box3,
+.box4,
+.box5,
+.box6,
+.box7,
+.box8 {
+  width: 1000px;
+  float: left;
+  _float: none;
+}
+
+.box2,
+.box6 {
+  margin-top: 8px;
+}
+
+.box2 {
+  margin-bottom: 10px;
+}
+
+.title {
+  /*float: left;*/
+  padding-top: 10px;
+  text-indent: 10px;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.title a {
+  font-size: 14px;
+}
+
+/********************************快速通道列表********************************/
+
+.ExpressLane {
+  margin-top: 5px;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  float: left;
+  background: #fff;
+}
+
+.list_ul {
+  margin-top: 5px;
+  overflow: hidden;
+  width: 100%;
+  list-style: none;
+  padding: 0;
+  text-align: center;
+}
+/*background修改*/
+.list_ul li {
+  text-align: center;
+  float: left;
+  width: 33.333%;
+}
+
+.list_ul a {
+  display: block;
+  text-align: center;
+}
+/*background修改*/
+.list_ul i {
+  display: block;
+  width: 100px;
+  height: 100px;
+  border-radius: 45%;
+  margin: 0 auto;
+  overflow: hidden;
+  background-size: 300% auto;
+  background-image: url('../img/icon.png');
+}
+
+.list_ul label {
+  text-align: center;
+  height: 24px;
+  line-height: 24px;
+  display: block;
+  overflow: hidden;
+  word-spacing: normal;
+  word-break: break-all;
+  font-size: 14px;
+  font-weight: 400;
+  text-shadow: none;
+  color: white;
+  padding-bottom: 5px;
+}
+
+.icon-1 {
+  background-color: #ffa54f;
+}
+
+.icon-2 {
+  background-color: #40b990;
+}
+
+.icon-3 {
+  background-color: #4cc7eb;
+}
+
+.icon-4 {
+  background-color: #e9ad7b;
+}
+
+.icon-5 {
+  background-color: #6bc36d;
+}
+
+.icon-6 {
+  background-color: #c6958e;
+}
+
+.icon-7 {
+  background-color: #7994af;
+}
+
+.icon-8 {
+  background-color: #d32d13;
+}
+
+.icon-9 {
+  background-color: #699bd0;
+}
+
+.icon-10 {
+  background-color: #bd5ce1;
+}
+
+.icon-11 {
+  background-color: #9acabc;
+}
+
+.icon-12 {
+  background-position: 100% 99.4%;
+  background-color: #e9ad7b;
+}
+
+.icon-1 i {
+  background-position: 0 0;
+  /*background-color: #FFA54F;*/
+}
+
+.icon-2 i {
+  background-position: 50% 0;
+  /*background-color: #40B990;*/
+}
+
+.icon-3 i {
+  background-position: 100% 0;
+  /*background-color: #4CC7EB;*/
+}
+
+.icon-4 i {
+  background-position: 0 33.3%;
+  /*background-color: #E9AD7B;*/
+}
+
+.icon-5 i {
+  background-position: 50% 33.3%;
+  /*background-color: #6BC36D;*/
+}
+
+.icon-6 i {
+  background-position: 100% 33.3%;
+  /*background-color: #C6958E;*/
+}
+
+.icon-7 i {
+  background-position: 0 66.6%;
+  /*background-color: #7994AF;*/
+}
+
+.icon-8 i {
+  background-position: 50% 66%;
+  /*background-color: #D32D13;*/
+}
+
+.icon-9 i {
+  background-position: 100% 66.6%;
+  /*background-color: #699BD0;*/
+}
+
+.icon-10 i {
+  background-position: 0 100%;
+  /*background-color: #BD5CE1;*/
+}
+
+.icon-11 i {
+  background-position: 50% 100%;
+  /*background-color: #9ACABC;*/
+}
+
+.icon-12 i {
+  background-position: 100% 99.4%;
+  /*background-color: #E9AD7B;*/
+}

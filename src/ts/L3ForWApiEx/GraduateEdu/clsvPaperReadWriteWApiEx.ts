@@ -1,0 +1,115 @@
+﻿/*-- -- -- -- -- -- -- -- -- -- --
+类名:clsPaperReadWriteWApi
+表名:PaperReadWrite(01120547)
+生成代码版本:2020.01.02.1
+生成日期:2020/01/02 16:12:20
+生成者:
+生成服务器IP:192.168.1.10
+工程名称:问卷调查
+工程ID:0112
+相关数据库:tzar.tpddns.cn,19433EduHigh_Jsie
+PrjDataBaseId:0122
+模块中文名:研究生培养
+模块英文名:GraduateEdu
+框架-层名:WA_访问层(WA_Access)
+编程语言:TypeScript
+注意:1、需要数据底层(PubDataBase.dll)的版本:2019.03.07.01
+       2、需要公共函数层(TzPubFunction.dll)的版本:2017.12.21.01
+== == == == == == == == == == == == 
+*/
+
+/// <summary>
+/// 论文读写表(PaperReadWrite)
+/// (AutoGCLib.WA_Access4TypeScript:GeneCode)
+/// </summary>
+/**
+ * Created by  on 2020年01月02日.
+ * 注意:该类必须与调用界面处于同一个包，否则调用不成功!
+ */
+
+//import * as QQ from "q";
+import axios from 'axios';
+import { clsPaperReadWriteEN } from '@/ts/L0Entity/GradEduPaper/clsPaperReadWriteEN';
+
+import { clsvPaperReadWriteEN } from '@/ts/L0Entity/GradEduPaper/clsvPaperReadWriteEN';
+import { vPaperReadWrite_GetObjLstByJSONObjLst } from '@/ts/L3ForWApi/GradEduPaper/clsvPaperReadWriteWApi';
+import { Dictionary } from '@/ts/PubFun/tzDictionary';
+
+import { GetWebApiUrl, clsSysPara4WebApi } from '@/ts/PubConfig/clsSysPara4WebApi';
+import { Format } from '@/ts/PubFun/clsString';
+
+export class clsvPaperReadWriteWApiEx {
+  public static mstrController = 'vPaperReadWriteExApi';
+  public objPaperReadWriteEN: clsPaperReadWriteEN = new clsPaperReadWriteEN();
+  constructor(pobjPaperReadWriteEN: clsPaperReadWriteEN) {
+    this.objPaperReadWriteEN = pobjPaperReadWriteEN;
+  }
+
+  /// <summary>
+  /// 获取论文读写中的用户数量
+  /// (AutoGCLib.WA_Access4TypeScript:Gen_4WA_Ts_GetObjLstAsync)
+  /// </summary>
+  /// <param name = "strWhereCond">条件</param>
+  /// <returns>获取的相应对象列表</returns>
+  public static async GetUserNumObjLstAsync(
+    strWhereCond: string,
+  ): Promise<Array<clsvPaperReadWriteEN>> {
+    const strThisFuncName = 'GetUserNumObjLstAsync';
+    const strAction = 'GetUserNumObjLst';
+    const strUrl = GetWebApiUrl(this.mstrController, strAction);
+    const mapParam: Dictionary = new Dictionary();
+    mapParam.add('strWhereCond', strWhereCond);
+    // const strData = mapParam.getParamText(); // "例如: strIdentityID =01";
+    try {
+      const response = await axios.get(strUrl, {
+        params: { strWhereCond },
+      });
+      const data = response.data;
+      if (data.errorId == 0) {
+        const returnObjLst = data.returnObjLst;
+        if (returnObjLst == null) {
+          const strNullInfo = Format(
+            '获取数据为null, 请注意!(in {0}.{1})',
+            this.mstrController,
+            strThisFuncName,
+          );
+          console.error(strNullInfo);
+          throw strNullInfo;
+        }
+        //console.log(returnObjLst);
+        const arrObjLst = vPaperReadWrite_GetObjLstByJSONObjLst(returnObjLst);
+        return arrObjLst;
+      } else {
+        console.error(data.errorMsg);
+        throw data.errorMsg;
+      }
+    } catch (error: any) {
+      console.error(error);
+      if (error.statusText == undefined) {
+        throw error;
+      }
+      if (error.statusText == 'error') {
+        const strInfo = Format(
+          '网络错误！访问地址:{0}不成功！(in {1}.{2})',
+          strUrl,
+          this.mstrController,
+          strThisFuncName,
+        );
+        console.error(strInfo);
+        throw strInfo;
+      } else if (error.statusText == 'Not Found') {
+        const strInfo = Format(
+          '网络错误！访问地址:{0}可能不存在！(in {1}.{2})',
+          strUrl,
+          this.mstrController,
+          strThisFuncName,
+        );
+        console.error(strInfo);
+        throw strInfo;
+      } else {
+        throw error.statusText;
+      }
+    }
+  }
+
+}

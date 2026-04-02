@@ -1,0 +1,498 @@
+﻿@page
+@{
+
+    //Layout = "~/Pages/Shared/_Layout_RequireJS.cshtml";
+    Layout = "~/Pages/Shared/_Layout_PC.cshtml";
+    ViewData["Title"] = "论文表维护";
+}
+@section Styles{
+
+    @*<link rel="stylesheet" href="../css/Bootstrap-3.0.3.css" />*@
+    <link rel="stylesheet" href="../lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="../css/site.css" />
+
+    <link rel="stylesheet" href="~/lib/Xadmin/css/font.css">
+    <link rel="stylesheet" href="~/lib/Xadmin/css/xadmin.css">
+
+    <link rel="stylesheet" href="~/css/paperlist.css" />
+    <link rel="stylesheet" href="~/css/public.css" />
+    <link rel="stylesheet" href="~/css/Tabs.css" />
+
+
+}
+@section Scripts{
+    <script src="../lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/Xadmin/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="~/lib/Xadmin/js/xadmin.js"></script>
+    <script src="../lib/bootstrap/dist/js/bootstrap.js"></script>
+
+    <script>
+        layui.use(['laydate', 'form'],
+            function () {
+                var laydate = layui.laydate;
+
+                //执行一个laydate实例
+                laydate.render({
+                    elem: '#txtUpdDate_q' //指定元素
+                });
+
+            });
+    </script>
+    <script src="../lib/require/require.js" data-main="../js/src/config"></script>
+
+}
+<script>
+    window.onload = function () {
+        $("#hidTabPaper").val("1");
+        //GetPaperTypeId_load();
+        require(["../js/GraduateEduEx/Paper_ListEx.js"], function (paper) {
+            var objPage = new paper.Paper_ListEx();
+            objPage.Page_Load();
+
+
+        });
+    }
+
+        /**
+     按钮单击,用于调用Js函数中btn_Click
+    (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_btn_Click)
+    **/
+    function btn_Click(strCommandName, strKeyId) {
+        require(["../js/GraduateEduEx/Paper_ListEx.js"], function (gs_paperlist) {
+            gs_paperlist.Paper_ListEx.btn_Click(strCommandName, strKeyId);
+        });
+    }
+
+
+    /*
+详细记录
+(AutoGCLib.WA_ViewScript_TS4CSharp:btnDetailRecord_Click)
+*/
+    function btnDetailRecordInTab_Click(strKeyId: string) {
+        GetReadWriteTypeId();
+        //require(["../js/GraduateEduEx/Paper_ListEx.js"], function (paperreadwrite) {
+        //    if (strKeyId == "") {
+        //        alert("请选择需要查看的记录！");
+        //        return;
+        //    }
+           
+        //    //var objPage = new paperreadwrite.PaperReadWrite_QUDI_TSEx();
+        //    //objPage.btnDetailRecord_Click();
+        //});
+        window.location.href = "../GraduateEduEx/PaperDetail?PaperId=" + strKeyId;
+    }
+    /*
+详细记录
+(AutoGCLib.WA_ViewScript_TS4CSharp:btnDetailRecord_Click)
+*/
+    function btnDetailRecord_Click() {
+        GetReadWriteTypeId();
+      
+        window.location.href = "../GraduateEduEx/PaperDetail?PaperId='" + strKeyId + "'";
+    }
+
+
+ /*
+  查询记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+ */
+function btnQuery_Click()
+{
+   require(["../js/GraduateEduEx/Paper_ListEx.js"], function(paper) {
+$("#Text1").val("进入函数：btnQuery_Click");
+var objPage = new paper.Paper_ListEx();
+objPage.btnQuery_Click();
+});
+}
+
+    /*
+ 专业分页修改
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_IndexPage)
+*/
+    function IndexPageOne(intPageIndex: number) {
+        console.log("跳转到" + intPageIndex + "页");
+        require(["../js/GraduateEduEx/Paper_ListEx.js"], function (xzmajordirection) {
+            var objPage = new xzmajordirection.Paper_ListEx();
+            objPage.IndexPageOne(intPageIndex);
+        });
+    }
+
+    /*
+     专业分页修改
+    (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_JumpToPage)
+    */
+    function JumpToPageOne() {
+        var intCurrPageIndex = $('#input_numberOne').val();
+        var intPageIndex = Number(intCurrPageIndex);
+        console.log("跳转到" + intPageIndex + "页");
+        require(["../js/GraduateEduEx/Paper_ListEx.js"], function (xzmajordirection) {
+            var objPage = new xzmajordirection.Paper_ListEx();
+            objPage.IndexPageOne(intPageIndex);
+        });
+    }
+    /*
+ 专业分页修改
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_PageNum)
+*/
+    function PageNumOne(intPageIndex: number) {
+        console.log("跳转到" + intPageIndex + "页");
+        require(["../js/GraduateEduEx/Paper_ListEx.js"], function (xzmajordirection) {
+            var objPage = new xzmajordirection.Paper_ListEx();
+            objPage.IndexPageOne(intPageIndex);
+        });
+    }
+
+    /*
+     专业分页修改
+    (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_PrevPage)
+    */
+    function PrevPageOne() {
+        var intCurrPageIndex = $('#hidCurrPageIndex').val();
+        var intPageIndex = Number(intCurrPageIndex) - 1;
+        console.log("跳转到" + intPageIndex + "页");
+        require(["../js/GraduateEduEx/Paper_ListEx.js"], function (xzmajordirection) {
+            var objPage = new xzmajordirection.Paper_ListEx();
+            objPage.IndexPageOne(intPageIndex);
+        });
+    }
+    /*
+  专业分页修改
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_NextPage)
+ */
+    function NextPageOne() {
+        var intCurrPageIndex = $('#hidCurrPageIndex').val();
+        var intPageIndex = Number(intCurrPageIndex) + 1;
+        console.log("跳转到" + intPageIndex + "页");
+        require(["../js/GraduateEduEx/Paper_ListEx.js"], function (xzmajordirection) {
+            var objPage = new xzmajordirection.Paper_ListEx();
+            objPage.IndexPageOne(intPageIndex);
+        });
+    }
+
+
+    /*
+添加点赞
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnAddNewRecord_Click)
+*/
+    function btnAddVote_Click(strKeyId,UserId) {
+        //$('#hidSubViewpointId').val(strKeyId);
+        require(["../js/GraduateEduEx/Paper_ListEx.js"], function (Paper_ListEx) {
+            var objPage = new Paper_ListEx.Paper_ListEx();
+            objPage.btnAddVote_Click(strKeyId, UserId);
+        });
+
+        layer.msg('已点赞!', {
+            icon: 1,
+            time: 2000
+        });
+    }
+
+
+    /*
+添加收藏
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnAddNewRecord_Click)
+*/
+    function btnAddCollection_Click(strKeyId: string) {
+        //$('#hidSubViewpointId').val(strKeyId);
+        require(["../js/GraduateEduEx/Paper_ListEx.js"], function (Paper_ListEx) {
+            var objPage = new Paper_ListEx.Paper_ListEx();
+            objPage.btnAddCollection_Click(strKeyId);
+        });
+        layer.msg('已收藏!', {
+            icon: 1,
+            time: 2000
+        });
+    }
+
+    //下载
+    function btnDownLoadFile_Click(strKeyId: string) {
+        require(["../js/GraduateEduEx/Paper_ListEx.js"], function (Paper_ListEx) {
+            var objpage = new Paper_ListEx.Paper_ListEx();
+            objpage.btnDownLoadFile_Click(strKeyId);
+
+        });
+    }
+
+
+    //下载方法
+    function doDownLoad(filepath: string, filename: string) {
+        var aLink = document.createElement('a');
+        aLink.download = filename;
+        aLink.href = filepath;
+        document.body.appendChild(aLink);
+        aLink.click();
+        document.body.removeChild(aLink);
+    }
+
+    /**智能排序事件 */
+    function PaperSort_Click() {
+        require(["../js/GraduateEduEx/Paper_ListEx.js"], function (Paper_ListEx) {
+            var objPage = new Paper_ListEx.Paper_ListEx();
+            objPage.PaperSort_Click();
+        });
+    }
+
+    //根据专业得到专业方向
+    function selectXzMajorDirection_Click() {
+        require(["../js/GraduateEduEx/Paper_ListEx.js"], function (Paper_ListEx) {
+            var objPage = new Paper_ListEx.Paper_ListEx();
+            objPage.selectXzMajorDirection_Click();
+        });
+    }
+
+    //刷新
+    function Refresh_Click() {
+        //location.reload();
+
+        require(["../js/GraduateEduEx/Paper_ListEx.js"], function (Paper_ListEx) {
+            var objPage = new Paper_ListEx.Paper_ListEx();
+            objPage.Refresh_Click();
+        });
+    }
+
+
+    //我的论文
+    function MyPaper_Click() {
+        //xadmin.open('申请添加主题', '../GraduateEduTopic/ApplyTopic', '', '', true);
+        xadmin.open('我的论文', '../GraduateEduEx/Paper_QUDI', '', '', true);
+    }
+
+    //论文阅读
+    function PaperRead_Click() {
+        //xadmin.open('申请添加主题', '../GraduateEduTopic/ApplyTopic', '', '', true);
+        xadmin.open('论文阅读', '../GraduateEduEx/PaperReadList?ReadWriteTypeId=03', '', '', true);
+    }
+
+    //论文答疑
+    function PaperQA_Click() {
+        //xadmin.open('申请添加主题', '../GraduateEduTopic/ApplyTopic', '', '', true);
+        xadmin.open('论文答疑', '../InteractManage/qa_PaperCRUD?typeid=1', '', '', true);
+    }
+
+    //信息提示
+    function layui_Alert(iconKey, strMsg) {
+
+        layer.msg(strMsg, {
+            icon: iconKey,
+            time: 2000
+        });
+    }
+
+    function PaperSubV_Click(strKey) {
+        //xadmin.open('申请添加主题', '../GraduateEduTopic/ApplyTopic', '', '', true);
+        xadmin.open('pdf论文子观点查看', '../GraduateEduEx/PaperSubViewpoint_pdf?Type=02&PaperId=' + strKey, '', '', true);
+    }
+     function PaperSubVer_Click(strKey) {
+        //xadmin.open('申请添加主题', '../GraduateEduTopic/ApplyTopic', '', '', true);
+        xadmin.open('pdf论文子观点查看', '../GraduateEduEx/PaperSubViewpoint_pdf?Type=02&PaperId=' + strKey, '', '', true);
+    }
+</script>
+<div id="divLoading" class="loading">
+    <img src="~/images/CirclePoint.gif" />
+</div>
+<a id="backtop" class="back-top" href="javascript:scroll(0,0);" target="_self" title="返回顶部" style="display: block;">
+    <i class="icon-backtop"></i>
+</a>
+<div id="tabLayout" class="tab_layout">
+    @*-- 标题层 --*@
+    <div class="x-nav">
+        <span class="layui-breadcrumb">
+            <a href="">首页</a>
+            <a href="">论文管理</a>
+            <a>
+                <cite>
+                    <span id="lbltitle" name="lbltitle">论文查看</span>
+                </cite>
+            </a>
+            <Label id="lblMsg_List" name="lblMsg_List"></Label>
+        </span>
+        <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="Refresh_Click()" title="刷新">
+            <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+        </a>
+        @*<a class="layui-btn layui-btn-small layui-btn-warm" style="line-height:1.6em;margin:0px 5px 0px 5px;float:right" onclick="PaperQA_Click()" title="论文答疑">
+                <i class="layui-icon layui-icon-survey" style="line-height:32px"></i>论文答疑
+            </a>
+            <a class="layui-btn layui-btn-small layui-btn-normal" style="line-height:1.6em;margin:0px 5px 0px 5px;float:right" onclick="PaperRead_Click()" title="论文观点(阅读)">
+                <i class="layui-icon layui-icon-read" style="line-height:30px"></i>论文观点(阅读)
+            </a>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin:0px 5px 0px 5px;float:right" onclick="MyPaper_Click()" title="我的论文">
+                <i class="layui-icon layui-icon-username" style="line-height:30px"></i>我的论文
+            </a>*@
+
+
+
+    </div>
+    @*-- 查询层 --*@
+
+
+    <div id="divQuery" class="div_query">
+
+        <table id="tabQuery" name="tabQuery" style="width: 60%; " class="table table-bordered table-hover table td table-sm">
+            <tr>
+
+                <td>
+                    <input id="txtPaperTitle_q" name="txtPaperTitle_q" placeholder="论文标题" class="layui-input" style="width:250px;" />
+                </td>
+                <td>
+                    <input class="layui-input" placeholder="发表日期" name="txtUpdDate_q" id="txtUpdDate_q" style="width:120px;">
+                </td>
+                <td class="ValueTD">
+                    <select id="ddlLiteratureTypeId_q" name="ddlLiteratureTypeId_q" class="form-control" style="width:170px;" />
+                </td>
+
+                @*<td>
+                    <select id="ddlid_XzMajor_q" name="ddlid_XzMajor_q" class="form-control" style="width:170px;" />*@
+                @*<select id="ddlid_XzMajor_q" name="ddlid_XzMajor_q" class="form-control" onchange="selectXzMajorDirection_Click()" style="width:170px;" />*@
+                @*</td>*@
+                <td>
+                    <select id="ddlUserId_q" name="ddlUserId_q" class="form-control" style="width:170px;" />
+                </td>
+                <td class="ValueTD">
+                    <select id="ddlPaperTypeId_q" name="ddlPaperTypeId_q" class="form-control" style="width:200px;" />
+                </td>
+                <td>            <select id="ddlMajorDirectionId_SetFldValue" name="ddlMajorDirectionId_SetFldValue" class="form-control ml-1" style="width:150px;"></select>
+</td>
+                <td>
+                    <button class="layui-btn" lay-submit="" lay-filter="sreach" onclick="btnQuery_Click()">
+                        <i class="layui-icon">&#xe615;</i>
+                    </button>
+                </td>
+            </tr>
+            @*<button type="submit" id="btnQuery" name="btnQuery" class="btn btn-outline-warning text-nowrap" onclick="btnQuery_Click()">查询</button>*@
+            @*  <tr>*@
+            @*<td>
+                    <Label id="lblid_XzMajor_q" name="lblid_XzMajor_q" class="col-form-label text-right" style="width:80px;width:90px;">
+                        专业
+                    </Label>
+                </td>*@
+
+            @*<td>
+                    <Label id="lblddlMajorDirectionId_q" name="lblddlMajorDirectionId_q" class="col-form-label text-right" style="width:80px;width:90px;">
+                        专业方向
+                    </Label>
+                </td>
+                <td>
+                    <select id="ddlMajorDirectionId_q" name="ddlMajorDirectionId_q" class="form-control" style="width:200px;" />
+                </td>*@
+            @*<td>
+
+                    </td>
+                </tr>*@
+        </table>
+    </div>
+    @*-- 功能区 --*@
+    <div>
+        <select id="ddlPaperSort" name="ddlPaperSort" class="form-control" style="width:150px; float:right; margin-right:20px; color:red;" onchange="PaperSort_Click()">
+            <option value="0">智能排序...</option>
+            <option value="1">时间排序</option>
+            <option value="2">标题排序</option>
+            <option value="3">评论数优先</option>
+            <option value="4">评分优先</option>
+            <option value="5">读写数优先</option>
+            <option value="6">浏览量优先</option>
+            <option value="7">人气优先</option>
+        </select>
+    </div>
+    @*<div id="divFunction" class="table table-bordered table-hover">
+            <ul class="nav">
+                <li class="nav-item" style="width:100%;">
+                    <Label id="lblPaperList" name="lblPaperList" class="col-form-label text-info" style="width:250px;">
+
+                    </Label>
+                </li>
+                <li class="nav-item ml-3">
+
+                </li>
+
+            </ul>
+        </div>*@
+    @*-- 列表层 --*@
+    <div id="divList" class="div_List">
+
+        <div style="height:100%;width:100%;background-color:#FFF;">
+
+            <ul id="myTab" class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#AllPaper" data-toggle="tab" onclick=btn_Click('AllPaper')>
+                        全部论文
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#CurrEduClsPaper" data-toggle="tab" onclick=btn_Click('CurrEduCls')>
+                        本教学班论文
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#MyMajor" data-toggle="tab" onclick="btn_Click('Major')"><span id="spnMajorName" class="font-weight-bold"></span>专业论文</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"  id="aMajorDirectionName" href="#MyDirection" data-toggle="tab" onclick="btn_Click('MajorDirection')">本方向论文</a>
+                </li>
+            </ul>
+            <div id="myTabContent" class="tab-content">
+                <div class="tab-pane active" id="AllPaper" style="padding:5px;">
+                    <p>
+                        <div id="divDataLst" class="div_List">
+                        </div>
+                          <div id="divPager" class="pager" value="1" style="display:none;">
+                               
+                            </div>
+                    </p>
+                </div>
+                <div class="tab-pane fade" id="CurrEduClsPaper" style="padding:5px;">
+                    <p>
+                        <div id="divCurrEduClsDataLst" class="div_List">
+                        </div>
+                        <div id="divPager_CurrEduCls" class="pager" value="1" style="display:none;">
+                               
+                            </div>
+                    </p>
+                </div>
+                <div class="tab-pane fade" id="MyMajor">
+                    <p>
+                        <div id="divDataLstMajor" class="div_List">
+                        </div>
+                        <div id="divPager_Major" class="pager" value="1">
+                               
+                            </div>
+                    </p>
+                </div>
+                <div class="tab-pane fade" id="MyDirection">
+                    <p>
+                        <div id="divDataLstDirection" class="div_List">
+                        </div>
+                          <div id="divPager_Direction" class="pager" value="1" style="display:none;">
+               
+            </div>
+                        @*<div id="divPager" class="pager" value="1">
+                               
+                            </div>*@
+                    </p>
+                </div>
+            </div>
+          
+        </div>
+    </div>
+
+</div>
+
+<input id="hidOpType" type="hidden" />
+<input id="hidKeyId" type="hidden" />
+
+<input id="hidCurrPageIndex" type="hidden" value="1" />
+<input id="hidSortvPaperBy" type="hidden" value="" />
+
+<input id="hidUserId" type="hidden" />
+<input id="hdnpic" type="hidden" />
+<input id="hidPaperTypeId" type="hidden" />
+
+<input id="hdnFileOne" type="hidden" />
+<input id="hdnFileTwo" type="hidden" />
+<input id="hdnpicThree" type="hidden" />
+
+
+<input id="hidSortvXzMajorDirectionBy" type="hidden" value="" />
+<input id="hidPaperId" type="hidden" />
+<input id="hidMajorDirectionId" type="hidden" />
+
+<input id="hidTabPaper" type="hidden" />

@@ -1,0 +1,933 @@
+﻿@page
+@model GraduateStudyWebApp.Pages.GraduateEduTools.SysComment_QUDI_TSModel
+@{
+    Layout = "~/Pages/Shared/_Layout_PC.cshtml";
+    ViewData["Title"] = "SysComment维护";
+    //操作Session样例，方法1：
+    //Model.seUserId = "TestUserId";
+    var strUserId_Value = Model.seUserId;
+    //操作Session样例，方法2：
+    Model.SetSession("UserId1", "TestUserId1");
+    var strUserId1_Value = Model.GetSession("UserId1");
+    //请参见页尾的隐形控件hidUserid和hidUserId1的使用。
+}
+
+@section Styles{
+    <link rel="stylesheet" href="../css/Bootstrap-3.0.3.css" />
+    <link rel="stylesheet" href="../lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="../css/site.css" />
+    <link rel="stylesheet" href="~/lib/Xadmin/css/font.css">
+    <link rel="stylesheet" href="~/lib/Xadmin/css/xadmin.css">
+
+    <link rel="stylesheet" href="~/css/public.css" />
+
+}
+@section Scripts{
+    <script src="~/lib/Xadmin/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="~/lib/Xadmin/js/xadmin.js"></script>
+
+    <script src="../lib/jquery/dist/jquery.js"></script>
+    <script src="../lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="../js/site.js" asp-append-version="true"></script>
+    @*<script src="../lib/bootstrap/dist/js/popper-utils.js"></script>*@
+
+    <!--tab选项卡-->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap.min.js"></script>
+
+
+    <script>
+        layui.use(['laydate', 'form'],
+            function () {
+                var laydate = layui.laydate;
+
+                //执行一个laydate实例
+                laydate.render({
+                    elem: '#txtStartDate_q' //指定元素
+                });
+
+                //执行一个laydate实例
+                laydate.render({
+                    elem: '#txtEndDate_q' //指定元素
+                });
+            });
+    </script>
+
+    <script src="../lib/require/require.js" data-main="../js/src/config"></script>
+}
+<script>
+
+var strUrl_Session_SetString = "@Model.Url_Session_SetString";
+var strUrl_Session_GetString = "@Model.Url_Session_GetString";
+    var strCurrPrjId = "@Model.CurrPrjId";
+
+
+
+    //删除；
+
+    function btnDelSysComment(strKeyId) {
+        //存储点击的id
+        $("#hidCommentId").val(strKeyId);
+
+   
+        require(["../js/GraduateEduTools/SysComment_QUDI_TSEx.js"], function (Statistics) {
+            var objPage = new Statistics.SysComment_QUDI_TSEx();
+            objPage.btnDelSysComment(strKeyId);
+        });
+    }
+    ///////////////////////----------tab评价点击事件
+    /*
+论文评论
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+*/
+    function li_PaperComment_Click() {
+        require(["../js/GraduateEduTools/SysComment_QUDI_TSEx.js"], function (Statistics) {
+            $("#hidQueryStata").val("1");
+            $("#Text1").val("进入函数：li_PaperComment_Click");
+            var objPage = new Statistics.SysComment_QUDI_TSEx();
+            objPage.li_PaperComment_Click();
+        });
+    }
+
+
+    /*
+论文子观点评论
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+*/
+    function li_PaperSubViewpointComment_Click() {
+        require(["../js/GraduateEduTools/SysComment_QUDI_TSEx.js"], function (Statistics) {
+            $("#hidQueryStata").val("2");
+            $("#Text1").val("进入函数：li_PaperSubViewpointComment_Click");
+            var objPage = new Statistics.SysComment_QUDI_TSEx();
+            objPage.li_PaperSubViewpointComment_Click();
+        });
+    }
+
+    /*
+个人观点评论
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+*/
+    function li_ViewpointComment_Click() {
+        require(["../js/GraduateEduTools/SysComment_QUDI_TSEx.js"], function (Statistics) {
+            $("#hidQueryStata").val("3");
+            $("#Text1").val("进入函数：li_ViewpointComment_Click");
+            var objPage = new Statistics.SysComment_QUDI_TSEx();
+            objPage.li_ViewpointComment_Click();
+        });
+    }
+
+
+    /*
+专家观点评论
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+*/
+    function li_ExpertViewpointComment_Click() {
+        require(["../js/GraduateEduTools/SysComment_QUDI_TSEx.js"], function (Statistics) {
+            $("#hidQueryStata").val("4");
+            $("#Text1").val("进入函数：li_ExpertViewpointComment_Click");
+            var objPage = new Statistics.SysComment_QUDI_TSEx();
+            objPage.li_ExpertViewpointComment_Click();
+        });
+    }
+
+    /*
+概念评论
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+*/
+    function li_ConceptComment_Click() {
+        require(["../js/GraduateEduTools/SysComment_QUDI_TSEx.js"], function (Statistics) {
+            $("#hidQueryStata").val("5");
+            $("#Text1").val("进入函数：li_ConceptComment_Click");
+            var objPage = new Statistics.SysComment_QUDI_TSEx();
+            objPage.li_ConceptComment_Click();
+        });
+    }
+    /*
+客观事实评论
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+*/
+    function li_ObjectiveFactComment_Click() {
+        require(["../js/GraduateEduTools/SysComment_QUDI_TSEx.js"], function (Statistics) {
+            $("#hidQueryStata").val("6");
+            $("#Text1").val("进入函数：li_ObjectiveFactComment_Click");
+            var objPage = new Statistics.SysComment_QUDI_TSEx();
+            objPage.li_ObjectiveFactComment_Click();
+        });
+    }
+
+    /*
+客观数据评论
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+*/
+    function li_ObjectiveBasisComment_Click() {
+        require(["../js/GraduateEduTools/SysComment_QUDI_TSEx.js"], function (Statistics) {
+            $("#hidQueryStata").val("7");
+            $("#Text1").val("进入函数：li_ObjectiveBasisComment_Click");
+            var objPage = new Statistics.SysComment_QUDI_TSEx();
+            objPage.li_ObjectiveBasisComment_Click();
+        });
+    }
+
+
+
+    function tbody() {
+        $("tbody.x-cate tr[fid!='0']").hide();
+        // 栏目多级显示效果
+        $('.x-show').click(function () {
+            if ($(this).attr('status') == 'true') {
+                $(this).html('&#xe625;');
+                $(this).attr('status', 'false');
+                cateId = $(this).parents('tr').attr('cate-id');
+                $("tbody tr[fid=" + cateId + "]").show();
+            } else {
+                cateIds = [];
+                $(this).html('&#xe623;');
+                $(this).attr('status', 'true');
+                cateId = $(this).parents('tr').attr('cate-id');
+                getCateId(cateId);
+                for (var i in cateIds) {
+                    $("tbody tr[cate-id=" + cateIds[i] + "]").hide().find('.x-show').html('&#xe623;').attr('status', 'true');
+                }
+            }
+        })
+    }
+
+    var cateIds = [];
+    function getCateId(cateId) {
+        $("tbody tr[fid=" + cateId + "]").each(function (index, el) {
+            id = $(el).attr('cate-id');
+            cateIds.push(id);
+            getCateId(id);
+        });
+    }
+
+ /*
+  添加新记录
+ (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_btnAddNewRecord_Click)
+ */
+function btnAddNewRecord_Click() {
+   require(["../js/GraduateEduTools/SysComment_QUDI_TSEx.js"], function(syscomment) {
+ShowDialog('Add');
+var objPage = new syscomment.SysComment_QUDI_TSEx();
+objPage.btnAddNewRecord_Click();
+});
+}
+
+ /*
+  删除记录的事件函数
+ (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_btnDelRecord_Click)
+ */
+function btnDelRecord_Click() {
+   require(["../js/GraduateEduTools/SysComment_QUDI_TSEx.js", "../js/TS/PubFun/clsCommonFunc4Web.js"], function(syscomment, commonfunc) {
+var arrKeyIds = commonfunc.clsCommonFunc4Web.GetCheckedKeyIds();
+if (arrKeyIds.length == 0)
+{
+alert("请选择需要删除的记录！");
+return;
+}
+var objPage = new syscomment.SysComment_QUDI_TSEx();
+objPage.btnDelRecord_Click();
+});
+}
+
+
+ /*
+  在数据表里删除记录的事件函数
+ (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_btnDelRecordInTab_Click)
+ */
+function btnDelRecordInTab_Click(strKeyId) {
+   require(["../js/GraduateEduTools/SysComment_QUDI_TSEx.js"], function(syscomment) {
+if (strKeyId == "")
+{
+alert("请选择需要删除的记录！");
+return;
+}
+var objPage = new syscomment.SysComment_QUDI_TSEx();
+objPage.btnDelRecordInTab_Click(strKeyId);
+});
+}
+
+
+ /*
+  查询记录
+ (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_btnQuery_Click)
+ */
+function btnQuery_Click()
+{
+   require(["../js/GraduateEduTools/SysComment_QUDI_TSEx.js"], function(syscomment) {
+$("#Text1").val("进入函数：btnQuery_Click");
+var objPage = new syscomment.SysComment_QUDI_TSEx();
+objPage.btnQuery_Click();
+});
+}
+
+ 
+
+
+ /*
+  在数据表里修改记录
+ (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_btnUpdateRecordInTab_Click)
+ */
+function btnUpdateRecordInTab_Click(strKeyId) {
+   require(["../js/GraduateEduTools/SysComment_QUDI_TSEx.js"], function(syscomment) {
+    if (strKeyId == "")
+{
+alert("请选择需要修改的记录！");
+return;
+}
+ShowDialog('Update');
+var objPage = new syscomment.SysComment_QUDI_TSEx();
+  objPage.btnUpdateRecordInTab_Click(strKeyId);
+});
+}
+
+
+ /*
+  单击数据列表中每行首列的复选框所引发的事件
+ (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_ChkClick)
+ */
+function ChkClick(myThis)
+{
+require(["../js/GraduateEduTools/SysComment_QUDI_TSEx.js", "../js/TS/PubFun/clsCommonFunc4Web.js"], function(syscomment, commonfunc) {
+var strId = myThis.id;
+var strKey = strId.substring(3);
+var arrKeys = commonfunc.arrSelectedKeys;
+if (myThis.checked == true) {
+if (arrKeys.indexOf(strKey) < 0)
+{
+arrKeys.push(strKey);
+}
+}
+else {
+var index = arrKeys.indexOf(strKey);
+if (index > -1)
+{
+arrKeys.splice(index, 1);
+}
+}
+var sstrKey = "";
+for (let strK of arrKeys)
+{
+sstrKey += `${ strK},`;
+}
+$('#spanResult').html(sstrKey);
+});
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_ExpandDiv)
+ */
+         function ExpandDiv(divName) {
+//基于RequireJS来调用tzPubFun.ts中的函数OnlyShowDiv。
+require(["../js/TS/PubFun/tzPubFun"], function (pubfun) {
+      pubfun.OnlyShowDiv(divName, "function", "content");
+});
+}
+
+ /*
+  获取数据列表中的所选记录
+ (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_GetAllCkechedKeys)
+ */
+function GetAllCkechedKeys(tabName)
+{
+var arrKeys = tabName.getElementsByTagName('chkInTab');
+alert(arrKeys.length.toString());
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_IndexPage)
+ */
+function IndexPage(intPageIndex)
+{
+console.log("跳转到" + intPageIndex + "页");
+require(["../js/GraduateEduTools/SysComment_QUDI_TSEx.js"], function(syscomment) {
+var objPage = new syscomment.SysComment_QUDI_TSEx();
+objPage.IndexPage(intPageIndex);
+});
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_JumpToPage)
+ */
+function JumpToPage()
+{
+var intCurrPageIndex = $('#input_number').val();
+var intPageIndex = Number(intCurrPageIndex);
+console.log("跳转到" + intPageIndex + "页");
+require(["../js/GraduateEduTools/SysComment_QUDI_TSEx.js"], function(syscomment) {
+var objPage = new syscomment.SysComment_QUDI_TSEx();
+objPage.IndexPage(intPageIndex);
+});
+}
+
+ /*
+  提交编辑
+ (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_mySubmit)
+ */
+    function mySubmit(pstrOp) {
+       $('#hidOpType').val("AddWithMaxId");
+//    alert("提交" + strOp);
+       require(["../js/GraduateEduTools/SysComment_QUDI_TSEx.js"], function(syscomment) {
+       var objPage = new syscomment.SysComment_QUDI_TSEx();
+       objPage.btnOKUpd_Click();
+    });
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_NextPage)
+ */
+function NextPage()
+{
+var intCurrPageIndex = $('#hidCurrPageIndex').val();
+var intPageIndex = Number(intCurrPageIndex) + 1;
+console.log("跳转到" + intPageIndex + "页");
+require(["../js/GraduateEduTools/SysComment_QUDI_TSEx.js"], function(syscomment) {
+var objPage = new syscomment.SysComment_QUDI_TSEx();
+objPage.IndexPage(intPageIndex);
+});
+}
+
+ /*
+  页面导入-在导入页面后运行的函数
+ (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_Page_Load)
+ */
+window.onload = function() {
+   require(["../js/GraduateEduTools/SysComment_QUDI_TSEx.js"], function(syscomment) {
+       var objPage = new syscomment.SysComment_QUDI_TSEx();
+       $("#hidQueryStata").val("1");
+       objPage.Page_Load();
+
+   });
+    //tbody();
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_PageNum)
+ */
+function PageNum(intPageIndex)
+{
+console.log("跳转到" + intPageIndex + "页");
+require(["../js/GraduateEduTools/SysComment_QUDI_TSEx.js"], function(syscomment) {
+var objPage = new syscomment.SysComment_QUDI_TSEx();
+objPage.IndexPage(intPageIndex);
+});
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_PrevPage)
+ */
+function PrevPage()
+{
+var intCurrPageIndex = $('#hidCurrPageIndex').val();
+var intPageIndex = Number(intCurrPageIndex) - 1;
+console.log("跳转到" + intPageIndex + "页");
+require(["../js/GraduateEduTools/SysComment_QUDI_TSEx.js"], function(syscomment) {
+var objPage = new syscomment.SysComment_QUDI_TSEx();
+objPage.IndexPage(intPageIndex);
+});
+}
+
+ /*
+  全选数据列表中的所有记录
+ (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_SetAllCkechedKeys)
+ */
+function SetAllCkechedKeys(tabName)
+{
+var thisChk = event.target;
+require(["../js/TS/PubFun/clsCommonFunc4Web.js"], function (commonfunc) {
+console.log(tabName);
+console.log(thisChk);
+commonfunc.clsCommonFunc4Web.SetAllCkechedKeys(tabName, thisChk);
+});
+}
+
+ /*
+  显示对话框
+ (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_ShowDialog)
+ */
+function ShowDialog(pstrOp) {
+   strOp = pstrOp;
+   require(['jquery', 'bootstrap'], function($) {
+       if (strOp === "Add") {
+           $('#myModalLabel').html('添加记录');
+//SysComment_QUDI_TSEx.GetMaxStrId('#txtCommentId');
+        }
+else if (strOp === "Update")
+{
+            $('#myModalLabel').html('修改记录');
+}
+else if (strOp === "Detail")
+{
+            $('#btnOKUpd').hide();
+            $('#myModalLabel').html('详细信息');
+}
+        $('#divEditRegion').modal('show');
+  });
+}
+
+ /*
+  隐藏对话框
+ (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_HideDialog)
+ */
+function HideDialog() {
+  require(['jquery', 'bootstrap'], function($) {
+      $('#divEditRegion').modal('hide');
+  });
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_SortBy)
+ */
+function SortBy(strFldName)
+{
+console.log("按：" + strFldName + "排序");
+require(["../js/GraduateEduTools/SysComment_QUDI_TSEx.js"], function(syscomment) {
+var objPage = new syscomment.SysComment_QUDI_TSEx();
+objPage.SortBy(strFldName);
+});
+}
+
+</script>
+<div id="tabLayout" class="tab_layout">
+    @*-- 标题层 --*@
+
+    @*<div class="x-nav">
+            <span class="layui-breadcrumb">
+                <a href="">首页</a>
+                <a href="">系统管理</a>
+                <a>
+                    <cite><Label id="lbltitle" name="lbltitle">评论维护</Label></cite>
+                </a>
+                <Label id="lblMsg_List" name="lblMsg_List"></Label>
+            </span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+                <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+            </a>
+        </div>*@
+
+    <div class="x-nav">
+        <span class="layui-breadcrumb">
+            <a href="">首页</a>
+            <a href="">个人中心</a>
+            <a>
+                <cite>评论管理</cite>
+            </a>
+            <Label id="lblMsg_List" name="lblMsg_List"></Label>
+        </span>
+        <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+            <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+        </a>
+
+    </div>
+
+    @*-- 查询层 --*@
+
+    <div id="divQuery" class="div_query">
+        <table id="tabQuery" style="width: 20%; " class="table table-bordered table-hover table td table-sm">
+            <tr>
+                @*<td>
+            <Label id="lblUserName_q" name="lblUserName_q" class="col-form-label text-right" style="width:80px;width:90px;">
+                用户名
+            </Label>
+        </td>*@
+                <td>
+                    <input id="txtUserName_q" name="txtUserName_q" class="layui-input" placeholder="用户名" style="width:200px;" />
+                </td>
+                <td>
+                    <select id="ddlScoreType" name="ddlScoreType" class="form-control" style="width:170px;">
+                        <option value="0">选评分类型</option>
+                        <option value="1">学生</option>
+                        <option value="2">教师</option>
+                    </select>
+                </td>
+                <td>
+                    <input class="layui-input" placeholder="起始日期" name="txtStartDate_q" id="txtStartDate_q" style="width:150px;">
+                </td>
+                <td>
+                    <input class="layui-input" placeholder="结束日期" name="txtEndDate_q" id="txtEndDate_q" style="width:150px;">
+                </td>
+                @*<td>
+            <Label id="lblCommentTypeName_q" name="lblCommentTypeName_q" class="col-form-label text-right" style="width:80px;width:90px;">
+                评论类型名
+            </Label>
+        </td>
+        <td>
+            <input id="txtCommentTypeName_q" name="txtCommentTypeName_q" class="form-control" style="width:200px;" />
+        </td>*@
+                <td>
+                    @*<button type="submit" id="btnQuery" name="btnQuery" class="btn btn-outline-warning text-nowrap" onclick="btnQuery_Click()">查询</button>*@
+                    <button class="layui-btn" lay-submit="" lay-filter="sreach" onclick="btnQuery_Click()">
+                        <i class="layui-icon">&#xe615;</i>
+                    </button>
+                </td>
+                @*<td>
+            <button type="submit" id="btnExportExcel" name="btnExportExcel" class="btn btn-outline-warning text-nowrap" onclick="btnExportExcel_Click()">导出Excel</button>
+        </td>*@
+            </tr>
+        </table>
+    </div>
+    @*-- 功能区 --*@
+
+
+    @*-- 列表层 --*@
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+
+                <div class="layui-card">
+
+                    @*<div class="layui-card-header">
+
+                    </div>*@
+
+                    <ul id="myTab" class="nav nav-tabs">
+                        <li class="active">
+                            <a href="#PaperComment" data-toggle="tab" onclick="li_PaperComment_Click()">
+                                论文评论
+                            </a>
+                        </li>
+                        <li><a href="#PaperSubViewpointComment" data-toggle="tab" onclick="li_PaperSubViewpointComment_Click()">论文子观点评论</a></li>
+                        <li><a href="#ViewpointComment" data-toggle="tab" onclick="li_ViewpointComment_Click()">个人观点评论</a></li>
+                        <li><a href="#ExpertViewpointComment" data-toggle="tab" onclick="li_ExpertViewpointComment_Click()">专家观点评论</a></li>
+                        <li><a href="#ConceptComment" data-toggle="tab" onclick="li_ConceptComment_Click()">概念评论</a></li>
+                        <li><a href="#ObjectiveFactComment" data-toggle="tab" onclick="li_ObjectiveFactComment_Click()">客观事实评论</a></li>
+                        <li><a href="#ObjectiveBasisComment" data-toggle="tab" onclick="li_ObjectiveBasisComment_Click()">客观数据评论</a></li>
+
+                    </ul>
+                    <div id="myTabContent" class="tab-content">
+                        @*-- 论文 --*@
+                        <div class="tab-pane fade in active show" id="PaperComment" style="padding:5px;">
+                            <div class="layui-card-body ">
+                                <table class="layui-table layui-form"  id="divDataLst_PaperComment">
+                                    <thead>
+                                        <tr>
+                                            @*<th width="5">
+                            <input type="checkbox" name="" lay-skin="primary">
+                        </th>*@
+                                            @*<th width="50">标识</th>*@
+                                            <th width="300">评论内容1</th>
+                                            <th width="10">打分</th>
+                                            <th width="25">评分类型</th>
+                                            <th width="300">论文标题</th>
+                                            <th width="30">被评论人</th>
+                                            <th width="90">评论时间</th>
+                                            <th width="30">评论人</th>
+                                            <th width="10">回复数</th>
+                                            <th width="20">删除</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbList1" class="x-cate"></tbody>
+                                </table>
+                            </div>
+                            <div id="divPager_PaperComment" class="pager" value="1">
+                               
+                            </div>
+
+
+                        </div>
+                        @*-- 论文子观点 --*@
+                        <div class="tab-pane fade" id="PaperSubViewpointComment">
+                            <div class="layui-card-body " id="divDataLst_PaperSubViewpointComment">
+                                <table class="layui-table layui-form">
+                                    <thead>
+                                        <tr>
+
+                                            <th width="300">评论内容</th>
+                                            <th width="10">打分</th>
+                                            <th width="25">评分类型</th>
+                                            <th width="300">子观点</th>
+                                            <th width="30">被评论人</th>
+                                            <th width="90">评论时间</th>
+                                            <th width="30">评论人</th>
+                                            <th width="10">回复数</th>
+                                            <th width="20">删除</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbList2" class="x-cate"></tbody>
+                                </table>
+                            </div>
+                            <div id="divPager_PaperSubViewpointComment" class="pager" value="1">
+                               
+                            </div>
+                        </div>
+                        @*-- 个人观点 --*@
+                        <div class="tab-pane fade" id="ViewpointComment">
+                            <div class="layui-card-body " id="divDataLst_ViewpointComment">
+                                <table class="layui-table layui-form">
+                                    <thead>
+                                        <tr>
+                                            <th width="300">评论内容</th>
+                                            <th width="10">打分</th>
+                                            <th width="25">评分类型</th>
+                                            <th width="300">个人观点</th>
+                                            <th width="30">被评论人</th>
+                                            <th width="90">评论时间</th>
+                                            <th width="30">评论人</th>
+                                            <th width="10">回复数</th>
+                                            <th width="20">删除</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbList3" class="x-cate"></tbody>
+                                </table>
+                            </div>
+                            <div id="divPager_ViewpointComment" class="pager" value="1">
+                               
+                            </div>
+                        </div>
+                        @*-- 专家观点 --*@
+                        <div class="tab-pane fade" id="ExpertViewpointComment">
+                            <div class="layui-card-body " id="divDataLst_ExpertViewpointComment">
+                                <table class="layui-table layui-form">
+                                    <thead>
+                                        <tr>
+                                            <th width="300">评论内容</th>
+                                            <th width="10">打分</th>
+                                            <th width="25">评分类型</th>
+                                            <th width="300">专家观点</th>
+                                            <th width="30">被评论人</th>
+                                            <th width="90">评论时间</th>
+                                            <th width="30">评论人</th>
+                                            <th width="10">回复数</th>
+                                            <th width="20">删除</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbList4" class="x-cate"></tbody>
+                                </table>
+                            </div>
+                            <div id="divPager_ExpertViewpointComment" class="pager" value="1">
+                               
+                            </div>
+                        </div>
+                        @*-- 概念 --*@
+                        <div class="tab-pane fade" id="ConceptComment">
+                            <div class="layui-card-body " id="divDataLst_ConceptComment">
+                                <table class="layui-table layui-form">
+                                    <thead>
+                                        <tr>
+                                            <th width="300">评论内容</th>
+                                            <th width="10">打分</th>
+                                            <th width="25">评分类型</th>
+                                            <th width="300">概念</th>
+                                            <th width="30">被评论人</th>
+                                            <th width="90">评论时间</th>
+                                            <th width="30">评论人</th>
+                                            <th width="10">回复数</th>
+                                            <th width="20">删除</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbList5" class="x-cate"></tbody>
+                                </table>
+                            </div>
+                            <div id="divPager_ConceptComment" class="pager" value="1">
+                               
+                            </div>
+                        </div>
+                        @*-- 客观事实 --*@
+                        <div class="tab-pane fade" id="ObjectiveFactComment">
+                            <div class="layui-card-body " id="divDataLst_ObjectiveFactComment">
+                                <table class="layui-table layui-form">
+                                    <thead>
+                                        <tr>
+                                            <th width="300">评论内容</th>
+                                            <th width="10">打分</th>
+                                            <th width="25">评分类型</th>
+                                            <th width="300">客观事实</th>
+                                            <th width="30">被评论人</th>
+                                            <th width="90">评论时间</th>
+                                            <th width="30">评论人</th>
+                                            <th width="10">回复数</th>
+                                            <th width="20">删除</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbList6" class="x-cate"></tbody>
+                                </table>
+                            </div>
+                            <div id="divPager_ObjectiveFactComment" class="pager" value="1">
+                               
+                            </div>
+                        </div>
+                        @*-- 客观数据 --*@
+                        <div class="tab-pane fade" id="ObjectiveBasisComment">
+                            <div class="layui-card-body " id="divDataLst_ObjectiveBasisComment">
+                                <table class="layui-table layui-form">
+                                    <thead>
+                                        <tr>
+                                            <th width="300">评论内容</th>
+                                            <th width="10">打分</th>
+                                            <th width="25">评分类型</th>
+                                            <th width="300">客观数据</th>
+                                            <th width="30">被评论人</th>
+                                            <th width="90">评论时间</th>
+                                            <th width="30">评论人</th>
+                                            <th width="10">回复数</th>
+                                            <th width="20">删除</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbList7" class="x-cate"></tbody>
+                                </table>
+                            </div>
+                            <div id="divPager_ObjectiveBasisComment" class="pager" value="1">
+                               
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+    @*<div id="divList" class="div_List">
+            <div id="divDataLst" class="div_List">
+            </div>
+            <div id="divPager" class="pager" value="1">
+               
+            </div>
+        </div>*@
+    @*-- 编辑层 --*@
+
+    <div class="modal fade" id="divEditRegion" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" style="width: 800px;">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">模态框（Modal）标题</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <table id="tabEdit" style="width: 70%; " class="table table-bordered table-hover table td table-sm">
+                        <tr style="display:none">
+                            <td>
+                                <Label id="lblCommentId" name="lblCommentId" class="col-form-label text-right" style="width:90px;">
+                                    评论Id
+                                </Label>
+                            </td>
+                            <td>
+                                <input id="txtCommentId" name="txtCommentId" class="form-control" style="width:200px;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <Label id="lblComment" name="lblComment" class="col-form-label text-right" style="width:90px;">
+                                    评论
+                                </Label>
+                            </td>
+                            <td>
+                                <input id="txtComment" name="txtComment" class="form-control" style="width:200px;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <Label id="lblscore" name="lblscore" class="col-form-label text-right" style="width:90px;">
+                                    评分
+                                </Label>
+                            </td>
+                            <td>
+                                <input id="txtscore" name="txtscore" class="form-control" style="width:200px;" />
+                                <asp:CompareValidator id="ComValid_score" name="ComValid_score" runat="server" CssClass="ErrMsg"
+                                                      ErrorMessage="请输入浮点型数值!"
+                                                      ControlToValidate="txtscore"
+                                                      Type="Double"
+                                                      Operator="DataTypeCheck"
+                                                      EnableClientScript="false">
+                                </asp:CompareValidator>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <Label id="lblCommentTypeId" name="lblCommentTypeId" class="col-form-label text-right" style="width:90px;">
+                                    评论类型Id
+                                </Label>
+                            </td>
+                            <td>
+                                <input id="txtCommentTypeId" name="txtCommentTypeId" class="form-control" style="width:200px;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <Label id="lblScoreType" name="lblScoreType" class="col-form-label text-right" style="width:90px;">
+                                    评分类型
+                                </Label>
+                            </td>
+                            <td>
+                                <input id="txtScoreType" name="txtScoreType" class="form-control" style="width:200px;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <Label id="lblParentId" name="lblParentId" class="col-form-label text-right" style="width:90px;">
+                                    父Id
+                                </Label>
+                            </td>
+                            <td>
+                                <input id="txtParentId" name="txtParentId" class="form-control" style="width:200px;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <Label id="lblTableKey" name="lblTableKey" class="col-form-label text-right" style="width:90px;">
+                                    表主键
+                                </Label>
+                            </td>
+                            <td>
+                                <input id="txtTableKey" name="txtTableKey" class="form-control" style="width:200px;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <Label id="lblUpdUser" name="lblUpdUser" class="col-form-label text-right" style="width:90px;">
+                                    修改人
+                                </Label>
+                            </td>
+                            <td>
+                                <input id="txtUpdUser" name="txtUpdUser" class="form-control" style="width:200px;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <Label id="lblMemo" name="lblMemo" class="col-form-label text-right" style="width:90px;">
+                                    备注
+                                </Label>
+                            </td>
+                            <td>
+                                <input id="txtMemo" name="txtMemo" class="form-control" style="width:200px;" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnCancel" type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button id="btnOKUpd" type="button" class="btn btn-primary" onclick="mySubmit()">添加</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal -->
+    </div>
+</div>
+<input id="hidOpType" type="hidden" />
+<input id="hidKeyId" type="hidden" />
+@*<input id="hidUserId" type="hidden" value="@Model.seUserId" />*@
+<input id="hidUserId1" type="hidden" value="@strUserId1_Value" />
+<input id="hidCurrPageIndex" type="hidden" value="1" />
+<input id="hidSortvSysCommentBy" type="hidden" value="" />
+@*-- 表Id --*@
+<input id="hidCommentId" type="hidden" />
+<input id="hidUserInfo" type="hidden" value="@Model.GetSession("objvUserRoleRelation")" />
+<input id="hidUserId" type="hidden" />
+@*-- 用来区分不同tab --*@
+<input id="hidQueryStata" type="hidden" />

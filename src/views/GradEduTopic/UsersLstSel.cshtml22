@@ -1,0 +1,147 @@
+﻿@page
+@{
+    Layout = "";
+}
+@section Styles{
+    <link rel="stylesheet" href="../lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="../css/site.css" />
+}
+@section Scripts{
+    <script src="../lib/jquery/dist/jquery.js"></script>
+    <script src="../lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="../js/site.js" asp-append-version="true"></script>
+    <script src="../lib/bootstrap/dist/js/popper.js"></script>
+    <script src="../lib/require/require.js" data-main="../js/src/config"></script>
+}
+
+<script>
+         /*
+      按钮单击,用于调用Js函数中btn_Click
+     (AutoGCLib.WA_ViewScript_TS4Html:Gen_WApi_JS_btn_Click)
+     */
+        function btnUsersLstSel_Click(strCommandName, strKeyId) {
+            require(["../js/GraduateEduTopic/UsersLstSel.js"], function (viewinfo) {
+                viewinfo.UsersLstSel.btn_Click(strCommandName, strKeyId);
+            });
+        }
+    /*
+  显示对话框
+ (AutoGCLib.WA_ViewScript_Edit_TS4Html:Gen_WApi_JS_ShowDialog)
+ */
+    function ShowDialog(strDialogName) {
+        require(['jquery', 'bootstrap'], function ($) {
+            $(strDialogName).modal('show');
+        });
+    }
+
+    /*
+     隐藏对话框
+    (AutoGCLib.WA_ViewScript_Edit_TS4Html:Gen_WApi_JS_HideDialog)
+    */
+    function HideDialog(strDialogName) {
+        require(['jquery', 'bootstrap'], function ($) {
+            $(strDialogName).modal('hide');
+        });
+    }
+
+</script>
+
+
+<div id="tabLayout" class="tab_layout">
+
+    @*-- 分左右2个区域 --*@
+    <div class="modal fade" style="z-index:1060;" id="divUserList" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+        <div class="modal-dialog">
+            @*<div class="modal-content" style="width: 1200px;">*@
+            <div class="modal-content" style="width: 800px;">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="lblDialogTitle_divUserList">用户列表</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+
+                @*-- 查询层 --*@
+
+                <div id="divQuery_UserSel" class="div_query">
+                    <table id="tabQuery" name="tabQuery" style="width: 50%; " class="table table-bordered table-hover table td table-sm">
+                        <tr>
+                            @*<td>
+            <Label id="lblUserId_q" name="lblUserId_q" class="col-form-label text-right" style="width:80px;width:90px;">
+                用户ID
+            </Label>
+        </td>*@
+                            <td>
+                                <input id="txtUserId_q" name="txtUserId_q" placeholder="用户ID" class="layui-input" style="width:70px;" />
+                            </td>
+                            @*<td>
+            <Label id="lblUserName_q" name="lblUserName_q" class="col-form-label text-right" style="width:80px;width:90px;">
+                用户名
+            </Label>
+        </td>*@
+                            <td>
+                                <input id="txtUserName_q" name="txtUserName_q" placeholder="用户名" class="layui-input" style="width:80px;" />
+                            </td>
+
+                            <td>
+                                <select id="ddlid_CurrEduCls" name="ddlid_CurrEduCls" class="form-control" style="width:150px;"></select>
+                            </td>
+                            <td>
+                                <button id="btnQuery" class="layui-btn" lay-submit="" lay-filter="sreach">
+                                    <i class="layui-icon">&#xe615;</i>
+                                </button>
+                            </td>
+                            @*<td>
+
+            <button type="submit" id="btnUserQuery" name="btnUserQuery" class="btn btn-outline-warning text-nowrap btn-sm" onclick="()">查询</button>
+        </td>*@
+                            <td>
+                                <Label id="lblTopicUserRole" name="lblTopicUserRole" class="col-form-label" style="color:red;width:150px;">
+                                    请选择主题用户角色：
+                                </Label>
+
+                            </td>
+                            <td>
+                                <select id="ddlTopicUserRole_q" name="ddlTopicUserRole_q" class="form-control" style="width:100px;" />
+                            </td>
+                            <td>
+                                  <button type="submit" id="btnAddUsersToTopic" name="btnAddUsersToTopic" class="btn btn-outline-warning text-nowrap btn" onclick="btnUsersLstSel_Click('AddUsersToTopic')">添加</button>
+                            </td>
+                        </tr>
+                        @*<tr>
+
+                            </tr>*@
+                    </table>
+                </div>
+
+                @*<div id="divFunction" class="table table-bordered table-hover">
+                        <ul class="nav" style="width:100%;">
+                            <li class="nav-item" >
+                                 <Label id="lblTopicUserRole" name="lblTopicUserRole" class="col-form-label" style="width:250px;">
+                            请选择主题用户角色：
+                                </Label>
+                                 <select id="ddlTopicUserRole_q" name="ddlTopicUserRole_q" class="form-control" style="width:180px;" />
+                            </li>
+                        </ul>
+                    </div>*@
+                <div class="modal-body">
+
+                    <div id="divList" class="div_List">
+                        <div id="divUserDataLst" class="div_List">
+                        </div>
+                        <div id="divPager_UsersLst" class="pager" value="1">
+
+                        </div>
+                    </div>
+                </div>
+                @*<div class="modal-footer">
+                        <button id="btnCancel" type="button" class="btn btn-default btn-sm" data-dismiss="modal" onclick="closeThree_Click()">关闭</button>
+                    </div>*@
+            </div>
+            <!-- /.modal-content -->
+        </div>
+
+    </div>
+
+
+</div>
+

@@ -1,0 +1,203 @@
+﻿@page
+@{
+    Layout = "~/Pages/Shared/_Layout_PC.cshtml";
+    ViewData["Title"] = "系统历史版本";
+}
+
+
+@section Styles{
+    <link rel="stylesheet" href="../lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="../css/site.css" />
+
+    <link rel="stylesheet" href="~/lib/Xadmin/css/font.css">
+    <link rel="stylesheet" href="~/lib/Xadmin/css/xadmin.css">
+    <link rel="stylesheet" href="~/css/comment.css">
+    <link rel="stylesheet" type="text/css" href="../css/SimpleTree.css">
+    <link rel="stylesheet" href="~/css/public.css" />
+  
+
+    <style>
+        .divleft {
+            width: 45%;
+            position: fixed;
+            /*border-right: solid 1px #dededf;*/
+            /*border-bottom: solid 1px #dbdcde;*/
+            /*border-radius: 10px 8px 8px 4px;*/ /* 四个半径值分别是左上角、右上角、右下角和左下角 */
+            float: left;
+            /*background: #fff;*/
+            font-family: 'Microsoft YaHei';
+            top: 40px;
+            left: 10px;
+            /*bottom: 5%;*/
+            z-index: 999;
+        }
+
+        /*右边内容区*/
+        .divComment {
+            margin-right: 10px;
+            padding: 20px;
+            width: 50%;
+            float: right;
+            overflow: hidden;
+        }
+    </style>
+}
+@section Scripts{
+
+
+    <script src="../lib/jquery/dist/jquery.js"></script>
+
+    <script src="~/lib/Xadmin/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="~/lib/Xadmin/js/xadmin.js"></script>
+
+    <script src="../lib/bootstrap/dist/js/bootstrap.js"></script>
+    @*<script src="../js/site.js" asp-append-version="true"></script>*@
+    @*<script src="../lib/bootstrap/dist/js/popper.js"></script>*@
+
+
+    <script src="../lib/require/require.js" data-main="../js/src/config"></script>
+}
+<script>
+
+    window.onload = function () {
+        $('#hidOrderbyId').val("1");
+        GetRequestId_PageLoad();
+    }
+
+
+    function GetRequest() {
+        var url = location.search; //获取url中"?"符后的字串
+        var theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1);
+            strs = str.split("&");
+            for (var i = 0; i < strs.length; i++) {
+                theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+            }
+        }
+        return theRequest;
+    }
+
+
+    function GetRequestId_PageLoad() {
+        var Request = new Object();
+        Request = GetRequest();
+
+        var strKey = Request['Key'];
+        var strType = Request['Type'];
+        //var strUser = Request['User'];
+        //var strPubParentId = Request['PubParentId'];
+
+        if (strKey != null) {
+            $('#hidKeyId').val(strKey);
+            $('#hidTypeId').val(strType);
+            //$('#hidUser').val(strUser);
+            //$('#hidPubParentId').val(strPubParentId);
+
+            require(["../js/GraduateEduEx/HistoricalVersion.js"], function (Version) {
+                var objPage = new Version.HistoricalVersion();
+                objPage.Page_Load();
+            });
+        }
+
+
+    }
+
+
+
+    //全部版本
+    function HistoricalVersion_Click() {
+        $('#hidOrderbyId').val("1");
+        require(["../js/GraduateEduEx/HistoricalVersion.js"], function (Version) {
+            var objPage = new Version.HistoricalVersion();
+            objPage.Showdiv_Version();
+
+            //layer.msg('已点赞!', {
+            //    icon: 1,
+            //    time: 2000
+            //});
+        });
+    }
+
+    //我的版本
+    function MyVersion_Click() {
+        $('#hidOrderbyId').val("2");
+        require(["../js/GraduateEduEx/HistoricalVersion.js"], function (Version) {
+            var objPage = new Version.HistoricalVersion();
+            objPage.Showdiv_Version();
+
+            //layer.msg('已点赞!', {
+            //    icon: 1,
+            //    time: 2000
+            //});
+        });
+    }
+
+    //最新版本
+    function NewVersion_Click() {
+        $('#hidOrderbyId').val("3");
+        require(["../js/GraduateEduEx/HistoricalVersion.js"], function (Version) {
+            var objPage = new Version.HistoricalVersion();
+            objPage.Showdiv_Version();
+
+            //layer.msg('已点赞!', {
+            //    icon: 1,
+            //    time: 2000
+            //});
+        });
+    }
+
+
+
+</script>
+
+<div id="divLoading" class="loading">
+    <img src="~/images/loading.gif" />
+</div>
+@*<a id="backtop" class="back-top" href="javascript:scroll(0,0);" target="_self" title="返回顶部" style="display: block;">
+        <i class="icon-backtop"></i>
+    </a>*@
+
+
+
+<div style="padding:10px 30px 10px 30px; ">
+    <div class="divleft">
+        <div id="div_Viewpoint"></div>
+    </div>
+    <div class="divComment">
+        <div class="comment-short" id="J_Short">
+            <div class="comment-title" style="margin-top:5px;">
+                <p class="comment-all" onclick="HistoricalVersion_Click()">历史版本</p>
+                <div class="comment-center" id="J_CommentCenter">
+                    <span class="comment-center-slash">/</span>
+                    <span class="comment-my J_userCenter" onclick="MyVersion_Click()">我的版本</span>
+                </div>
+                <p class="comment-sort">
+                    <span data-targetid="4760694256" data-sort="1" class="J_CommentSort comment-sort-cur" onclick="NewVersion_Click()">最近版本</span>
+                    @*&nbsp;/&nbsp;<span data-targetid="4760694256" data-sort="0" class="J_CommentSort comment-sort-cur" onclick="HottestComment_Click()">最热</span> &nbsp;&nbsp; &nbsp;&nbsp;
+        <button id="btnOKUpd" type="button" class="btn btn-primary btn-sm" style="width:150px;" onclick="btnDetailAddAppraise_Click()">添加评论</button>*@
+                </p>
+            </div>
+            <div id="J_ShortComment">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+@*<input id="hidParentId" type="hidden" />
+<input id="hidPubParentId" type="hidden" />*@
+
+<input id="hidKeyId" type="hidden" />
+<input id="hidTypeId" type="hidden" />
+
+@*<input id="hidUser" type="hidden" />*@
+
+
+
+<input id="hidOrderbyId" type="hidden" />

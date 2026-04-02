@@ -1,0 +1,4 @@
+﻿生成日期：20240120113204(当前工程Id:0014, 用户：pyf)
+针对表:00140005(QxPrjPotence)
+错误：潘以锋,您好！您还没有设置代码生成路径：实体层Store(TS)，请设置！生成表:[QxPrjPotence(00140005)]时.(System.Threading.ExecutionContext:RunInternal->System.Threading.ThreadHelper:ThreadStart_Context->Agc_CsWin.clsGeneCode_Local:GeneAllCheckedTableThreeLayer).
+共计生成文件数:0(共计表:1).

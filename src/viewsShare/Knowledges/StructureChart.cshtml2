@@ -1,0 +1,221 @@
+﻿@page
+@{
+    Layout = "~/Pages/Shared/_Layout_PC.cshtml";
+    ViewData["Title"] = "组织结构图";
+}
+@section Styles{
+
+    @*<link rel="stylesheet" href="../lib/bootstrap/dist/css/bootstrap.css" />*@
+    <link rel="stylesheet" href="~/lib/Xadmin/css/font.css">
+    <link rel="stylesheet" href="~/lib/Xadmin/css/xadmin.css">
+    <link rel="stylesheet" href="~/css/public.css" />
+
+    <link type="text/css" rel="stylesheet" href="~/lib/jsmind/jsmind.css" />
+    <link rel="stylesheet" type="text/css" href="~/lib/jsPlumb/css/style.css">
+
+    <style type="text/css">
+
+        #jsmind_container {
+            width: 100%;
+            height: 800px;
+            border: solid 1px #ccc;
+            /*background:#f4f4f4;*/
+            background: #f4f4f4;
+        }
+    </style>
+    @*<link href="~/css/font-awesome.min.css" rel="stylesheet" type="text/css">*@
+
+
+}
+@section Scripts{
+
+    <script src="../lib/require/require.js" data-main="../js/src/config"></script>
+
+
+    <script src="../lib/jquery/dist/jquery.js"></script>
+
+    <script src="~/lib/Xadmin/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="~/lib/Xadmin/js/xadmin.js"></script>
+
+    <script type="text/javascript" src="~/lib/jsmind/jsmind.js"></script>
+    <script type="text/javascript" src="~/lib/jsmind/jsmind.draggable.js"></script>
+    <script type="text/javascript" src="~/lib/jsmind/jsmind.screenshot.js"></script>
+
+}
+
+<script>
+
+    window.onload = function () {
+        load_jsmind()
+        //GetRequestId_PageLoad();
+    }
+
+    function GetRequest() {
+        var url = location.search; //获取url中"?"符后的字串
+        var theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1);
+            strs = str.split("&");
+            for (var i = 0; i < strs.length; i++) {
+                theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+            }
+        }
+        return theRequest;
+    }
+
+
+    function GetRequestId_PageLoad() {
+        var Request = new Object();
+        Request = GetRequest();
+
+        var strKnowledgeGraphId = Request['KnowledgeGraphId'];
+
+        if (strKnowledgeGraphId != null) {
+            $('#hidKnowledgeGraphId').val(strKnowledgeGraphId);
+            require(["../js/Knowledges/LogicRela.js"], function (LogicRela) {
+                var objPage = new LogicRela.LogicRela();
+                objPage.Page_Load();
+            });
+        }
+
+    }
+
+    //加载结构图
+    function load_jsmind() {
+        var mind = {
+            "meta": {
+                "name": "demo",
+                "author": "77240613@qq.com",
+                "version": "0.2",
+            },
+            "format": "node_array",
+            "data": [
+                { "id": "root", "isroot": true, "topic": "父节点" },
+
+                { "id": "sub1", "parentid": "root", "topic": "sub1", "background-color": "#0000ff" },
+                { "id": "sub11", "parentid": "sub1", "topic": "sub11" },
+                { "id": "sub12", "parentid": "sub1", "topic": "sub12" },
+                { "id": "sub13", "parentid": "sub1", "topic": "sub13" },
+
+                { "id": "sub2", "parentid": "root", "topic": "sub2" },
+                { "id": "sub21", "parentid": "sub2", "topic": "sub21" },
+                { "id": "sub22", "parentid": "sub2", "topic": "sub22", "foreground-color": "#33ff33" },
+
+                { "id": "sub3", "parentid": "root", "topic": "sub3" },
+            ]
+        };
+        var options = {
+            container: 'jsmind_container',
+            editable: true,
+            theme: 'primary'
+        }
+        var jm = jsMind.show(options, mind);
+        // jm.set_readonly(true);
+        // var mind_data = jm.get_data();
+        // alert(mind_data);
+        jm.add_node("sub2", "sub23", "new node", { "background-color": "red" });
+        jm.set_node_color('sub21', 'green', '#ccc');
+    }
+
+    //添加节点
+    function add_node() {
+        var selected_node = _jm.get_selected_node(); // as parent of new node
+        if (!selected_node) { prompt_info('please select a node first.'); return; }
+
+        var nodeid = jsMind.util.uuid.newid();
+        var topic = '* Node_' + nodeid.substr(nodeid.length - 6) + ' *';
+        var node = _jm.add_node(selected_node, nodeid, topic);
+    }
+
+    //删除节点
+    function remove_node() {
+        var selected_id = get_selected_nodeid();
+        if (!selected_id) { prompt_info('please select a node first.'); return; }
+
+        _jm.remove_node(selected_id);
+    }
+
+    //保存结构图
+    function save_node() {
+        //var mind_data = _jm.get_data();
+        //var mind_string = jsMind.util.json.json2string(mind_data);
+        //prompt_info(mind_string);
+        var mind_data = _jm.get_data('node_array');
+        var mind_string = jsMind.util.json.json2string(mind_data);
+        //prompt_info(mind_string);
+    }
+
+   
+    function Alert_layer(strIcon, strMsg) {
+
+        layer.msg(strMsg, {
+            icon: strIcon,
+            time: 2000
+        });
+    }
+
+</script>
+
+
+<div id="divLoading" class="loading">
+    <img src="~/images/CirclePoint.gif" />
+</div>
+
+
+
+@*<div id="tabLayout">*@
+@*-- 标题层 --*@
+<div class="x-nav">
+    <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">个人中心</a>
+        <a>
+            <cite>逻辑关系图</cite>
+        </a>
+        <Label id="lblMsg_List" name="lblMsg_List"></Label>
+    </span>
+
+
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+        <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i>
+    </a>
+
+    <a id="btn1" onclick="save_node()" class="layui-btn layui-btn-normal" style="line-height:1.6em;margin-top:3px;float:right; margin-right:10px;" title="保存结构图">
+        <i class="layui-icon layui-icon-file-b" style="line-height:30px"></i>保存结构图
+    </a>
+
+    <a id="btn3" onclick="remove_node()" class="layui-btn layui-btn-danger" style="display:none; line-height:1.6em;margin-top:3px;float:right; margin-right:10px;" title="删除节点">
+        <i class="layui-icon layui-icon-delete" style="line-height:30px"></i>删除节点
+    </a>
+    <a id="btn2" onclick="add_node()" class="layui-btn layui-btn-warm" style="display:none; line-height:1.6em;margin-top:3px;float:right; margin-right:10px;" title="添加节点">
+        <i class="layui-icon ayui-icon-add-circle" style="line-height:30px"></i>添加节点
+    </a>
+
+</div>
+
+
+
+
+
+<div class="device">
+    @*<button class="btn1"> console.log(JSON) </button>*@
+    <div class="deviceLeft">
+
+        <h3>结构图</h3>
+        <div id="StructureChartTitle" class="deviceLeft_box">
+        </div>
+
+    </div>
+    <div id="deviceRight">
+        <div id="jsmind_container"></div>
+    </div>
+</div>
+
+<input id="hidLogicNodeJson" type="hidden" />
+<input id="hidLogicRelaJson" type="hidden" />
+
+
+<input id="hidKnowledgeGraphId" type="hidden" />
+
+<input id="hidChangeBg" type="hidden" />
+@*</div>*@

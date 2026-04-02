@@ -1,0 +1,1801 @@
+﻿@page
+@model GraduateStudyWebApp.Pages.GraduateEduEx.PaperSubViewpoint_pdfModel
+@{
+    Layout = "~/Pages/Shared/_Layout_PC.cshtml";
+    ViewData["Title"] = "子观点表维护";
+    //操作Session样例，方法1：
+    //Model.seUserId = "TestUserId";
+    var strUserId_Value = Model.seUserId;
+    //操作Session样例，方法2：
+    Model.SetSession("UserId1", "TestUserId1");
+    var strUserId1_Value = Model.GetSession("UserId1");
+    //请参见页尾的隐形控件hidUserid和hidUserId1的使用。
+}
+@section Styles{
+    @*<link rel="stylesheet" href="~/pdfjs2.3/web/viewer.css">*@
+    <!-- This snippet is used in production (included from viewer.html) -->
+    @*<link rel="resource" type="application/l10n" href="~/pdfjs2.3/web/locale/locale.properties">*@
+
+    <link rel="stylesheet" href="../lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="../css/site.css" />
+
+    <link rel="stylesheet" href="~/lib/Xadmin/css/font.css">
+    <link rel="stylesheet" href="~/lib/Xadmin/css/xadmin.css">
+    <link rel="stylesheet" href="~/css/comment.css">
+    <!-- <link rel="stylesheet" href="./css/theme5.css"> -->
+
+    <link rel="stylesheet" href="~/css/public.css" />
+    <link rel="stylesheet" href="~/css/paperlist.css" />
+    <style>
+
+        .nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
+            color: #0080ff;
+            background-color: #fff;
+            border-color: #dee2e6 #dee2e6 #fff;
+            font-weight: bold;
+        }
+        /*.layui-table td, .layui-table th {
+            position: relative;
+            padding: 9px 15px;
+            min-height: 20px;
+            line-height: 20px;
+            font-size: 15px;
+        }*/
+        .layui-fluid {
+            padding: 0px;
+        }
+
+        .layui-table td, .layui-table th {
+            min-width: 20px;
+        }
+
+        #tbList img {
+            max-width: 460px;
+        }
+
+        .text-span {
+            background-color: yellow;
+            /*color: red;*/
+        }
+
+        #leftPart {
+            float: left;
+            width: 55%;
+            height: 100%;
+            position: fixed;
+            top: 40px;
+            left: 1px;
+            border-radius: 10px;
+        }
+
+        #right_Content {
+            float: right;
+            width: 45%;
+        }
+    </style>
+
+}
+@section Scripts{
+    @*<script src="~/pdfjs2.3/build/pdf.js"></script>
+        <script src="~/pdfjs2.3/web/viewer.js"></script>*@
+    <script src="../lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/Xadmin/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="~/lib/Xadmin/js/xadmin.js"></script>
+    <script src="../lib/bootstrap/dist/js/bootstrap.js"></script>
+    @*<script src="../js/site.js" asp-append-version="true"></script>*@
+    @*<script src="../lib/bootstrap/dist/js/popper.js"></script>*@
+
+    <!-- 文件上传 -->
+    <script src="../lib/jquery-form.js"></script>
+    <script src="../lib/jquery.min.js"></script>
+
+
+    @*<script type="text/javascript">
+            jQuery(document).ready(function () {
+                jQuery(".contenttext").mouseup(function (e) {
+                    var txt;
+                    var page_Number = document.getElementById("pageNumber");
+
+                    var txt_ExplainContent = document.getElementById("txtExplainContent");
+                    var txt_PaperPageNum = document.getElementById("txtPaperPageNum");
+
+                    var parentOffset = jQuery(this).offset();
+                    var x = e.pageX - parentOffset.left;
+                    var y = e.pageY - parentOffset.top;
+                    txt = window.getSelection();
+                    if (txt.toString().length > 1) {
+                        //alert(txt);
+                        //$("#txtContent").text(txt);
+                        //$("#txtContent").val(txt);
+                        txt_ExplainContent.value = txt;
+                        txt_PaperPageNum.value = page_Number.value;
+
+                        //txt_Content.value += " 第" + page_Number.value + "页；";
+                        //txt_Content.value += " x:" + x;
+                        //txt_Content.value += " y:" + y;
+
+
+                    }
+                });
+            });
+        </script>*@
+
+    <script src="../lib/require/require.js" data-main="../js/src/config"></script>
+}
+<script>
+var strUrl_Session_SetString = "@Model.Url_Session_SetString";
+var strUrl_Session_GetString = "@Model.Url_Session_GetString";
+
+     var strCurrPrjId = "@Model.CurrPrjId";
+     var strWebRoot = "@Model.WebRoot";
+     var strAddressAndPort = "@Model.AddressAndPort";
+
+
+    window.onload = function () {
+        $("#hidTabNum").val(1);
+        $("#hidSortPsv").val(1);
+        ToolUploadFileNum();
+        GetPaperRWId_PageLoad();
+
+    }
+
+     //定义附件框数量
+    function ToolUploadFileNum() {
+        var MaxInputs = 2;
+        var InputsWrapper = $("#InputsWrapper");
+        var x = InputsWrapper.length;
+        var FieldCount = 1;
+        $("#AddMoreFileBox").click(function () {
+
+            if (x <= MaxInputs) {
+                FieldCount++;
+                //add input box
+                $("#InputsWrapper").append('<br/><input type="file" name="txtUploadfile' + FieldCount + '" id="txtUploadfile' + FieldCount + '"/>');
+                x++; //text box increment
+            }
+            return false;
+        })
+        //		aurl   文件夹路径
+        //	divname   div的id ， （必传参数）
+        //	inputname  会为你生成input :text;设置input id 默认div id;
+        //	starnum    星星的个数；默认五个；
+        //	startnum   星星初始化个数，初始化后，不可更改；(op  设置 true ；)
+        //  textTure   星星数默认五颗；开启文本显示；
+
+        //initPingFen({ divname : 'pingfen1',textTure:true,starnum:10});
+        //initPingFen({ divname: 'pingfen2', textTure: true, inputname: 'pin' });
+    }
+
+
+    function GetRequest() {
+        var url = location.search; //获取url中"?"符后的字串
+        var theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1);
+            strs = str.split("&");
+            for (var i = 0; i < strs.length; i++) {
+                theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+            }
+        }
+        return theRequest;
+    }
+    //function GetPaperRWId() {
+    //    var Request = new Object();
+    //    Request = GetRequest();
+
+    //    var strPaperRWId = Request['PaperRWId'];
+    //    var strType = Request['Type'];
+
+    //    //str1 = "00000002";
+    //    $('#hidPaperRWId').val(strPaperRWId);
+    //    $('#hidType').val(strType);
+    //}
+
+    function GetPaperRWId_PageLoad() {
+        var Request = new Object();
+        Request = GetRequest();
+
+        //var strPaperRWId = Request['PaperRWId'];
+        var strPaperId = Request['PaperId'];
+        var strType = Request['Type'];
+        var strQuestionsId = Request['QuestionsId'];
+        var strQuestionsTypeId = Request['QuestionsTypeId'];
+        var strid_CurrEduCls = Request['id_CurrEduCls'];
+        var strPushId = Request['PushId'];
+        var strTopicId = Request['TopicId'];
+
+
+        if (strPaperId != null) {
+
+            $('#hidPaperId').val(strPaperId);
+            $('#hidType').val(strType);
+
+            $('#hidid_CurrEduCls').val(strid_CurrEduCls);
+            $('#hidTopicId').val(strTopicId);
+
+            if (strQuestionsTypeId != null) {
+                if (strQuestionsTypeId == '01') {
+                    $("#hidTabNum").val(2);
+                }
+                else if (strQuestionsTypeId == '02') {
+                    $("#hidTabNum").val(4);
+                }
+                else {
+                    $("#hidTabNum").val(3);
+                }
+
+
+                $('#hidQuestionsTypeId').val(strQuestionsTypeId);
+                $('#hidQuestionsId').val(strQuestionsId);
+                $('#hidPushId').val(strPushId);
+            }
+
+
+            require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js"], function (papersubviewpoint) {
+                var objPage = new papersubviewpoint.PaperSubViewpoint_pdf();
+                objPage.Page_Load();
+                //tbody();
+            });
+        }
+        //else {
+        //    $('#hidPaperRWId').val("00000002");
+        //        require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js"], function (papersubviewpoint) {
+        //            var objPage = new papersubviewpoint.PaperSubViewpoint_pdf();
+        //            objPage.Page_Load();
+        //            //tbody();
+        //        });
+        //}
+    }
+
+
+
+
+
+    ////		aurl   文件夹路径
+    ////	divname   div的id ， （必传参数）
+    ////	inputname  会为你生成input :text;设置input id 默认div id;
+    ////	starnum    星星的个数；默认五个；
+    ////	startnum   星星初始化个数，初始化后，不可更改；(op  设置 true ；)
+    ////  textTure   星星数默认五颗；开启文本显示；
+    //$(function () {
+    //    //initPingFen({ divname : 'pingfen1',textTure:true,starnum:10});
+    //    initPingFen({ divname: 'pingfen2', textTure: true, inputname: 'pin' });
+    //    //initPingFen({ divname : 'pingfen3',textTure:true});
+    //    //initPingFen({ divname : 'pingfen4',startnum:3,op : true});
+    //    //initPingFen({ divname : 'pingfen5',startnum:2});
+    //});
+    //function sdfg() {
+    //    alert($('#pingfen2').val())
+    //    //alert($('#pin').val());
+    //}
+
+
+
+
+    function tbody() {
+        $("tbody.x-cate tr[fid!='0']").hide();
+        // 栏目多级显示效果
+        $('.x-show').click(function () {
+            if ($(this).attr('status') == 'true') {
+                $(this).html('&#xe625;');
+                $(this).attr('status', 'false');
+                cateId = $(this).parents('tr').attr('cate-id');
+                $("tbody tr[fid=" + cateId + "]").show();
+            } else {
+                cateIds = [];
+                $(this).html('&#xe623;');
+                $(this).attr('status', 'true');
+                cateId = $(this).parents('tr').attr('cate-id');
+                getCateId(cateId);
+                for (var i in cateIds) {
+                    $("tbody tr[cate-id=" + cateIds[i] + "]").hide().find('.x-show').html('&#xe623;').attr('status', 'true');
+                }
+            }
+        })
+    }
+
+    var cateIds = [];
+    function getCateId(cateId) {
+        $("tbody tr[fid=" + cateId + "]").each(function (index, el) {
+            id = $(el).attr('cate-id');
+            cateIds.push(id);
+            getCateId(id);
+        });
+    }
+
+ /*
+  添加新记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnAddNewRecord_Click)
+ */
+    function btnAddNewRecord_Click(strKeyId: string) {
+        require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js"], function (papersubviewpoint) {
+            $('#ddlSubViewpointTypeId').val(strKeyId);
+            $('#ddlExplainTypeId').val("01");
+
+            $('#hidSubViewpointTypeId').val(strKeyId);
+
+            //ShowDialog('Add');
+            $('#div_PaperDetail').hide();
+            $('#divQuery').hide();
+            $('#div_SubViewpointList').hide();
+            $('#divEditRegion').show();
+
+
+       var objPage = new papersubviewpoint.PaperSubViewpoint_pdf();
+       objPage.btnAddNewRecord_Click();
+       });
+    }
+
+    function btnAddNewRecord_Click() {
+        require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js"], function (papersubviewpoint) {
+            //$('#ddlSubViewpointTypeId').val(strKeyId);
+            $('#ddlExplainTypeId').val("01");
+
+            //$('#hidSubViewpointTypeId').val(strKeyId);
+
+            //ShowDialog('Add');
+            $('#div_PaperDetail').hide();
+            $('#divQuery').hide();
+            $('#div_SubViewpointList').hide();
+            $('#divEditRegion').show();
+
+
+            //var objPage = new papersubviewpoint.PaperSubViewpoint_pdf();
+            //objPage.btn_Click('AddNewRecord');
+            papersubviewpoint.PaperSubViewpoint_pdf.btn_Click('AddNewRecord');
+        });
+    }
+
+
+    /*
+ 添加点赞
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnAddNewRecord_Click)
+*/
+    function btnAddLikeLog_Click(strKeyId: string) {
+        $('#hidSubViewpointId').val(strKeyId);
+        require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js"], function (papersubviewpoint) {
+            var objPage = new papersubviewpoint.PaperSubViewpoint_pdf();
+            objPage.btnAddLikeLog_Click();
+        });
+    }
+
+
+
+    /*
+ 修改排序号
+*/
+    function btnUpdateOrderNum_Click(strKeyId,strOrderNum) {
+        require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js"], function (papersubviewpoint) {
+            var objPage = new papersubviewpoint.PaperSubViewpoint_pdf();
+            objPage.btnUpdateOrderNum_Click(strKeyId, strOrderNum);
+        });
+    }
+
+    /**选择类型得到类型简称 */
+    function selectTitle_Click() {
+        require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js"], function (papersubviewpoint) {
+            var objPage = new papersubviewpoint.PaperSubViewpoint_pdf();
+            objPage.selectTitle_Click();
+        });
+    }
+
+ /*
+  删除记录的事件函数
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnDelRecord_Click)
+ */
+function btnDelRecord_Click() {
+   require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js", "../js/TS/PubFun/clsCommonFunc4Web.js"], function(papersubviewpoint, commonfunc) {
+var arrKeyIds = commonfunc.clsCommonFunc4Web.GetCheckedKeyIds();
+if (arrKeyIds.length == 0)
+{
+alert("请选择需要删除的记录！");
+return;
+}
+var objPage = new papersubviewpoint.PaperSubViewpoint_pdf();
+objPage.btnDelRecord_Click();
+});
+}
+
+
+ /*
+  在数据表里删除记录的事件函数
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnDelRecordInTab_Click)
+ */
+function btnDelRecordInTab_Click(strKeyId: string) {
+   require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js"], function(papersubviewpoint) {
+if (strKeyId == "")
+{
+alert("请选择需要删除的记录！");
+return;
+}
+$('#hidKeyId').val(strKeyId);
+var objPage = new papersubviewpoint.PaperSubViewpoint_pdf();
+objPage.btnDelRecordInTab_Click(strKeyId);
+});
+}
+    /*
+      记录上移
+     (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnUpMove_Click)
+     */
+    function btnUpMove_Click(strKeyId,OrderNum,SubViewpointTypeId) {
+        $('#hidKeyId').val(strKeyId);
+        $('#hidOrderNum').val(OrderNum);
+        $('#hidSubViewpointTypeId').val(SubViewpointTypeId);
+        require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js", "../js/TS/PubFun/clsCommonFunc4Web.js"], function (papersubviewpoint, commonfunc) {
+            //var arrKeyIds = commonfunc.clsCommonFunc4Web.GetCheckedKeyIds();
+            //if (arrKeyIds.length == 0) {
+            //    alert("请选择需要上移的记录！");
+            //    return;
+            //}
+            var objPage = new papersubviewpoint.PaperSubViewpoint_pdf();
+            objPage.btnUpMove_Click();
+        });
+    }
+
+
+    //function btnUpMoveEx_Click(strKeyId: string) {
+
+    //    require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js"], function (papersubviewpoint) {
+    //        var objPage = new papersubviewpoint.PaperSubViewpoint_pdf();
+    //        objPage.btnUpMoveEx_Click(strKeyId);
+    //    });
+    //}
+
+ /*
+  记录下移
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnDownMove_Click)
+ */
+    function btnDownMove_Click(strKeyId,OrderNum, SubViewpointTypeId) {
+        $('#hidKeyId').val(strKeyId);
+        $('#hidOrderNum').val(OrderNum);
+        $('#hidSubViewpointTypeId').val(SubViewpointTypeId);
+    require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js", "../js/TS/PubFun/clsCommonFunc4Web.js"], function(papersubviewpoint, commonfunc) {
+//var arrKeyIds = commonfunc.clsCommonFunc4Web.GetCheckedKeyIds();
+//if (arrKeyIds.length == 0)
+//{
+//alert("请选择需要下移的记录！");
+//return;
+//}
+        var objPage = new papersubviewpoint.PaperSubViewpoint_pdf();
+        objPage.btnDownMove_Click();
+   });
+
+    }
+
+
+    //function btnDownMove_Click(strKeyId: string) {
+    //    require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js"], function (papersubviewpoint) {
+    //        var objPage = new papersubviewpoint.PaperSubViewpoint_pdf();
+    //        objPage.btnDownMove_Click(strKeyId);
+    //    });
+    //}
+
+    /*
+ 记录重序
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnReOrder_Click)
+*/
+    function btnReOrder_Click(SubViewpointTypeId) {
+        $('#hidSubViewpointTypeId').val(SubViewpointTypeId);
+        require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js", "../js/TS/PubFun/clsCommonFunc4Web.js"], function (papersubviewpoint, commonfunc) {
+            var objPage = new papersubviewpoint.PaperSubViewpoint_pdf();
+            objPage.btnReOrder_Click();
+        });
+    }
+
+
+
+ /*
+  记录移底
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnGoBottum_Click)
+ */
+function btnGoBottum_Click() {
+   require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js", "../js/TS/PubFun/clsCommonFunc4Web.js"], function(papersubviewpoint, commonfunc) {
+var arrKeyIds = commonfunc.clsCommonFunc4Web.GetCheckedKeyIds();
+if (arrKeyIds.length == 0)
+{
+alert("请选择需要移底的记录！");
+return;
+}
+var objPage = new papersubviewpoint.PaperSubViewpoint_pdf();
+  objPage.btnGoBottum_Click();
+});
+}
+
+
+ /*
+  记录置顶
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnGoTop_Click)
+ */
+function btnGoTop_Click() {
+   require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js", "../js/TS/PubFun/clsCommonFunc4Web.js"], function(papersubviewpoint, commonfunc) {
+var arrKeyIds = commonfunc.clsCommonFunc4Web.GetCheckedKeyIds();
+if (arrKeyIds.length == 0)
+{
+alert("请选择需要置顶的记录！");
+return;
+}
+var objPage = new papersubviewpoint.PaperSubViewpoint_pdf();
+  objPage.btnGoTop_Click();
+});
+}
+
+
+ /*
+  查询记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnQuery_Click)
+ */
+function btnQuery_Click()
+{
+   require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js"], function(papersubviewpoint) {
+$("#Text1").val("进入函数：btnQuery_Click");
+var objPage = new papersubviewpoint.PaperSubViewpoint_pdf();
+       objPage.btnQueryEx_Click();
+});
+}
+
+ /*
+  在数据表里修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_btnUpdateRecordInTab_Click)
+ */
+function btnUpdateRecordInTab_Click(strKeyId: string) {
+   require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js"], function(papersubviewpoint) {
+    if (strKeyId == "")
+{
+alert("请选择需要修改的记录！");
+return;
+}
+//ShowDialog('Update');
+       $('#div_PaperDetail').hide();
+       $('#divQuery').hide();
+       $('#div_SubViewpointList').hide();
+       $('#divEditRegion').show();
+var objPage = new papersubviewpoint.PaperSubViewpoint_pdf();
+  objPage.btnUpdateRecordInTab_Click(strKeyId);
+});
+}
+
+
+
+
+ /*
+  单击数据列表中每行首列的复选框所引发的事件
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_ChkClick)
+ */
+function ChkClick(myThis)
+{
+require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js", "../js/TS/PubFun/clsCommonFunc4Web.js"], function(papersubviewpoint, commonfunc) {
+var strId = myThis.id;
+var strKey = strId.substring(3);
+var arrKeys = commonfunc.arrSelectedKeys;
+if (myThis.checked == true) {
+if (arrKeys.indexOf(strKey) < 0)
+{
+arrKeys.push(strKey);
+}
+}
+else {
+var index = arrKeys.indexOf(strKey);
+if (index > -1)
+{
+arrKeys.splice(index, 1);
+}
+}
+var sstrKey = "";
+for (let strK of arrKeys)
+{
+sstrKey += `${ strK},`;
+}
+$('#spanResult').html(sstrKey);
+});
+}
+
+ /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_ExpandDiv)
+ */
+         function ExpandDiv(divName) {
+//基于RequireJS来调用tzPubFun.ts中的函数OnlyShowDiv。
+require(["../js/TS/PubFun/tzPubFun"], function (pubfun) {
+      pubfun.OnlyShowDiv(divName, "function", "content");
+});
+}
+
+ /*
+  获取数据列表中的所选记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_GetAllCkechedKeys)
+ */
+function GetAllCkechedKeys(tabName)
+{
+var arrKeys = tabName.getElementsByTagName('chkInTab');
+alert(arrKeys.length.toString());
+}
+
+
+    function btnCancel_Click() {
+        $('#div_PaperDetail').show();
+        $('#divQuery').show();
+        $('#div_SubViewpointList').show();
+        $('#divEditRegion').hide();
+    }
+
+
+    /*
+ 提交编辑
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_mySubmit)
+*/
+  async function mySubmit(pstrOp: string) {
+        //$("#btnSubmit_PaperSubViewpoint").attr("disabled", true);
+      console.error("已经进入mySubmit", pstrOp);
+        if ($("#hidUserInfo").val() != "") {
+            if ($("#ddlShareId").val() == "" || $("#ddlShareId").val() == "0") {
+                layer.msg('分享不能为空!', {
+                    icon: 3,
+                    time: 1000
+                });
+            }
+            else {
+                //GetPaperRWId();
+                //调用附件验证；
+                var bolIsExist = await IsHasFile();
+                console.error("bolIsExist:", bolIsExist);
+                if (bolIsExist == false) {
+                    require(["../js/GraduateEduPaper/PaperSubViewpoint_EditEx.js"], function (papersubviewpoint) {
+                        console.error('进入：objPage.mySubmit();');
+                        var objPage = new papersubviewpoint.PaperSubViewpoint_EditEx();
+                        objPage.mySubmit(pstrOp);
+
+                        //$('#div_PaperDetail').show();
+                        //$('#divQuery').show();
+                        //$('#div_SubViewpointList').show();
+                        //$('#divEditRegion').hide();
+                    });
+                }
+            }
+
+
+        } else {
+            $("#btnSubmit_PaperSubViewpoint").attr("disabled", false);
+            alert("用户session丢失，请重新登录！");
+        }
+
+
+    }
+    //判断图片附件格式、以及文件附件格式
+  async  function IsHasFile() {
+        //图片
+        var InputsWrapper = $("#InputsWrapper");
+        //console.error(InputsWrapper);
+        //var MaxInputs = 2;
+        var y = InputsWrapper.length;
+
+        //循环得到的个数
+        for (var i = 0; i < y; i++) {
+            if (i == 0) {
+                var file1 = $("#txtUploadfile").val();
+                console.log('file1:', file1);
+                //console.error(file1);
+                if (file1 != "") {
+                    strs = file1.split('.');
+                    var suffix = strs[strs.length - 1];
+
+                    if (suffix != 'jpg' && suffix != 'JPG' && suffix != 'gif' && suffix != 'GIF' && suffix != 'png' && suffix != 'PNG') {
+                        alert("请选择jpg、gif、png格式文件！");
+                        var obj = document.getElementById('txtUploadfile');
+                        obj.outerHTML = obj.outerHTML; //这样清空，在IE8下也能执行成功
+                        return true;
+                        //obj.select(); document.selection.clear();这种方法也可以清空 input file 的value值
+                    }
+
+                }
+                else {
+                    return false;
+                }
+            }
+            else if (i == 1) {
+                var file2 = $("#txtUploadfile2").val();
+
+                if (file2 != "") {
+                    strs = file2.split('.');
+                    var suffix = strs[strs.length - 1];
+
+                    if (suffix != 'jpg' && suffix != 'gif' && suffix != 'png') {
+                        alert("请选择jpg、gif、png格式文件！");
+                        var obj = document.getElementById('txtUploadfile2');
+                        obj.outerHTML = obj.outerHTML; //这样清空，在IE8下也能执行成功
+                        return true;
+                        //obj.select(); document.selection.clear();这种方法也可以清空 input file 的value值
+                    }
+
+                }
+            }
+            else if (i == 2) {
+
+                var file3 = $("#txtUploadfile3").val();
+
+                if (file3 != "") {
+                    strs = file3.split('.');
+                    var suffix = strs[strs.length - 1];
+
+                    if (suffix != 'jpg' && suffix != 'gif' && suffix != 'png') {
+                        alert("请选择jpg、gif、png格式文件！");
+                        var obj = document.getElementById('txtUploadfile3');
+                        obj.outerHTML = obj.outerHTML; //这样清空，在IE8下也能执行成功
+                        return true;
+                        //obj.select(); document.selection.clear();这种方法也可以清空 input file 的value值
+                    }
+
+                }
+
+            }
+        }
+        //上传
+      var bolIsSuccess = await doUpload();
+      return bolIsSuccess;
+
+
+    }
+      //上传方法
+    async function doUpload() {
+        let bolIsSuccess = false;
+        var formData = new FormData($("#uploadForm")[0]);
+        $.ajax({
+             url: "@Url.Action("UploadFilePic", "testUploadPic")",
+            type: 'post',
+            data: formData,
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (returndata) {
+
+                console.error(returndata.status);
+                //成功/为空
+                if (returndata.status == 0 || returndata.status == -1) {
+
+
+                    //如果文件地址为空，那么是修改 则不用存放地址；返回3个文件地址；
+                    if (returndata.fileNameOne != "") {
+                        $("#hdnFileOne").val(returndata.fileNameOne);
+                        console.error("文件1已经上传");
+                        bolIsSuccess = true;
+                    }
+                    if (returndata.fileNameTwo != "") {
+                        $("#hdnFileTwo").val(returndata.fileNameTwo);
+                        console.error("文件2已经上传");
+                        bolIsSuccess = true;
+                    }
+                    if (returndata.fileNameThree != "") {
+                        $("#hdnFileThree").val(returndata.fileNameThree);
+                        console.error("文件3已经上传");
+                        bolIsSuccess = true;
+                    }
+
+                    require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js"], function (papersubviewpoint) {
+                        console.error('进入：objPage.btnOKUpd_Click();');
+                        var objPage = new papersubviewpoint.PaperSubViewpoint_pdf();
+                        objPage.btnOKUpd_Click();
+
+                        $('#div_PaperDetail').show();
+                        $('#divQuery').show();
+                        $('#div_SubViewpointList').show();
+                        $('#divEditRegion').hide();
+                    });
+                    // var aa = JSON.stringify(returndata);
+
+                    //alert(returndata.message);
+
+                }
+                else {
+
+                    alert('请选择正确图片格式(in PaperSubViewpoint_pdf)')
+
+                }
+
+
+            },
+            error: function (returndata) {
+                alert(returndata);
+            }
+        });
+        return bolIsSuccess;
+    }
+
+
+ /*
+  分页修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_IndexPage)
+ */
+function IndexPage(intPageIndex)
+{
+console.log("跳转到" + intPageIndex + "页");
+    require(["../js/GraduateEduEx/CitingPaper.js"], function(papersubviewpoint) {
+        var objPage = new papersubviewpoint.CitingPaper();
+objPage.IndexPage(intPageIndex);
+});
+}
+
+ /*
+  分页修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_JumpToPage)
+ */
+function JumpToPage()
+{
+var intCurrPageIndex = $('#input_number').val();
+var intPageIndex = Number(intCurrPageIndex);
+console.log("跳转到" + intPageIndex + "页");
+    require(["../js/GraduateEduEx/CitingPaper.js"], function(papersubviewpoint) {
+        var objPage = new papersubviewpoint.CitingPaper();
+objPage.IndexPage(intPageIndex);
+});
+}
+
+
+
+ /*
+  分页修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_NextPage)
+ */
+function NextPage()
+{
+var intCurrPageIndex = $('#hidCurrPageIndex').val();
+var intPageIndex = Number(intCurrPageIndex) + 1;
+console.log("跳转到" + intPageIndex + "页");
+    require(["../js/GraduateEduEx/CitingPaper.js"], function(papersubviewpoint) {
+        var objPage = new papersubviewpoint.CitingPaper();
+objPage.IndexPage(intPageIndex);
+});
+}
+
+
+
+ /*
+  分页修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_PageNum)
+ */
+function PageNum(intPageIndex)
+{
+console.log("跳转到" + intPageIndex + "页");
+    require(["../js/GraduateEduEx/CitingPaper.js"], function(papersubviewpoint) {
+        var objPage = new papersubviewpoint.CitingPaper();
+objPage.IndexPage(intPageIndex);
+});
+}
+
+ /*
+  分页修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_PrevPage)
+ */
+function PrevPage()
+{
+var intCurrPageIndex = $('#hidCurrPageIndex').val();
+var intPageIndex = Number(intCurrPageIndex) - 1;
+console.log("跳转到" + intPageIndex + "页");
+    require(["../js/GraduateEduEx/CitingPaper.js"], function(papersubviewpoint) {
+        var objPage = new papersubviewpoint.CitingPaper();
+objPage.IndexPage(intPageIndex);
+});
+    }
+
+    /*
+  修改记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_SortBy)
+ */
+    function SortBy(strFldName: string) {
+        console.log("按：" + strFldName + "排序");
+        require(["../js/GraduateEduEx/CitingPaper.js"], function (papersubviewpoint) {
+            var objPage = new papersubviewpoint.CitingPaper();
+            objPage.SortBy(strFldName);
+        });
+    }
+
+
+    /*
+ 页面导入-在导入页面后运行的函数
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_Page_Load)
+*/
+//window.onload = function() {
+//   require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js"], function(papersubviewpoint) {
+//var objPage = new papersubviewpoint.PaperSubViewpoint_pdf();
+//objPage.Page_Load();
+//});
+//}
+
+ /*
+  全选数据列表中的所有记录
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_SetAllCkechedKeys)
+ */
+function SetAllCkechedKeys(tabName)
+{
+var thisChk = event.target;
+require(["../js/TS/PubFun/clsCommonFunc4Web.js"], function (commonfunc) {
+console.log(tabName);
+console.log(thisChk);
+commonfunc.clsCommonFunc4Web.SetAllCkechedKeys(tabName, thisChk);
+});
+}
+
+ /*
+  显示对话框
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_ShowDialog)
+ */
+function ShowDialog(pstrOp: string) {
+   strOp = pstrOp;
+   require(['jquery', 'bootstrap'], function($) {
+       if (strOp === "Add") {
+           $('#myModalLabel').html('添加记录');
+//PaperSubViewpoint_pdf.GetMaxStrId('#txtSubViewpointId');
+        }
+else if (strOp === "Update")
+{
+            $('#myModalLabel').html('修改记录');
+}
+else if (strOp === "Detail")
+{
+            $('#btnOKUpd').hide();
+            $('#myModalLabel').html('详细信息');
+}
+        $('#divEditRegion').modal('show');
+   });
+    }
+
+
+ /*
+  隐藏对话框
+ (AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_HideDialog)
+ */
+function HideDialog() {
+  require(['jquery', 'bootstrap'], function($) {
+      $('#divEditRegion').modal('hide');
+  });
+    }
+
+
+
+
+    //选择文献
+    function selectPaper_Click() {
+        require(["../js/GraduateEduEx/CitingPaper.js"], function (paper) {
+            var objPage = new paper.CitingPaper();
+            objPage.Page_Load();
+        });
+        ShowDialog2();
+    }
+    //关闭文献列表
+    function close_Click() {
+
+        HideDialog2();
+    }
+
+
+    //确认引用文献
+    function btnCitingPaper_Click(strKeyId: string) {
+        $('#txtLiteratureSourcesId').val(strKeyId);
+        HideDialog2();
+    }
+
+    /*
+显示对话框2
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_ShowDialog)
+*/
+    function ShowDialog2() {
+        require(['jquery', 'bootstrap'], function ($) {
+            $('#divPaperList').modal('show');
+        });
+    }
+
+    /*
+ 隐藏对话框2
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_HideDialog)
+*/
+    function HideDialog2() {
+        require(['jquery', 'bootstrap'], function ($) {
+            $('#divPaperList').modal('hide');
+        });
+    }
+
+    /*
+显示对话框3
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_ShowDialog)
+*/
+    function ShowDialog3() {
+        require(['jquery', 'bootstrap'], function ($) {
+            $('#divEditAppraise').modal('show');
+        });
+    }
+
+    /*
+ 隐藏对话框3
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_HideDialog)
+*/
+    function HideDialog3() {
+        require(['jquery', 'bootstrap'], function ($) {
+            $('#divEditAppraise').modal('hide');
+        });
+    }
+
+    /*
+显示对话框4
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_ShowDialog)
+*/
+    function ShowDialog4() {
+        require(['jquery', 'bootstrap'], function ($) {
+            $('#divShowAppraise').modal('show');
+        });
+    }
+
+    /*
+ 隐藏对话框4
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_HideDialog)
+*/
+    function HideDialog4() {
+        require(['jquery', 'bootstrap'], function ($) {
+            $('#divShowAppraise').modal('hide');
+        });
+    }
+
+    /*
+    是否隐藏
+(AutoGCLib.WA_ViewScript_TS4CSharp:Gen_WApi_JS_HideDialog)
+*/
+    function btnIsDisplay_Click() {
+        require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js"], function (papersubviewpoint) {
+            var objPage = new papersubviewpoint.PaperSubViewpoint_pdf();
+            objPage.btnIsDisplay_Click();
+        });
+    }
+
+
+
+
+
+
+    /*
+添加点赞
+(AutoGCLib.WA_ViewScript_TS4CSharp:btnAddVote_Click)
+*/
+    function btnAddVote_Click(strKeyId: string, strUserId: string) {
+        //$('#hidSubViewpointId').val(strKeyId);
+        require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js"], function (papersubviewpoint) {
+            var objPage = new papersubviewpoint.PaperSubViewpoint_pdf();
+            objPage.btnAddVote_Click(strKeyId, strUserId);
+        });
+
+        layer.msg('已点赞!', {
+            icon: 1,
+            time: 2000
+        });
+    }
+
+
+    /*
+添加收藏
+(AutoGCLib.WA_ViewScript_TS4CSharp:btnAddCollection_Click)
+*/
+    function btnAddCollection_Click(strKeyId: string) {
+        //$('#hidSubViewpointId').val(strKeyId);
+        require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js"], function (papersubviewpoint) {
+            var objPage = new papersubviewpoint.PaperSubViewpoint_pdf();
+            objPage.btnAddCollection_Click(strKeyId);
+        });
+        layer.msg('已收藏!', {
+            icon: 1,
+            time: 2000
+        });
+    }
+
+    //下载
+    function btnDownLoadFile_Click() {
+        require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js"], function (papersubviewpoint) {
+            var objpage = new papersubviewpoint.PaperSubViewpoint_pdf();
+            objpage.btnDownLoadFile_Click();
+
+        });
+    }
+
+
+
+
+    //下载方法
+    function doDownLoad(filepath: string, filename: string) {
+        var aLink = document.createElement('a');
+        aLink.download = filename;
+        aLink.href = filepath;
+        document.body.appendChild(aLink);
+        aLink.click();
+        document.body.removeChild(aLink);
+    }
+
+
+    //控制pdf页码
+    function btnUpdatePaperPageNum_Click(PageNum: number, ExplainContent: string) {
+
+        //定位pdf页码
+        $("#iframe_qaPdf")[0].contentWindow.btnLocationPdfPageNum_Click(PageNum);
+
+        //var page_Number = document.getElementById("pageNumber");
+
+        //page_Number.value = PageNum;
+        //PDFViewerApplication.page = PageNum;
+
+        //webViewerLoad();
+
+        $("#hidExplainContent").val(ExplainContent);
+
+        if (PageNum != 0) {
+
+            require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js"], function (papersubviewpoint) {
+                var objpage = new papersubviewpoint.PaperSubViewpoint_pdf();
+                objpage.btnUpdatePaperPageNum_Click();
+
+                //papersubviewpoint.PaperSubViewpoint_pdf.FindText();
+            });
+            //document.getElementById("pageNumber").value = this.pdfViewer.currentPageNumber = PageNum * 1;
+        }
+
+        //$("#txtPaperPageNum").val(PageNum);
+
+
+    }
+
+
+    //刷新本页面观点
+    function Refresh_vPaperSubViewpoint() {
+
+        require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js"], function (papersubviewpoint) {
+            var objPage = new papersubviewpoint.PaperSubViewpoint_pdf();
+            objPage.BindGv_vPaperSubViewpoint();
+        });
+    }
+
+
+    //向左推移
+    function right_Click() {
+        var leftPart = document.getElementById("leftPart");
+        var right_Content = document.getElementById("right_Content");
+
+        var hidleftNum = document.getElementById("hidleftNum");
+        var hidrightNum = document.getElementById("hidrightNum");
+
+        var num = 5;
+        hidleftNum.value = parseInt(hidleftNum.value) - num;
+        hidrightNum.value = parseInt(hidrightNum.value) + num;
+
+        leftPart.style.width = hidleftNum.value + '%';
+        right_Content.style.width = hidrightNum.value + '%';
+
+        layer.msg('内容编辑区增宽到：' + hidrightNum.value + '%', {
+            icon: 1,
+            time: 2000
+        });
+    }
+
+
+
+
+    //向右推移
+    function left_Click() {
+        var leftPart = document.getElementById("leftPart");
+        var right_Content = document.getElementById("right_Content");
+
+        var hidleftNum = document.getElementById("hidleftNum");
+        var hidrightNum = document.getElementById("hidrightNum");
+
+        var num = 5;
+        hidleftNum.value = parseInt(hidleftNum.value) + num;
+        hidrightNum.value = parseInt(hidrightNum.value) - num;
+        leftPart.style.width = hidleftNum.value + '%';
+        right_Content.style.width = hidrightNum.value + '%';
+        layer.msg('pdf增宽到：' + hidleftNum.value + '%', {
+            icon: 1,
+            time: 2000
+        });
+    }
+
+    //最大化
+    function Maximize_Click() {
+        var leftPart = document.getElementById("leftPart");
+        var right_Content = document.getElementById("right_Content");
+
+        var hidleftNum = document.getElementById("hidleftNum");
+        var hidrightNum = document.getElementById("hidrightNum");
+
+        if (hidleftNum.value != 0) {
+
+            hidleftNum.value = 0;
+            hidrightNum.value = 100;
+
+            leftPart.style.width = '0%';
+            right_Content.style.width = '100%';
+
+            $("#i_Maximize").removeClass("layui-icon-screen-full");
+            $("#i_Maximize").addClass("layui-icon-screen-restore");
+            //$("#infoSubViewpoint div").removeClass("liRowsColor");
+            ////添加背景色
+            //strKey = "Q" + strKey;
+            //$("#" + strKey).addClass("liRowsColor");
+
+            layer.msg('内容编辑区已经最大化！', {
+                icon: 1,
+                time: 2000
+            });
+        } else {
+            hidleftNum.value = 55;
+            hidrightNum.value = 45;
+
+            leftPart.style.width = '55%';
+            right_Content.style.width = '45%';
+
+            $("#i_Maximize").removeClass("layui-icon-screen-restore");
+            $("#i_Maximize").addClass("layui-icon-screen-full");
+
+            layer.msg('内容编辑区已经恢复！', {
+                icon: 1,
+                time: 2000
+            });
+        }
+
+    }
+
+    function li_PaperQA_Click() {
+        require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js"], function (papersubviewpoint) {
+            var objPage = new papersubviewpoint.PaperSubViewpoint_pdf();
+            objPage.Bind_Paper_QA();
+        });
+    }
+
+
+    function li_PaperTags_Click() {
+        require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js"], function (papersubviewpoint) {
+            var objPage = new papersubviewpoint.PaperSubViewpoint_pdf();
+            objPage.Bind_Paper_Tags();
+        });
+    }
+
+    //触发答疑子页面的添加问题编辑框
+    //function AddQ() {
+    //    $("#iframe_Paper_QA")[0].contentWindow.AddQ();
+    //}
+
+    //function btnAddTags_Click() {
+    //    $("#iframe_Paper_Tags")[0].contentWindow.btnAddTags_Click();
+    //}
+
+
+    //点击tab事件；
+    function li_PaperMenu_Click(KeyId: string) {
+        //存储点击的id
+        $("#hidTabNum").val(KeyId);
+        require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js"], function (papersubviewpoint) {
+            var objPage = new papersubviewpoint.PaperSubViewpoint_pdf();
+            objPage.li_PaperMenu_Click();
+        });
+    }
+
+    //辅助子界面查看小组答案的历史版本
+    function SearchAnsWerV(strKeyId: string) {
+        xadmin.open('历史版本', '../GraduateEduEx/HistoricalVersion?Key=' + strKeyId + '&Type=12');
+
+    }
+
+    //排序_最新子观点
+    function btnOrderBy_Click() {
+        $("#hidSortPsv").val(2);
+        require(["../js/GraduateEduEx/PaperSubViewpoint_pdf.js"], function (papersubviewpoint) {
+            var objPage = new papersubviewpoint.PaperSubViewpoint_pdf();
+            objPage.BindGv_vPaperSubViewpoint();
+        });
+    }
+
+
+    //评论
+    function SysComment(strAnswerId: string, strUserId: string, strQuestionsId: string) {
+        xadmin.open('教师问题回答评论', '../GraduateEduTools/SysComment?Key=' + strAnswerId + '&Type=11&User=' + strUserId + '&PubParentId=' + strQuestionsId);
+
+    }
+
+
+    //刷新教师回答页面
+    function Refresh_vTea_QA() {
+        $("#iframe_Tea_QA")[0].contentWindow.Refresh_vTea_QA();
+    }
+
+    //刷新教师测试回答页面
+    function Refresh_vTeaTest_QA() {
+        $("#iframe_TeaTest_QA")[0].contentWindow.Refresh_vTeaTest_QA();
+    }
+
+</script>
+
+<div id="divLoading" class="loading">
+    <img src="~/images/CirclePoint.gif" />
+</div>
+@*<a id="backtop" class="back-top" href="javascript:scroll(0,0);" target="_self" title="返回顶部" style="display: block;">
+        <i class="icon-backtop"></i>
+    </a>*@
+<div class="x-nav" style="position:fixed;top:1px;left:1px;right:1px;width:100%;">
+    <span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">论文管理</a>
+        <a>
+            <cite><span id="spanPaperContent">pdf子观点</span></cite>
+        </a>
+        <Label id="lblMsg_List" name="lblMsg_List"></Label>
+    </span>
+    <a class="layui-btn layui-btn-small" style="line-height:1.6em;float:right;margin-top:2px; color:#fff;" onclick="location.reload()" title="刷新">
+        <i class="layui-icon layui-icon-refresh-3" style="line-height:32px"></i>
+    </a>
+    @*<button class="layui-btn layui-btn-danger" style="float:right;margin-right:10px;margin-top:3px;" onclick="javascript:history.go(-1)" title="返回">
+            <i class="layui-icon layui-icon-return" style="line-height:30px"></i>
+        </button>*@
+    @*<a class="layui-btn layui-btn-danger" style="line-height:1.6em;margin-top:3px;float:right;margin-left:50px; margin-right:10px; color:#fff;" onclick="javascript:history.go(-1)" title="返回">
+            <i class="layui-icon layui-icon-return" style="line-height:32px"></i>
+        </a>*@
+
+    <a class="layui-btn layui-btn-normal" style="line-height:1.6em;margin-top:2px; float:right; color:#fff;" onclick="left_Click()" title="向右推移">
+        <i class="layui-icon layui-icon-spread-left" style="line-height:32px"></i>
+    </a>
+
+
+    <a class="layui-btn layui-btn-normal" style="line-height:1.6em;margin-top:2px;float:right; color:#fff;" onclick="right_Click()" title="向左推移">
+        <i class="layui-icon layui-icon-shrink-right" style="line-height:32px"></i>
+    </a>
+
+
+    <a class="layui-btn layui-btn-normal" style="line-height:1.6em;margin-top:2px; float:right; color:#fff;" onclick="Maximize_Click()" title="内容区最大化">
+        <i id="i_Maximize" class="layui-icon layui-icon-screen-full" style="line-height:32px"></i>
+    </a>
+
+</div>
+<div style="width:100%; height:100%;">
+    @*<div id="pdfcontenttext">*@
+    <div id="leftPart">
+    </div>
+    <div id="right_Content" style="margin-top:40px;">
+
+        <ul id="tabMenu" class="nav nav-tabs" role="tablist">
+            <li id="liPaper_SubViewpoint" class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#Paper_SubViewpoint" onclick="li_PaperMenu_Click(1)">子观点</a>
+            </li>
+            <li id="liPaper_QA" class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#Paper_QA" onclick="li_PaperMenu_Click(2)">论文答疑</a>
+            </li>
+            <li id="liPaper_Tags" class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#Paper_Tags" onclick="li_PaperMenu_Click(3)">论文标记</a>
+            </li>
+            <li id="liTea_QA" class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#Tea_QA" onclick="li_PaperMenu_Click(4)">教师提问</a>
+            </li>
+            <li id="liTeaTest_QA" class="nav-item" style="display:none">
+                <a class="nav-link" data-toggle="tab" href="#TeaTest_QA" onclick="li_PaperMenu_Click(5)">教师测试提问</a>
+            </li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+
+
+            <div id="Paper_SubViewpoint" class="tab-pane active">
+
+                <div class="layui-collapse" lay-accordion>
+                    <div class="layui-colla-item">
+                        <h2 class="layui-colla-title">论文详情</h2>
+                        <div id="divtab1" class="layui-colla-content">
+                            @*-- 论文详情区 --*@
+                            <div id="div_PaperDetail">
+                                @*<div style="text-align:left;height:40px;margin-left:10px">
+
+                                        <button type="submit" id="btnIsDisplay" name="btnQuery" class="layui-btn layui-btn-danger btn-sm" style="float:left;" onclick="btnIsDisplay_Click()">隐藏论文</button>
+                                    </div>*@
+                                <div id="tabwucPaperReadWrite" style="background-color:white;">
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="layui-colla-item">
+                        <h2 class="layui-colla-title">论文子观点</h2>
+                        <div id="divtab2" class="layui-colla-content layui-show">
+                            @* 查询区 *@
+                            <div id="divQuery" class="div_query">
+
+                                <table id="tabQuery" name="tabQuery" style="width: 20%; " class="table table-bordered table-hover table td table-sm">
+                                    <tr>
+                                        <td>
+                                            <select id="ddlSubViewpointTypeId_q" name="ddlSubViewpointTypeId_q" class="form-control" style="width:200px;" />
+                                        </td>
+                                        <td>
+                                            <select id="ddlSectionId_q" name="ddlSectionId_q" class="form-control" style="width:200px;" />
+                                        </td>
+                                        <td>
+                                            <button title="查询" class="layui-btn" lay-submit="" lay-filter="sreach" onclick="btnQuery_Click()">
+                                                <i class="layui-icon">&#xe615;</i>
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button title="最新子观点" class="layui-btn layui-btn-normal" lay-submit="" lay-filter="sreach" onclick="btnOrderBy_Click()">
+                                                <i class="layui-icon">&#xe619;</i>
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button title="添加子观点" class="layui-btn layui-btn-warm" lay-submit="" lay-filter="sreach" onclick="btnAddNewRecord_Click()">
+                                                <i class="layui-icon">&#xe654;</i>
+                                            </button>
+                                        </td>
+
+                                    </tr>
+                                </table>
+                            </div>
+
+
+                            @*-- 功能区 --*@
+                            <div id="div_SubViewpointList" class="layui-fluid">
+                                <div class="layui-row layui-col-space15">
+                                    <div class="layui-col-md12">
+                                        <div class="layui-card">
+                                            <div class="layui-card-body ">
+                                                <table class="layui-table layui-form">
+                                                    @*<thead>*@
+                                                    @*<tr>*@
+
+                                                    @*<th width="5">
+                                                            <input type="checkbox" name="" lay-skin="primary">
+                                                        </th>*@
+                                                    @*<th width="30">标识</th>*@
+                                                    @*<td width="100">论文节</td>*@
+
+                                                    @*<th>
+                                                            <div class="float-left">观点内容</div>
+                                                            <div class="float-right"><button title="最新子观点" class="layui-btn layui-btn layui-btn-xs" onclick=btnOrderBy_Click()><i class="layui-icon">&#xe619;</i>最新子观点</button></div>
+                                                            <div class="float-right">
+                                                                <button title="添加子观点" class="layui-btn layui-btn-warm layui-btn-xs" onclick=btnAddNewRecord_Click()><i class="layui-icon"></i>添加子观点</button>
+                                                            </div>
+                                                        </th>*@
+
+                                                    @*<th width="90" style="text-align:center">排序</th>*@
+                                                    @*<th width="100">编写用户</th>*@
+                                                    @*<th width="110">编写时间</th>*@
+                                                    @*<th width="100">操作</th>*@
+                                                    @*</thead>*@
+                                                    <tbody id="tbList" class="x-cate"></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            @*-- 编辑层 --*@
+                            @*<div class="modal fade" id="divEditRegion" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">*@
+                            <div id="divEditRegion" style="display:none; margin-top:50px;">
+                                <form id="uploadForm" method="post" enctype="multipart/form-data">
+                                    <div class="modal-content" style="width: 99%;">
+                                        <div class="modal-header">
+                                            <h4 class="modal-title" id="myModalLabel">子观点编辑</h4>
+
+                                            <button id="btnSubmit_PaperSubViewpoint" type="button" class="btn btn-primary" style="float:right; width:100px; margin-left:300px;" onclick="mySubmit()">添加</button>
+                                            <button id="btnCancel_PaperSubViewpoint" type="button" class="btn btn-primary" style="width:100px;" onclick="btnCancel_Click()">取消编辑</button>
+                                            @*<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>*@
+                                        </div>
+                                        <div class="modal-body">
+                                            <table id="tabwucPaperSubViewpoint" name="tabwucPaperSubViewpoint" style="width: 100%; padding: 1px; border:0px" class="table table-bordered table-hover">
+                                                <tr>
+                                                    <td class="NameTD">
+                                                        <Label id="lblSectionId" name="lblSectionId" class="col-form-label text-right" style="width:90px;">
+                                                            论文节
+                                                        </Label>
+                                                    </td>
+                                                    <td class="ValueTD">
+                                                        <select id="ddlSectionId" name="ddlSectionId" class="form-control" style="width:200px;" />
+                                                    </td>
+                                                    <td class="NameTD">
+                                                        <Label id="lblShareId" name="lblShareId" class="col-form-label text-right" style="width:90px;">
+                                                            分享权限
+                                                        </Label>
+                                                    </td>
+                                                    <td class="ValueTD">
+                                                        <select id="ddlShareId" name="ddlShareId" class="form-control" style="width:200px;" />
+
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="NameTD">
+                                                        <Label id="lblSubViewpointTypeId" name="lblSubViewpointTypeId" class="col-form-label text-right" style="width:90px;">
+                                                            类型
+                                                        </Label>
+                                                    </td>
+                                                    <td class="ValueTD">
+                                                        <select id="ddlSubViewpointTypeId" name="ddlSubViewpointTypeId" class="form-control" style="width:200px;" />
+                                                    </td>
+                                                    <td class="NameTD">
+                                                        <Label id="lblAttitudesId" name="lblRWTitle" class="col-form-label text-right" style="width:90px;">
+                                                            观点态度
+                                                        </Label>
+                                                    </td>
+                                                    <td><select id="ddlAttitudesId" name="ddlAttitudesId" class="form-control" style="width:200px;" /></td>
+                                                    <td class="NameTD">
+                                                            <Label id="lblRWTitle" name="lblRWTitle" class="col-form-label text-right" style="width:90px;">
+                                                                类型标题
+                                                            </Label>
+                                                        </td>
+                                                        <td><input id="txtRWTitle" name="txtRWTitle" class="form-control" style="width:200px;" /></td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td class="NameTD">
+                                                        <Label id="lblSubViewpointContent" name="lblSubViewpointContent" class="col-form-label text-right" style="width:90px;">
+                                                            观点内容
+                                                        </Label>
+                                                    </td>
+                                                    <td class="ValueTD" colspan="3">
+                                                        @*<input id="txtSubViewpointContent" name="txtSubViewpointContent" class="form-control" style="width:200px;" />*@
+                                                        <textarea id="txtSubViewpointContent" name="txtSubViewpointContent" class="form-control" style="width:550px;height:80px;"></textarea>
+                                                    </td>
+
+                                                </tr>
+                                                <tr>
+                                                    <td class="NameTD">
+                                                        <Label id="lblExplainTypeId" name="lblExplainTypeId" class="col-form-label text-right" style="width:90px;">
+                                                            说明类型
+                                                        </Label>
+                                                    </td>
+                                                    <td class="ValueTD">
+                                                        <select id="ddlExplainTypeId" name="ddlExplainTypeId" class="form-control" style="width:200px;" />
+                                                    </td>
+                                                    <td></td>
+                                                    <td style="display:none">
+                                                        <span class="form-control" style="width:200px;">
+                                                            <input type="checkbox" id="chkIsPublic" name="chkIsPublic" Text="是否公开" checked="checked"><label for="chkIsPublic">是否公开</label>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="NameTD">
+                                                        <Label id="lblExplainContent" name="lblExplainContent" class="col-form-label text-right" style="width:90px;">
+                                                            说明内容
+                                                        </Label>
+                                                    </td>
+                                                    <td class="ValueTD" colspan="3">
+                                                        @*<input id="txtExplainContent" name="txtExplainContent" class="form-control" style="width:200px;" />*@
+                                                        <textarea id="txtExplainContent" name="txtExplainContent" class="form-control" style="width:550px;height:80px;"></textarea>
+                                                    </td>
+
+                                                </tr>
+
+                                                @*<tr>
+                                                        <td class="NameTD">
+                                                            <Label id="lblPaperPageNum" name="lblPaperPageNum" class="col-form-label text-right" style="width:90px;">
+                                                                论文页码
+                                                            </Label>
+                                                        </td>
+                                                        <td class="ValueTD">
+                                                            <input id="txtPaperPageNum" name="txtPaperPageNum" class="form-control" style="width:100px;" />
+                                                        </td>
+                                                        <td>
+                                                            <Label id="lblPaperLineNum" name="lblPaperLineNum" class="col-form-label text-right" style="width:90px;">
+                                                                论文行号
+                                                            </Label>
+                                                        </td>
+                                                        <td>
+                                                            <input id="txtPaperLineNum" name="txtPaperLineNum" class="form-control" style="width:100px;" />
+                                                        </td>
+                                                    </tr>*@
+                                                @*<tr>
+                                                        <td class="NameTD">
+                                                            <Label id="lblUploadfileUrl" name="lblUploadfileUrl" class="col-form-label text-right" style="width:90px;">
+                                                                上传图片
+                                                            </Label>
+                                                        </td>
+                                                        <td class="ValueTD" colspan="3">
+                                                            <input type="file" id="txtUploadfileUrl" name="txtUploadfileUrl">
+
+                                                        </td>
+                                                    </tr>
+
+
+                                                    </tr>*@
+                                                <tr>
+                                                    <td class="NameTD">
+                                                        <Label id="lblUploadfileUrl" name="lblUploadfileUrl" class="col-form-label text-right" style="width:90px;">
+                                                            上传图片
+                                                        </Label>
+                                                    </td>
+                                                    <td class="ValueTD" id="InputsWrapper" colspan="3">
+                                                        <input type="file" id="txtUploadfile" name="txtUploadfile">
+                                                        <button id="AddMoreFileBox" type="button" class="btn btn-primary" data-dismiss="modal">添加更多图片</button>
+
+                                                        @*<input id="txtUploadfileUrl" name="txtUploadfileUrl" class="form-control" style="width:200px;" />*@
+                                                    </td>
+
+                                                </tr>
+
+
+                                                <tr>
+                                                    <td class="NameTD">
+                                                        <Label id="lblLiteratureSourcesId" name="lblLiteratureSourcesId" class="col-form-label text-right" style="width:90px;">
+                                                            文献来源
+                                                        </Label>
+                                                    </td>
+                                                    <td class="ValueTD">
+                                                        <input id="txtLiteratureSourcesId" name="txtLiteratureSourcesId" disabled="disabled" class="form-control" style="width:100px;" />
+
+                                                    </td>
+                                                    <td><button id="btnselectPaper" type="button" class="btn btn-primary" style="margin-top:2px; width:100px;" onclick="selectPaper_Click()">引用文献</button></td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr style="display:none;">
+                                                    <td class="NameTD">
+                                                        <Label id="lblPageNumber" name="lblPageNumber" class="col-form-label text-right" style="width:90px;">
+                                                            页码
+                                                        </Label>
+                                                    </td>
+                                                    <td class="ValueTD">
+                                                        <input id="txtPageNumber" name="txtPageNumber" class="form-control" style="width:200px;" />
+                                                        <asp:CompareValidator id="ComValid_PageNumber" name="ComValid_PageNumber" runat="server" CssClass="ErrMsg"
+                                                                              ErrorMessage="请输入整型数值!"
+                                                                              ControlToValidate="txtPageNumber"
+                                                                              Type="Integer"
+                                                                              Operator="DataTypeCheck"
+                                                                              EnableClientScript="false">
+                                                        </asp:CompareValidator>
+                                                    </td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr style="display:none;">
+                                                    <td class="NameTD">
+                                                        <Label id="lblOrderNum" name="lblOrderNum" class="col-form-label text-right" style="width:90px;">
+                                                            序号
+                                                        </Label>
+                                                    </td>
+                                                    <td class="ValueTD">
+                                                        <input id="txtOrderNum" name="txtOrderNum" class="form-control" style="width:200px;" value="30" />
+                                                        <asp:CompareValidator id="ComValid_OrderNum" name="ComValid_OrderNum" runat="server" CssClass="ErrMsg"
+                                                                              ErrorMessage="请输入整型数值!"
+                                                                              ControlToValidate="txtOrderNum"
+                                                                              Type="Integer"
+                                                                              Operator="DataTypeCheck"
+                                                                              EnableClientScript="false">
+                                                        </asp:CompareValidator>
+                                                    </td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="NameTD">
+                                                        <Label id="lblMemo" name="lblMemo" class="col-form-label text-right" style="width:90px;">
+
+                                                            备注
+                                                        </Label>
+                                                    </td>
+                                                    <td class="ValueTD" colspan="3">
+                                                        @*<input id="txtMemo" name="txtMemo" class="form-control" style="width:200px;" />*@
+                                                        <textarea id="txtMemo" name="txtMemo" class="form-control" style="width:550px;height:60px;"></textarea>
+
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        @*<div class="modal-footer">
+
+                                            </div>*@
+                                    </div>
+                                    <!-- /.modal-content -->
+                                    <!-- /.modal -->
+                                </form>
+                            </div>
+
+                            <div class="modal fade" style="z-index:1060;" id="divPaperList" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+                                <div class="modal-dialog" style="margin-left:200px;">
+                                    <div class="modal-content" style="width: 1000px;">
+                                        <div class="modal-header">
+                                            <h4 class="modal-title" id="myModalLabel">引用论文</h4>
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div id="divList" class="div_List">
+                                                <div id="divDataLst" class="div_List">
+                                                </div>
+                                                <div id="divPager" class="pager" value="1">
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button id="btnCancel" type="button" class="btn btn-default" data-dismiss="modal" onclick="close_Click()">关闭</button>
+                                            @*<button id="btnOKUpd" type="button" class="btn btn-primary" onclick="mySubmit2()">添加</button>*@
+                                        </div>
+                                    </div>
+                                    <!-- /.modal-content -->
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+
+            <div id="Paper_QA" class="tab-pane fade">
+            </div>
+
+            <div id="Paper_Tags" class="tab-pane fade">
+            </div>
+
+            <div id="Tea_QA" class="tab-pane fade">
+            </div>
+
+            <div id="TeaTest_QA" class="tab-pane fade">
+            </div>
+        </div>
+    </div>
+</div>
+
+<input id="hidOpType" type="hidden" />
+<input id="hidKeyId" type="hidden" />
+<input id="hidUserId" type="hidden" />
+<input id="hidRoleId" type="hidden" />
+
+@*<input id="hidUserId1" type="hidden" value="@strUserId1_Value" />*@
+<input id="hidCurrPageIndex" type="hidden" value="1" />
+<input id="hidSortvPaperSubViewpointBy" type="hidden" value="" />
+@*<input id="hidUserInfo" type="hidden" value="@Model.GetSession("objvUserRoleRelation")" />*@
+
+<input id="hidPaperId" type="hidden" />
+<input id="hidPaperRWId" type="hidden" />
+
+<input id="hidSubViewpointId" type="hidden" />
+<input id="hidSubViewpointTypeId" type="hidden" />
+
+<input id="hdnFileOne" type="hidden" />
+<input id="hdnFileTwo" type="hidden" />
+<input id="hdnFileThree" type="hidden" />
+
+@*<input id="hidPaperId" type="hidden" />*@
+
+<input id="hidIsSubmit" type="hidden" />
+
+@* pdf查看维护类型 *@
+<input id="hidType" type="hidden" />
+
+
+<input id="hidExplainContent" type="hidden" />
+
+<input id="hidOrderNum" type="hidden" />
+
+
+@* 评论相关 *@
+<input id="hidParentId" type="hidden" />
+
+
+@* pdfContent num *@
+<input id="hidleftNum" type="hidden" value="55" />
+@* rightContent num *@
+<input id="hidrightNum" type="hidden" value="45" />
+
+@*答疑问题Id*@
+<input id="hidQuestionsId" type="hidden" />
+
+@*答疑问题类型Id*@
+<input id="hidQuestionsTypeId" type="hidden" />
+
+@*教学班Id*@
+<input id="hidid_CurrEduCls" type="hidden" />
+
+@*回复Id*@
+<input id="hidPushId" type="hidden" />
+
+
+@* tab页菜单Id *@
+<input id="hidTabNum" type="hidden" />
+
+@* 主题Id *@
+<input id="hidTopicId" type="hidden" />
+
+<input id="hidSortPsv" type="hidden" />
+

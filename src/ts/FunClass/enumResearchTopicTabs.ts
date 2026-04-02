@@ -1,0 +1,22 @@
+export default class enumResearchTopicTabs {
+  static readonly liUser = 'liUser'; // label: '小组成员' },
+  static readonly liResearchPlan = 'liResearchPlan'; // '计划' },
+  static readonly liResearchTask = 'liResearchTask'; // '任务' },
+  static readonly ligs_ReflectLog = 'ligs_ReflectLog'; // '反思' },
+  static readonly liPaper = 'liPaper'; // '论文' },
+  static readonly liSubViewpoint = 'liSubViewpoint'; // '论文子观点-个人观点' },
+  static readonly liViewpoint = 'liViewpoint'; // '论文子观点--个人观点' },
+  static readonly liExpertViewpoint = 'liExpertViewpoint'; // '专家观点' },
+  static readonly liConcept = 'liConcept'; // '概念' },
+  static readonly liObjective = 'liObjective'; // '客观事实' },
+  static readonly liObjectiveBasis = 'liObjectiveBasis'; // '客观数据' },
+  static readonly liSysskill = 'liSysskill'; // '技能' },
+  static readonly liSysSocialRela = 'liSysSocialRela'; // '社会关系' },
+
+  static readonly liAllViewpoint = 'liAllViewpoint'; // '主题各观点' },
+  static readonly liOriginalPaper = 'liOriginalPaper'; // '小组论文写作' },
+  static readonly liMeetingMinutes = 'liMeetingMinutes'; // '会议纪要' },
+  static readonly liPaperReport = 'liPaperReport'; // '论文汇报' },
+  static readonly liTobeStudiedProblem = 'liTobeStudiedProblem'; // '待研究问题' },
+  static readonly liResearchResult = 'liResearchResult'; // '研究成果' },
+}

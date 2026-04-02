@@ -1,0 +1,379 @@
+﻿import { ke_Super_EditEx } from './ke_Super_EditEx';
+import { ke_SuperCRUD } from '@/viewsBase/GradEduTopic/ke_SuperCRUD';
+import { clske_SuperEN } from '@/ts/L0Entity/GradEduTopic/clske_SuperEN';
+import {
+  ke_Super_GetObjLstByPagerAsync,
+  ke_Super_GetRecCountByCondAsync,
+} from '@/ts/L3ForWApi/GradEduTopic/clske_SuperWApi';
+import {
+  GetCheckedKeyIdsInDivObj,
+  GetFirstCheckedKeyIdInDivObj,
+  GetDivObjInDivObj,
+} from '@/ts/PubFun/clsCommFunc4Ctrl';
+import { BindTab, SortFun } from '@/ts/PubFun/clsCommFunc4Web';
+import { clsDataColumn } from '@/ts/PubFun/clsDataColumn';
+import { GetCurrPageIndex } from '@/ts/PubFun/clsOperateList';
+import { Format } from '@/ts/PubFun/clsString';
+import { IShowList } from '@/ts/PubFun/IShowList';
+import { stuPagerPara } from '@/ts/PubFun/stuPagerPara';
+import { enumDivType } from '@/ts/PubFun/enumDivType';
+import { AccessBtnClickDefault } from '@/ts/PubFun/clsErrMsgBLEx';
+
+/* ke_SuperCRUDEx 的摘要说明。其中Q代表查询,U代表修改
+ (AutoGCLib.WA_ViewScriptCSEx_TS4TypeScript:GeneCode)
+*/
+export class ke_SuperCRUDEx extends ke_SuperCRUD implements IShowList {
+  //public static mstrListDiv: string = "divDataLst";
+  //public static mstrSortke_SuperBy: string = "keSuperId";
+  /*
+   * 每页记录数，在扩展类可以修改
+   */
+  public get pageSize(): number {
+    return 10;
+  }
+
+  /**
+   * 函数功能:初始设置，用来初始化一些变量值
+   **/
+  public async InitVarSet(): Promise<void> {
+    console.log('InitVarSet in TeacherInfoCRUDEx');
+  }
+  /**
+   * 函数功能:初始化界面控件值，放在绑定下拉框之后
+   **/
+  public async InitCtlVar(): Promise<void> {
+    console.log('InitCtlVar in TeacherInfoCRUDEx');
+  }
+  BindGv(strType: string, strPara: string) {
+    console.log(strType, strPara);
+    this.BindGv_ke_Super(this.thisDivList);
+  }
+  BindGvCache(strType: string, strPara: string) {
+    console.log('strPara', strPara);
+    let strMsg = '';
+    switch (strType) {
+      case 'ke_Super':
+        alert('该类没有绑定该函数：[this.BindGv_ke_Super_Cache]！');
+        //this.BindGv_ke_SuperCache();;
+        break;
+      default:
+        strMsg = Format('类型(strType):{0}在BindGv_Cache函数的switch中没有被处理！', strType);
+        console.error(strMsg);
+        alert(strMsg);
+        break;
+    }
+  }
+
+  /*
+     按钮单击,用于调用Js函数中btn_Click
+    (AutoGCLib.WA_ViewScriptCSEx_TS4TypeScript:Gen_WApi_TS_btn_Click)
+    */
+  public static btn_Click(strCommandName: string, strKeyId: string, divLayout: HTMLDivElement) {
+    let objPage: ke_SuperCRUDEx;
+    if (ke_SuperCRUD.objPageCRUD == null) {
+      ke_SuperCRUD.objPageCRUD = new ke_SuperCRUDEx(divLayout);
+      objPage = <ke_SuperCRUDEx>ke_SuperCRUD.objPageCRUD;
+    } else {
+      objPage = <ke_SuperCRUDEx>ke_SuperCRUD.objPageCRUD;
+    }
+    const objPageEdit: ke_Super_EditEx = new ke_Super_EditEx('ke_Super_EditEx', objPage);
+    const arrKeyIds = GetCheckedKeyIdsInDivObj(objPage.divList);
+    strKeyId = GetFirstCheckedKeyIdInDivObj(objPage.divList);
+
+    switch (strCommandName) {
+      case 'Query': //查询记录
+        objPage.btnQuery_Click();
+        break;
+      case 'AddNewRecordWithMaxId': //添加记录使用最大关键字
+        objPageEdit.btnAddNewRecordWithMaxId_Click();
+        break;
+      case 'CreateWithMaxId': //添加记录使用最大关键字
+        objPageEdit.btnAddNewRecordWithMaxId_Click();
+        break;
+      case 'AddNewRecord': //添加记录
+      case 'Create': //添加记录
+        objPageEdit.btnAddNewRecord_Click();
+        break;
+      case 'UpdateRecord': //修改记录
+      case 'Update': //修改记录
+        if (strKeyId == '') {
+          alert('请选择需要修改的记录！');
+          return;
+        }
+        objPageEdit.btnUpdateRecord_Click(strKeyId);
+        break;
+      case 'CopyRecord': //复制记录
+      case 'Clone': //复制记录
+        if (arrKeyIds.length == 0) {
+          alert('请选择需要复制的记录！');
+          return;
+        }
+        //objPage.btnCopyRecord_Click();
+        break;
+      case 'DelRecord': //删除记录
+      case 'Delete': //删除记录
+        if (arrKeyIds.length == 0) {
+          alert(`请选择需要删除的${objPage.thisTabName}记录！`);
+          return;
+        }
+        objPage.btnDelRecord_Click();
+        break;
+      case 'DelRecordBySign': //按标志删除记录
+      case 'DeleteBySign': //按标志删除记录
+        if (arrKeyIds.length == 0) {
+          alert('请选择需要按标志删除的记录！');
+          return;
+        }
+        //objPage.btnDelRecordBySign_Click();
+        break;
+      case 'UnDelRecordBySign': //按标志恢复删除记录
+      case 'UnDeleteBySign': //按标志恢复删除记录
+        if (arrKeyIds.length == 0) {
+          alert('请选择需要恢复删除的记录！');
+          return;
+        }
+        //objPage.btnUnDelRecordBySign_Click();
+        break;
+      case 'GoTop': //置顶记录
+        if (arrKeyIds.length == 0) {
+          alert('请选择需要置顶的记录！');
+          return;
+        }
+        //objPage.btnGoTop_Click();
+        break;
+      case 'GoBottum': //移底记录
+        if (arrKeyIds.length == 0) {
+          alert('请选择需要移底的记录！');
+          return;
+        }
+        //objPage.btnGoBottum_Click();
+        break;
+      case 'UpMove': //上移记录
+        if (arrKeyIds.length == 0) {
+          alert('请选择需要上移的记录！');
+          return;
+        }
+        //objPage.btnUpMove_Click();
+        break;
+      case 'DownMove': //下移记录
+        if (arrKeyIds.length == 0) {
+          alert('请选择需要下移的记录！');
+          return;
+        }
+        //objPage.btnDownMove_Click();
+        break;
+      case 'ReOrder': //重序记录
+        //objPage.btnReOrder_Click();
+        break;
+      case 'ExportExcel': //导出Excel
+        alert('导出Excel功能还没有开通！');
+        break;
+
+      default:
+        AccessBtnClickDefault(strCommandName, 'WA_Users_QUDI_CacheEx.btn_Click');
+
+        break;
+    }
+  }
+
+  /* 根据条件获取相应的对象列表
+ (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_BindGv)
+*/
+  public async BindGv_ke_Super(divList: HTMLDivElement) {
+    const objLayOut = this.getDivName(enumDivType.LayOut_01);
+    if (objLayOut == null) return;
+    const divDataLst = GetDivObjInDivObj(divList, 'divDataLst');
+    const strWhereCond = await this.Combineke_SuperCondition();
+    const intCurrPageIndex = GetCurrPageIndex(this.objPager.currPageIndex); //获取当前页
+    let arrke_SuperObjLst: Array<clske_SuperEN> = [];
+    try {
+      this.recCount = await ke_Super_GetRecCountByCondAsync(strWhereCond);
+      const objPagerPara: stuPagerPara = {
+        pageIndex: intCurrPageIndex,
+        pageSize: this.pageSize,
+        whereCond: strWhereCond,
+        orderBy: ke_SuperCRUD.sortke_SuperBy,
+        sortFun: (x, y) => {
+          x = x;
+          y = y;
+          return 0;
+        },
+      };
+      await ke_Super_GetObjLstByPagerAsync(objPagerPara).then((jsonData) => {
+        arrke_SuperObjLst = <Array<clske_SuperEN>>jsonData;
+      });
+    } catch (e: any) {
+      console.error('catch(e)=');
+      console.error(e);
+      const strMsg = `绑定GridView不成功,${e}.`;
+      alert(strMsg);
+    }
+    //if (arrke_SuperObjLst.length == 0) {
+    //    strIdCurrEduclsstrMsg: string = `在绑定Gv_Cache过程中，根据条件获取的对象列表数为0！`;
+    //    alert(strMsg);
+    //    return;
+    //}
+    try {
+      this.BindTab_ke_Super(divList, arrke_SuperObjLst);
+      console.log('完成BindGv_ke_Super!');
+    } catch (e: any) {
+      console.error('catch(e)=');
+      console.error(e);
+      const strMsg = `绑定对象列表不成功.Error Massage:${e}.`;
+      alert(strMsg);
+    }
+  }
+
+  /* 显示ke_Super对象的所有属性值
+ (AutoGCLib.WA_ViewScriptCS_TS4TypeScript:Gen_WApi_Ts_BindTab)
+ <param name = "divContainer">显示容器</param>
+ <param name = "arrke_SuperObjLst">需要绑定的对象列表</param>
+*/
+  public async BindTab_ke_Super(
+    divContainer: HTMLDivElement,
+    arrke_SuperObjLst: Array<clske_SuperEN>,
+  ) {
+    const strThisFuncName = this.BindTab_ke_Super.name;
+    if (divContainer == null) {
+      const strMsg = `所给层divContainer不存在！(in ${strThisFuncName})`;
+      alert(strMsg);
+      console.error(strMsg);
+      return;
+    }
+    const arrDataColumn: Array<clsDataColumn> = [
+      {
+        fldName: '',
+        colHeader: '',
+        text: '',
+        tdClass: 'text-left',
+        sortBy: '',
+        sortFun: SortFun,
+        getDataSource: '',
+        columnType: 'CheckBox',
+        orderNum: 1,
+        funcName: () => {},
+      },
+      {
+        fldName: 'keSuperId',
+        colHeader: '知识分类Id',
+        text: '',
+        tdClass: 'text-left',
+        sortBy: '',
+        sortFun: SortFun,
+        getDataSource: '',
+        columnType: 'Label',
+        orderNum: 1,
+        funcName: () => {},
+      },
+      {
+        fldName: 'keSuperNameCn',
+        colHeader: '知识分类名',
+        text: '',
+        tdClass: 'text-left',
+        sortBy: '',
+        sortFun: SortFun,
+        getDataSource: '',
+        columnType: 'Label',
+        orderNum: 1,
+        funcName: () => {},
+      },
+      {
+        fldName: 'keSuperNameEn',
+        colHeader: '知识分类英文名',
+        text: '',
+        tdClass: 'text-left',
+        sortBy: '',
+        sortFun: SortFun,
+        getDataSource: '',
+        columnType: 'Label',
+        orderNum: 1,
+        funcName: () => {},
+      },
+      {
+        fldName: clske_SuperEN.con_KeSuperDescribeCn,
+        colHeader: '知识分类描述',
+        text: '',
+        tdClass: 'text-left',
+        sortBy: '',
+        sortFun: SortFun,
+        getDataSource: '',
+        columnType: 'Label',
+        orderNum: 1,
+        funcName: () => {},
+      },
+      {
+        fldName: clske_SuperEN.con_KeSuperDescribeEn,
+        colHeader: '知识分类英文描述',
+        text: '',
+        tdClass: 'text-left',
+        sortBy: '',
+        sortFun: SortFun,
+        getDataSource: '',
+        columnType: 'Label',
+        orderNum: 1,
+        funcName: () => {},
+      },
+      {
+        fldName: 'updDate',
+        colHeader: '修改日期',
+        text: '',
+        tdClass: 'text-left',
+        sortBy: '',
+        sortFun: SortFun,
+        getDataSource: '',
+        columnType: 'Label',
+        orderNum: 1,
+        funcName: () => {},
+      },
+      {
+        fldName: 'updUser',
+        colHeader: '修改人',
+        text: '',
+        tdClass: 'text-left',
+        sortBy: '',
+        sortFun: SortFun,
+        getDataSource: '',
+        columnType: 'Label',
+        orderNum: 1,
+        funcName: () => {},
+      },
+      //{
+      //    fldName: "",
+      //    colHeader: "修改",
+      //    text: "修改",tdClass: "text-left",sortBy: "", sortFun: SortFun, getDataSource: "",
+      //    columnType: "Button",
+      //    orderNum: 1,
+      //    funcName: (strKeyId: string, strText: string) => {
+      //        strIdCurrEduclsbtn1: HTMLElement = document.createElement("button");
+      //        btn1.innerText = strText;
+      //        btn1.className = "btn btn-outline-info btn-sm";
+      //        btn1.setAttribute("onclick", `btnUpdateRecordInTab_Click('${strKeyId}');`);
+      //        return btn1;
+      //    }
+      //},
+      //{
+      //    fldName: "",
+      //    colHeader: "删除",
+      //    text: "删除",tdClass: "text-left",sortBy: "", sortFun: SortFun, getDataSource: "",
+      //    columnType: "Button",
+      //    orderNum: 1,
+      //    funcName: (strKeyId: string, strText: string) => {
+      //        strIdCurrEduclsbtn1: HTMLElement = document.createElement("button");
+      //        btn1.innerText = strText;
+      //        btn1.className = "btn btn-outline-info btn-sm";
+      //        btn1.setAttribute("onclick", `btnDelRecordInTab_Click('${strKeyId}');`);
+      //        return btn1;
+      //    }
+      //},
+    ];
+    const objLayOut = this.getDivName(enumDivType.LayOut_01);
+    if (objLayOut == null) return;
+    const divDataLst = GetDivObjInDivObj(divContainer, 'divDataLst');
+    await BindTab(divDataLst, arrke_SuperObjLst, arrDataColumn, 'keSuperId', this);
+    if (this.objPager.IsInit(divContainer, this.divName4Pager) == false)
+      this.objPager.InitShow(divContainer, this.divName4Pager);
+    this.objPager.recCount = this.recCount;
+    this.objPager.pageSize = this.pageSize;
+    this.objPager.ShowPagerV2(objLayOut, this, this.divName4Pager);
+  }
+}

@@ -1,0 +1,4 @@
+﻿生成日期：20231229163103(当前工程Id:0112, 用户：pyf)
+针对表:01120957(QxRoleRightRelation)
+错误：未将对象引用设置到对象的实例。生成表:[QxRoleRightRelation(01120957)]时.(System.Threading.ExecutionContext:RunInternal->System.Threading.ThreadHelper:ThreadStart_Context->Agc_CsWin.clsGeneCode_Local:GeneAllCheckedTableThreeLayer).
+共计生成文件数:0(共计表:1).
